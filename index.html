@@ -6,9 +6,11 @@
     <title>Sistema de Gestión de Causas Penales - MP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <!-- ===== FIREBASE SDK (MÓDULOS) ===== -->
+    <!-- ===== FIREBASE SDK (VERSIÓN COMPAT, FUNCIONA EN GITHUB PAGES) ===== -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <style>
         /* ========== ESTILOS COMPLETOS ========== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f0f2f5; color:#2d2d2d; padding:20px; }
@@ -138,7 +140,7 @@
         .alert-item .badge-danger { background:#f8d7da; color:#721c24; padding:2px 8px; border-radius:12px; font-size:12px; }
         .alert-item .badge-success { background:#d4edda; color:#155724; padding:2px 8px; border-radius:12px; font-size:12px; }
         @media (max-width:768px) { .alert-item { flex-direction:column; align-items:flex-start; } .alert-item .label { min-width:auto; } }
-        
+
         /* ========== ESTILOS DE IMPRESIÓN ========== */
         @media print {
             @page { size: legal; margin: 1.5cm; }
@@ -721,15 +723,8 @@
     </div>
 </div>
 
-<script type="module">
-    // ============================================================
-    // 1. IMPORTAR FIREBASE
-    // ============================================================
-    import { initializeApp } from "firebase/app";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
-
-    <script>
+<!-- ============================================================ -->
+<!-- FIN DE LA PARTE 1 – CONTINÚA CON LA PARTE 2 --><script>
     // ============================================================
     // CONFIGURACIÓN DE FIREBASE (TUS DATOS)
     // ============================================================
@@ -825,9 +820,9 @@
             document.getElementById('auth-status').textContent = '';
         }
     });
-</script>
+
     // ============================================================
-    // 4. CONFIGURACIÓN DE HECHOS PUNIBLES (COMPLETA)
+    // CONFIGURACIÓN DE HECHOS PUNIBLES (COMPLETA)
     // ============================================================
     const CONFIG = {
         hechos: {
@@ -1067,7 +1062,7 @@
     };
 
     // ============================================================
-    // 5. DILIGENCIAS Y PREGUNTAS
+    // DILIGENCIAS Y PREGUNTAS
     // ============================================================
     const DILIGENCIAS_ORDINARIAS = [
         { id: 'dil-testifical', label: 'Testifical (declaración de testigos)' },
@@ -1150,7 +1145,7 @@
     ];
 
     // ============================================================
-    // 6. ESTADO GLOBAL
+    // ESTADO GLOBAL
     // ============================================================
     let causas = [];
     let hechosAgregados = [];
@@ -1163,7 +1158,7 @@
     let esAdmin = false;
 
     // ============================================================
-    // 7. EXPONER TODAS LAS FUNCIONES AL OBJETO window
+    // EXPONER FUNCIONES Y VARIABLES AL OBJETO window
     // ============================================================
     window.CONFIG = CONFIG;
     window.DILIGENCIAS_ORDINARIAS = DILIGENCIAS_ORDINARIAS;
@@ -1181,20 +1176,28 @@
     window.esAdmin = esAdmin;
 
     // ============================================================
-    // 8. FUNCIONES DE AUTENTICACIÓN (ya expuestas antes)
+    // FUNCIONES DE ADMINISTRACIÓN (básicas)
     // ============================================================
-    // (Las funciones login, registrar, logout, etc. ya están expuestas)
+    window.toggleAdminPanel = function() {
+        const panel = document.getElementById('admin-panel');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            window.cargarUsuarios();
+        } else {
+            panel.style.display = 'none';
+        }
+    };
+
+    window.cargarUsuarios = function() {
+        const container = document.getElementById('admin-users-list');
+        container.innerHTML = '<p class="text-muted">Usuarios gestionados directamente desde Firebase Console.</p>';
+    };
 
     // ============================================================
-    // 9. FUNCIONES DE ADMINISTRACIÓN (ya expuestas antes)
-    // ============================================================
-    // (Las funciones toggleAdminPanel, cargarUsuarios, activarSuscripcion, etc. ya están expuestas)
-
-    // ============================================================
-    // 10. FUNCIONES DE GESTIÓN DE CAUSAS (COMPLETAS)
+    // FUNCIONES DE GESTIÓN DE CAUSAS (COMPLETAS)
     // ============================================================
 
-    // ===== VÍCTIMAS Y TESTIGOS =====
+    // ----- VÍCTIMAS Y TESTIGOS -----
     window.agregarVictima = function() {
         const container = document.getElementById('victimas-container');
         const div = document.createElement('div');
@@ -1241,7 +1244,7 @@
         else alert('Debe haber al menos un testigo.');
     };
 
-    // ===== HECHOS PUNIBLES =====
+    // ----- HECHOS PUNIBLES -----
     window.actualizarIncisos = function() {
         const hecho = document.getElementById('hecho-selector').value;
         const container = document.getElementById('incisos-opciones');
@@ -1301,7 +1304,7 @@
         if (!hecho) { alert('Seleccione un hecho punible.'); return; }
         const config = CONFIG.hechos[hecho];
         if (!config) return;
-        
+
         const incisosSeleccionados = [];
         document.querySelectorAll('.inciso-check:checked').forEach(el => {
             const incisoId = el.value;
@@ -1320,12 +1323,12 @@
                 });
             }
         });
-        
+
         if (incisosSeleccionados.length === 0) {
             alert('Seleccione al menos un inciso.');
             return;
         }
-        
+
         const yaExiste = hechosAgregados.some(h => {
             if (h.hecho !== hecho) return false;
             if (h.incisos.length !== incisosSeleccionados.length) return false;
@@ -1337,7 +1340,7 @@
             });
         });
         if (yaExiste) { alert('Esta combinación de incisos y numerales ya fue agregada.'); return; }
-        
+
         hechosAgregados.push({ hecho, incisos: incisosSeleccionados });
         window.renderizarHechosAgregados();
         window.generarCaratula();
@@ -1386,7 +1389,7 @@
         window.actualizarTab3();
     };
 
-    // ===== CARÁTULA =====
+    // ----- CARÁTULA -----
     window.generarCaratula = function() {
         const num = document.getElementById('num-causa').value.trim();
         const imputado = document.getElementById('imputado').value.trim();
@@ -1406,7 +1409,7 @@
         preview.textContent = `Causa Nº ${num} "${imputado}" S/ ${hechosText}`;
     };
 
-    // ===== PESTAÑAS =====
+    // ----- PESTAÑAS -----
     window.activarTab = function(tabId) {
         document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -1436,7 +1439,7 @@
         if (!activa) document.getElementById('num-reincidencias').value = 0;
     };
 
-    // ===== CÁLCULO DE DÍAS =====
+    // ----- CÁLCULO DE DÍAS -----
     window.calcularDiasSuspendidos = function() {
         const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
         const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
@@ -1582,15 +1585,15 @@
         const rebeldiaActiva = document.getElementById('rebeldia-activa').checked;
         const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
         const el = document.getElementById('nueva-fecha-rebeldia');
-        
+
         if (!fechaImputacion || plazo <= 0) {
             el.value = '';
             return;
         }
-        
+
         const fecha = new Date(fechaImputacion);
         let diasSuspendidos = 0;
-        
+
         if (rebeldiaActiva && fechaLevantamiento) {
             const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
             if (fechaDeclaracion) {
@@ -1601,23 +1604,23 @@
                 }
             }
         }
-        
+
         fecha.setMonth(fecha.getMonth() + plazo);
         fecha.setDate(fecha.getDate() + diasSuspendidos);
-        
+
         el.value = fecha.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
         if (diasSuspendidos > 0) {
             el.value += ` (+${diasSuspendidos} días suspendidos)`;
         }
     };
 
-    // ===== TAB 3 - INTERVENCIONES =====
+    // ----- TAB 3 - INTERVENCIONES -----
     window.actualizarTab3 = function() {
         const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
         const container = document.getElementById('tab3-contenido');
-        
+
         let html = '';
-        
+
         if (hechoPrincipal === '229') {
             html += window.generarCuestionarioRiesgo();
         } else if (hechoPrincipal === '225') {
@@ -1629,7 +1632,7 @@
         } else {
             html = '<p class="text-muted">Seleccione un hecho punible en Datos Generales para ver el contenido.</p>';
         }
-        
+
         html += `
             <hr style="margin:20px 0;border-color:#e0e4ea;">
             <div style="display:flex;justify-content:flex-end;">
@@ -1637,12 +1640,12 @@
             </div>
         `;
         html += `<div id="intervenciones-adicionales" style="margin-top:15px;"></div>`;
-        
+
         container.innerHTML = html;
         window.restaurarIntervencionesAdicionales();
     };
 
-    // ===== DILIGENCIAS ORDINARIAS =====
+    // ----- DILIGENCIAS ORDINARIAS -----
     window.generarDiligenciasOrdinarias = function() {
         let html = `
             <h4 style="color:#1a2a4a;margin-bottom:12px;">Diligencias realizadas</h4>
@@ -1687,7 +1690,7 @@
         });
     };
 
-    // ===== CUESTIONARIO SEXUAL =====
+    // ----- CUESTIONARIO SEXUAL -----
     window.generarCuestionarioSexual = function() {
         let html = `<h4 style="color:#1a2a4a;margin-bottom:12px;">Cuestionario de Valoración de Riesgo en Delitos Sexuales</h4><p class="text-muted">Complete todas las preguntas para obtener el nivel de riesgo y las medidas sugeridas.</p>`;
         const secciones = [
@@ -1815,7 +1818,7 @@
         });
     };
 
-    // ===== CUESTIONARIO DE RIESGO (Art. 229) =====
+    // ----- CUESTIONARIO DE RIESGO (Art. 229) -----
     window.generarCuestionarioRiesgo = function() {
         let html = `<h4 style="color:#1a2a4a;margin-bottom:12px;">Cuestionario de Nivel de Riesgo (Art. 229)</h4><p class="text-muted">Complete todas las preguntas para obtener el nivel de riesgo y las medidas sugeridas.</p>`;
         const secciones = [
@@ -1910,7 +1913,7 @@
         return todas;
     };
 
-    // ===== LIQUIDACIÓN Y DILIGENCIAS (Art. 225) =====
+    // ----- LIQUIDACIÓN Y DILIGENCIAS (Art. 225) -----
     window.generarLiquidacionYdiligencias = function() {
         const DILIGENCIAS_ALIMENTOS = [
             { id: 'dil-testifical', label: 'Testifical (recabar info sobre causas o acuerdos anteriores)' },
@@ -2008,7 +2011,7 @@
         });
     };
 
-    // ===== MODAL PARA AGREGAR INTERVENCIÓN MANUAL =====
+    // ----- MODAL PARA AGREGAR INTERVENCIÓN MANUAL -----
     window.abrirModalIntervencion = function() {
         document.getElementById('modal-intervencion').classList.add('active');
         document.getElementById('interv-fecha').value = '';
@@ -2044,7 +2047,7 @@
         const resultado = document.getElementById('interv-resultado').value;
         const observaciones = document.getElementById('interv-observaciones').value.trim();
         const otraDesc = document.getElementById('interv-otra-desc').value.trim();
-        
+
         if (tipo === 'otra' && !otraDesc) {
             alert('Debe describir la intervención.');
             return;
@@ -2053,7 +2056,7 @@
             alert('Debe ingresar el nombre del profesional.');
             return;
         }
-        
+
         const nueva = {
             id: 'interv_' + Date.now(),
             tipo: tipo,
@@ -2063,7 +2066,7 @@
             observaciones: observaciones,
             otraDesc: otraDesc
         };
-        
+
         if (!intervencionesGuardadas) intervencionesGuardadas = [];
         intervencionesGuardadas.push(nueva);
         window.cerrarModalIntervencion();
@@ -2105,7 +2108,7 @@
         window.restaurarIntervencionesAdicionales();
     };
 
-    // ===== GUARDADO POR PESTAÑA =====
+    // ----- GUARDADO POR PESTAÑA -----
     window.getCausaActual = function() {
         if (!causaActualId) return null;
         return causas.find(c => c.id === causaActualId) || null;
@@ -2253,7 +2256,7 @@
         if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
         const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
         let datos = {};
-        
+
         if (hechoPrincipal === '229') {
             const respuestas = {};
             preguntasRiesgo.forEach(p => {
@@ -2301,9 +2304,9 @@
         } else {
             datos.intervenciones = { tipo: 'ninguno' };
         }
-        
+
         datos.intervencionesAdicionales = intervencionesGuardadas || [];
-        
+
         const causa = window.actualizarCausa(datos);
         if (causa) {
             window.actualizarEstadoSeccion('tab3', true);
@@ -2312,7 +2315,7 @@
         }
     };
 
-    // ===== CARGAR CAUSA PARA EDITAR =====
+    // ----- CARGAR CAUSA PARA EDITAR -----
     window.cargarCausaParaEditar = function(id) {
         const causa = causas.find(c => c.id === id);
         if (!causa) return;
@@ -2506,7 +2509,7 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // ===== RENDERIZAR LISTADO =====
+    // ----- RENDERIZAR LISTADO -----
     window.renderizarCausas = function() {
         const grid = document.getElementById('causa-grid');
         const contador = document.getElementById('contador-causas');
@@ -2648,7 +2651,7 @@
         causaActualId = null;
     };
 
-    // ===== INFORME =====
+    // ----- INFORME -----
     window.actualizarInforme = function() {
         const container = document.getElementById('informe-contenido');
         const causa = window.getCausaActual();
@@ -2973,7 +2976,7 @@
         setTimeout(() => { window.print(); }, 300);
     };
 
-    // ===== ALERTAS (pestaña 6) =====
+    // ----- ALERTAS (pestaña 6) -----
     window.actualizarAlertas = function() {
         const container = document.getElementById('alertas-contenido');
         const causa = window.getCausaActual();
@@ -3119,7 +3122,9 @@
         }
     };
 
-    // ===== GUARDAR Y CARGAR DATOS (localStorage) =====
+    // ============================================================
+    // GUARDAR Y CARGAR DATOS (localStorage)
+    // ============================================================
     window.guardarDatos = function() {
         try { localStorage.setItem('causasPenalesMP', JSON.stringify(causas)); } catch(e) { console.error(e); }
     };
@@ -3167,12 +3172,12 @@
     };
 
     // ============================================================
-    // 11. INICIALIZAR
+    // INICIALIZAR
     // ============================================================
     window.renderizarCausas();
     window.actualizarIncisos();
     window.actualizarTab3();
-    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente.');
+    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (compat).');
     console.log(`Causas registradas: ${causas.length}`);
 </script>
 </body>
