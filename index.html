@@ -7,11 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <!-- ===== FIREBASE SDK (MÓDULOS) ===== -->
-    <script type="importmap">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-
-    <style>
         /* ========== ESTILOS COMPLETOS ========== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f0f2f5; color:#2d2d2d; padding:20px; }
@@ -732,8 +729,9 @@
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
     import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
 
+    <script>
     // ============================================================
-    // 2. CONFIGURACIÓN DE FIREBASE (NUEVO PROYECTO)
+    // CONFIGURACIÓN DE FIREBASE (TUS DATOS)
     // ============================================================
     const firebaseConfig = {
         apiKey: "AIzaSyBpxzHKYIh1zQAw5z8ezQL5pZRVkTHAlb8",
@@ -744,17 +742,90 @@
         appId: "1:593874362548:web:321ac543b084258dc2b7e1"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // Inicializar Firebase (versión compat)
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
     // ============================================================
-    // 3. EXPONER FUNCIONES Y VARIABLES AL OBJETO window
+    // FUNCIONES DE AUTENTICACIÓN (compat)
     // ============================================================
-    window.auth = auth;
-    window.db = db;
-    window.Timestamp = Timestamp;
+    window.login = function() {
+        const email = document.getElementById('email-input').value;
+        const password = document.getElementById('password-input').value;
+        const status = document.getElementById('auth-status');
+        status.textContent = 'Iniciando sesión...';
+        auth.signInWithEmailAndPassword(email, password)
+            .then(() => {
+                status.textContent = '✅ Sesión iniciada.';
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                window.cargarDatos();
+                window.renderizarCausas();
+                window.verificarPlazosYAlertar();
+            })
+            .catch(error => {
+                status.textContent = '❌ ' + error.message;
+            });
+    };
 
+    window.registrar = function() {
+        const email = document.getElementById('reg-email').value;
+        const password = document.getElementById('reg-password').value;
+        const status = document.getElementById('auth-status');
+        if (password.length < 6) {
+            status.textContent = '❌ La contraseña debe tener al menos 6 caracteres.';
+            return;
+        }
+        status.textContent = 'Registrando usuario...';
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(() => {
+                status.textContent = '✅ Usuario registrado. Inicia sesión.';
+                window.mostrarLogin();
+            })
+            .catch(error => {
+                status.textContent = '❌ ' + error.message;
+            });
+    };
+
+    window.logout = function() {
+        auth.signOut().then(() => {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('auth-container').style.display = 'flex';
+            document.getElementById('email-input').value = '';
+            document.getElementById('password-input').value = '';
+            document.getElementById('auth-status').textContent = 'Sesión cerrada.';
+        });
+    };
+
+    window.mostrarRegistro = function() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('registro-form').style.display = 'block';
+        document.getElementById('auth-status').textContent = '';
+    };
+
+    window.mostrarLogin = function() {
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('registro-form').style.display = 'none';
+        document.getElementById('auth-status').textContent = '';
+    };
+
+    // ============================================================
+    // OBSERVADOR DE AUTENTICACIÓN
+    // ============================================================
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            window.cargarDatos();
+            window.renderizarCausas();
+            window.verificarPlazosYAlertar();
+        } else {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('auth-container').style.display = 'flex';
+            document.getElementById('auth-status').textContent = '';
+        }
+    });
+</script>
     // ============================================================
     // 4. CONFIGURACIÓN DE HECHOS PUNIBLES (COMPLETA)
     // ============================================================
