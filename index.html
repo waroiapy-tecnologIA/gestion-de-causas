@@ -19,6 +19,20 @@
         .header h1 { font-size:22px; font-weight:600; }
         .header h1 i { color:#d4a843; margin-right:10px; }
         .header .subtitle { font-size:14px; opacity:0.8; font-weight:300; }
+        /* Badge de estado */
+        .status-badge {
+            display:inline-block;
+            padding:4px 12px;
+            border-radius:20px;
+            font-size:12px;
+            font-weight:600;
+            margin-left:10px;
+            background:#2a7d4f;
+            color:#fff;
+        }
+        .status-badge.error {
+            background:#b33c3c;
+        }
 
         /* ===== BANNER DE AVISO ===== */
         .aviso-banner {
@@ -178,6 +192,7 @@
             .header { background:#1a2a4a !important; color:#fff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:10px 20px; }
             .header h1 { font-size:16pt; }
             .header .subtitle { font-size:10pt; }
+            .status-badge { display:none !important; }
             .aviso-banner { display:none !important; }
             .toolbar, .causa-grid, .tab-btn, .no-print, .btn, .footer-seccion, .search-box { display:none !important; }
             .form-container { display:block !important; border:none !important; padding:0 !important; margin:0 !important; background:#fff !important; opacity:1 !important; transform:none !important; }
@@ -387,7 +402,10 @@
 <!-- ===== APLICACIÓN PRINCIPAL ===== -->
 <div class="app-container" id="app-container">
     <header class="header">
-        <h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+            <h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1>
+            <span class="status-badge" id="status-badge">⏳ Cargando...</span>
+        </div>
         <span class="subtitle">Ministerio Público – Sistema de Gestión Integral</span>
     </header>
 
@@ -749,7 +767,7 @@
     </div>
 </div>
 
-<!-- ===== MODAL PARA RENOVAR SUSCRIPCIÓN (no usado pero se mantiene) ===== -->
+<!-- ===== MODAL PARA RENOVAR SUSCRIPCIÓN (placeholder) ===== -->
 <div class="modal-overlay" id="modal-renovar">
     <div class="modal-content">
         <button class="btn-cerrar-modal" onclick="window.cerrarModalRenovar()">&times;</button>
@@ -764,9 +782,66 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- SCRIPT ÚNICO CORREGIDO (CON FIREBASE COMPAT)                 -->
+<!-- SCRIPT ÚNICO CON DIAGNÓSTICO (SIN RECORTES)                   -->
 <!-- ============================================================ -->
 <script>
+    // ============================================================
+    // BLOQUE DE DIAGNÓSTICO (se ejecuta primero)
+    // ============================================================
+    (function diagnosticar() {
+        var estado = { ok: true, errores: [] };
+        var badge = document.getElementById('status-badge');
+
+        // 1. Verificar que Firebase esté cargado
+        if (typeof firebase === 'undefined') {
+            estado.ok = false;
+            estado.errores.push('Firebase no está definido. Revisa la carga de los scripts CDN.');
+        } else {
+            console.log('✅ Firebase cargado correctamente.');
+        }
+
+        // 2. Verificar elementos esenciales del DOM
+        var idsEsenciales = [
+            'auth-container', 'app-container', 'email-input', 'password-input',
+            'num-causa', 'imputado', 'hecho-selector', 'incisos-opciones',
+            'victimas-container', 'testigos-container', 'causa-grid',
+            'tab1', 'tab2', 'tab3', 'tab5', 'tab6',
+            'form-container', 'listado-view'
+        ];
+        idsEsenciales.forEach(function(id) {
+            if (!document.getElementById(id)) {
+                estado.ok = false;
+                estado.errores.push('Falta el elemento con ID: ' + id);
+            }
+        });
+
+        // 3. Mostrar resultado en consola y badge
+        if (estado.ok) {
+            console.log('✅ Diagnóstico: TODOS los elementos esenciales están presentes.');
+            if (badge) {
+                badge.textContent = '✅ OK';
+                badge.className = 'status-badge';
+            }
+        } else {
+            console.error('❌ Diagnóstico: ERRORES encontrados:');
+            estado.errores.forEach(function(err) {
+                console.error('   - ' + err);
+            });
+            if (badge) {
+                badge.textContent = '❌ Error';
+                badge.className = 'status-badge error';
+            }
+            // Mostrar un mensaje visible en la interfaz (sin bloquear)
+            var msg = document.createElement('div');
+            msg.style.cssText = 'background:#f8d7da;color:#721c24;padding:10px 20px;border:1px solid #f5c6cb;border-radius:4px;margin:10px 0;';
+            msg.innerHTML = '<strong>⚠️ Error de inicialización:</strong> Revisa la consola (F12) para más detalles.';
+            var container = document.getElementById('auth-container');
+            if (container) {
+                container.parentNode.insertBefore(msg, container);
+            }
+        }
+    })();
+
     // ============================================================
     // CONFIGURACIÓN DE FIREBASE
     // ============================================================
@@ -790,7 +865,6 @@
         try { localStorage.setItem('avisoCerrado', 'true'); } catch(e) {}
     };
 
-    // Mostrar el banner solo si no se ha cerrado antes
     (function() {
         try {
             if (localStorage.getItem('avisoCerrado') === 'true') {
@@ -1154,7 +1228,7 @@
     window.esAdmin = esAdmin;
 
     // ============================================================
-    // FUNCIONES DE ADMINISTRACIÓN
+    // FUNCIONES DE ADMINISTRACIÓN (placeholders)
     // ============================================================
     window.toggleAdminPanel = function() {
         var panel = document.getElementById('admin-panel');
@@ -3248,7 +3322,7 @@
     window.renderizarCausas();
     window.actualizarIncisos();
     window.actualizarTab3();
-    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (versión compat con aviso).');
+    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (versión compat con diagnóstico).');
     console.log('Causas registradas:', causas.length);
 </script>
 </body>
