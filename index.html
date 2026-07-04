@@ -6,16 +6,9 @@
     <title>Sistema de Gestión de Causas Penales - MP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <!-- ===== FIREBASE SDK (MÓDULOS) - VERSIÓN CORREGIDA ===== -->
-    <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"
-            }
-        }
-    </script>
+    <!-- ===== FIREBASE SDK (VERSIÓN COMPAT, COMO EN EL PRIMER CÓDIGO) ===== -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <style>
         /* ========== ESTILOS COMPLETOS (sin cambios) ========== */
@@ -731,20 +724,13 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- SCRIPT PRINCIPAL CORREGIDO (MÓDULOS)                         -->
+<!-- SCRIPT ÚNICO CORREGIDO (CON FIREBASE COMPAT)                 -->
 <!-- ============================================================ -->
-<script type="module">
+<script>
     // ============================================================
-    // 1. IMPORTAR FIREBASE
+    // CONFIGURACIÓN DE FIREBASE (EXACTAMENTE LA MISMA QUE EN EL PRIMER CÓDIGO)
     // ============================================================
-    import { initializeApp } from "firebase/app";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
-
-    // ============================================================
-    // 2. CONFIGURACIÓN DE FIREBASE (NUEVO PROYECTO)
-    // ============================================================
-    const firebaseConfig = {
+    var firebaseConfig = {
         apiKey: "AIzaSyBpxzHKYIh1zQAw5z8ezQL5pZRVkTHAlb8",
         authDomain: "gestion-de-causas-e66e0.firebaseapp.com",
         projectId: "gestion-de-causas-e66e0",
@@ -753,21 +739,14 @@
         appId: "1:593874362548:web:321ac543b084258dc2b7e1"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // Inicializar Firebase (versión compat)
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
 
     // ============================================================
-    // 3. EXPONER FUNCIONES Y VARIABLES AL OBJETO window
+    // CONFIGURACIÓN DE HECHOS PUNIBLES (COMPLETA)
     // ============================================================
-    window.auth = auth;
-    window.db = db;
-    window.Timestamp = Timestamp;
-
-    // ============================================================
-    // 4. CONFIGURACIÓN DE HECHOS PUNIBLES (COMPLETA)
-    // ============================================================
-    const CONFIG = {
+    var CONFIG = {
         hechos: {
             '162': {
                 label: 'Art. 162 – Hurto',
@@ -1005,9 +984,9 @@
     };
 
     // ============================================================
-    // 5. DILIGENCIAS Y PREGUNTAS
+    // DILIGENCIAS Y PREGUNTAS
     // ============================================================
-    const DILIGENCIAS_ORDINARIAS = [
+    var DILIGENCIAS_ORDINARIAS = [
         { id: 'dil-testifical', label: 'Testifical (declaración de testigos)' },
         { id: 'dil-careo', label: 'Careo entre imputado y testigos' },
         { id: 'dil-reconocimiento-personas', label: 'Reconocimiento de personas' },
@@ -1025,7 +1004,7 @@
         { id: 'dil-camara-gessell', label: 'Cámara Gessell (para víctimas vulnerables)' }
     ];
 
-    const DILIGENCIAS_SEXUALES = [
+    var DILIGENCIAS_SEXUALES = [
         { id: 'dil-camara-gessell', label: 'Cámara Gessell (declaración de la víctima)' },
         { id: 'dil-evaluacion-psicologica', label: 'Evaluación psicológica forense' },
         { id: 'dil-evaluacion-medica', label: 'Evaluación médica forense' },
@@ -1038,7 +1017,7 @@
         { id: 'dil-careo', label: 'Careo entre víctima e imputado (si procede)' }
     ];
 
-    const preguntasRiesgo = [
+    var preguntasRiesgo = [
         { id:'r1.1', label:'1.1 – Grado de relación con el supuesto agresor', opciones:[{valor:3,texto:'Cónyuge/concubino/pareja'},{valor:3,texto:'Ex cónyuge/ex concubino/ex pareja'},{valor:2,texto:'Padres/padrastros, abuelos'},{valor:2,texto:'Hijos/nietos'},{valor:1,texto:'Hermanos/sobrinos'},{valor:1,texto:'Tíos/primos'},{valor:0,texto:'Otros'}] },
         { id:'r1.2', label:'1.2 – ¿La víctima tiene personas a su cargo?', opciones:[{valor:3,texto:'Sí, hijos menores/discapacitados'},{valor:2,texto:'Sí, padres adultos mayores/discapacitados'},{valor:1,texto:'Sí, otros familiares'},{valor:0,texto:'No'}] },
         { id:'r1.3', label:'1.3 – La víctima ha manifestado al supuesto agresor antes del hecho', opciones:[{valor:3,texto:'Que piensa separarse de él o dejar la casa'},{valor:2,texto:'Que lo ha denunciado o lo va a denunciar'},{valor:1,texto:'Que ha solicitado medidas de protección o piensa solicitarla'},{valor:0,texto:'No le ha manifestado nada'}] },
@@ -1070,7 +1049,7 @@
         { id:'r5.3', label:'5.3 – La víctima manifiesta su voluntad de continuar el proceso', opciones:[{valor:3,texto:'No quiere continuar'},{valor:2,texto:'Duda en continuar'},{valor:1,texto:'Manifiesta su voluntad de continuar'},{valor:0,texto:'Está segura de continuar'}] }
     ];
 
-    const preguntasSexuales = [
+    var preguntasSexuales = [
         { id:'s1.1', label:'1.1 – Relación entre víctima e imputado', opciones:[{valor:3,texto:'Familiar (padre, padrastro, tío, abuelo, hermano)'},{valor:3,texto:'Pareja o ex pareja'},{valor:2,texto:'Conocido (amigo, vecino, profesor, autoridad)'},{valor:1,texto:'Desconocido'},{valor:0,texto:'Otro'}] },
         { id:'s1.2', label:'1.2 – ¿Existe relación de dependencia o confianza?', opciones:[{valor:3,texto:'Sí, dependencia económica o afectiva'},{valor:2,texto:'Sí, relación de confianza (amistad, laboral)'},{valor:1,texto:'No, relación esporádica'},{valor:0,texto:'No existe relación'}] },
         { id:'s1.3', label:'1.3 – Edad de la víctima', opciones:[{valor:3,texto:'Menor de 10 años'},{valor:2,texto:'Entre 10 y 14 años'},{valor:1,texto:'Entre 14 y 18 años'},{valor:0,texto:'Mayor de 18 años'}] },
@@ -1088,20 +1067,20 @@
     ];
 
     // ============================================================
-    // 6. ESTADO GLOBAL
+    // ESTADO GLOBAL
     // ============================================================
-    let causas = [];
-    let hechosAgregados = [];
-    let riesgoPuntaje = 0;
-    let riesgoNivel = '';
-    let causaActualId = null;
-    let seccionesGuardadas = { tab1:false, tab2:false, tab3:false };
-    let intervencionesGuardadas = [];
-    let usuarioActual = null;
-    let esAdmin = false;
+    var causas = [];
+    var hechosAgregados = [];
+    var riesgoPuntaje = 0;
+    var riesgoNivel = '';
+    var causaActualId = null;
+    var seccionesGuardadas = { tab1:false, tab2:false, tab3:false };
+    var intervencionesGuardadas = [];
+    var usuarioActual = null;
+    var esAdmin = false;
 
     // ============================================================
-    // 7. EXPONER TODAS LAS FUNCIONES AL OBJETO window
+    // EXPONER FUNCIONES Y VARIABLES AL OBJETO window
     // ============================================================
     window.CONFIG = CONFIG;
     window.DILIGENCIAS_ORDINARIAS = DILIGENCIAS_ORDINARIAS;
@@ -1119,10 +1098,10 @@
     window.esAdmin = esAdmin;
 
     // ============================================================
-    // 8. FUNCIONES DE ADMINISTRACIÓN (ahora definidas)
+    // FUNCIONES DE ADMINISTRACIÓN
     // ============================================================
     window.toggleAdminPanel = function() {
-        const panel = document.getElementById('admin-panel');
+        var panel = document.getElementById('admin-panel');
         if (panel.style.display === 'none') {
             panel.style.display = 'block';
             window.cargarUsuarios();
@@ -1132,7 +1111,7 @@
     };
 
     window.cargarUsuarios = function() {
-        const container = document.getElementById('admin-users-list');
+        var container = document.getElementById('admin-users-list');
         container.innerHTML = '<p class="text-muted">Usuarios gestionados directamente desde Firebase Console.</p>';
     };
 
@@ -1147,18 +1126,13 @@
     };
 
     // ============================================================
-    // 9. FUNCIONES DE AUTENTICACIÓN (ya expuestas)
-    // ============================================================
-    // (Las funciones login, registrar, logout, etc. ya están expuestas más abajo)
-
-    // ============================================================
-    // 10. FUNCIONES DE GESTIÓN DE CAUSAS (COMPLETAS)
+    // FUNCIONES DE GESTIÓN DE CAUSAS (COMPLETAS)
     // ============================================================
 
-    // ===== VÍCTIMAS Y TESTIGOS =====
+    // ----- VÍCTIMAS Y TESTIGOS -----
     window.agregarVictima = function() {
-        const container = document.getElementById('victimas-container');
-        const div = document.createElement('div');
+        var container = document.getElementById('victimas-container');
+        var div = document.createElement('div');
         div.className = 'victima-block';
         div.innerHTML = `
             <div class="form-row">
@@ -1176,14 +1150,14 @@
     };
 
     window.eliminarVictima = function(btn) {
-        const block = btn.closest('.victima-block');
+        var block = btn.closest('.victima-block');
         if (document.querySelectorAll('.victima-block').length > 1) block.remove();
         else alert('Debe haber al menos una víctima.');
     };
 
     window.agregarTestigo = function() {
-        const container = document.getElementById('testigos-container');
-        const div = document.createElement('div');
+        var container = document.getElementById('testigos-container');
+        var div = document.createElement('div');
         div.className = 'testigo-block';
         div.innerHTML = `
             <div class="form-row">
@@ -1197,81 +1171,81 @@
     };
 
     window.eliminarTestigo = function(btn) {
-        const block = btn.closest('.testigo-block');
+        var block = btn.closest('.testigo-block');
         if (document.querySelectorAll('.testigo-block').length > 1) block.remove();
         else alert('Debe haber al menos un testigo.');
     };
 
-    // ===== HECHOS PUNIBLES =====
+    // ----- HECHOS PUNIBLES -----
     window.actualizarIncisos = function() {
-        const hecho = document.getElementById('hecho-selector').value;
-        const container = document.getElementById('incisos-opciones');
+        var hecho = document.getElementById('hecho-selector').value;
+        var container = document.getElementById('incisos-opciones');
         container.innerHTML = '';
         if (!hecho || !CONFIG.hechos[hecho]) {
             container.innerHTML = '<span class="text-muted">Seleccione un hecho punible</span>';
             return;
         }
-        const config = CONFIG.hechos[hecho];
+        var config = CONFIG.hechos[hecho];
         if (config.incisos.length === 0) {
             container.innerHTML = '<span class="text-muted">Este artículo no tiene incisos</span>';
             return;
         }
-        let html = '<div style="display:flex;flex-direction:column;gap:8px;padding:5px 0;">';
-        config.incisos.forEach(inc => {
-            const tieneNumerales = inc.numerales && inc.numerales.length > 0;
-            html += `<div class="inciso-group">`;
-            html += `<label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.4;padding:2px 0;">
-                        <input type="checkbox" value="${inc.id}" class="inciso-check" data-hecho="${hecho}" data-inciso="${inc.id}" style="margin-top:2px;">
-                        <span class="inciso-check-label">${inc.label}</span>
-                     </label>`;
+        var html = '<div style="display:flex;flex-direction:column;gap:8px;padding:5px 0;">';
+        config.incisos.forEach(function(inc) {
+            var tieneNumerales = inc.numerales && inc.numerales.length > 0;
+            html += '<div class="inciso-group">';
+            html += '<label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.4;padding:2px 0;">';
+            html += '<input type="checkbox" value="' + inc.id + '" class="inciso-check" data-hecho="' + hecho + '" data-inciso="' + inc.id + '" style="margin-top:2px;">';
+            html += '<span class="inciso-check-label">' + inc.label + '</span>';
+            html += '</label>';
             if (tieneNumerales) {
-                html += `<div class="numerales-container" id="numerales-${inc.id}" style="padding-left:30px;display:none;margin-top:4px;">`;
-                inc.numerales.forEach(num => {
-                    html += `<label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.3;padding:2px 0;color:#444;">
-                                <input type="checkbox" value="${num.id}" class="numeral-check" data-hecho="${hecho}" data-inciso="${inc.id}" data-numeral="${num.id}" style="margin-top:2px;">
-                                <span class="numeral-check-label">${num.label}</span>
-                             </label>`;
+                html += '<div class="numerales-container" id="numerales-' + inc.id + '" style="padding-left:30px;display:none;margin-top:4px;">';
+                inc.numerales.forEach(function(num) {
+                    html += '<label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.3;padding:2px 0;color:#444;">';
+                    html += '<input type="checkbox" value="' + num.id + '" class="numeral-check" data-hecho="' + hecho + '" data-inciso="' + inc.id + '" data-numeral="' + num.id + '" style="margin-top:2px;">';
+                    html += '<span class="numeral-check-label">' + num.label + '</span>';
+                    html += '</label>';
                 });
-                html += `</div>`;
+                html += '</div>';
             }
-            html += `</div>`;
+            html += '</div>';
         });
         html += '</div>';
         container.innerHTML = html;
 
-        document.querySelectorAll('.inciso-check').forEach(el => {
+        document.querySelectorAll('.inciso-check').forEach(function(el) {
             el.addEventListener('change', function() {
-                const incisoId = this.dataset.inciso;
-                const numeralContainer = document.getElementById(`numerales-${incisoId}`);
+                var incisoId = this.dataset.inciso;
+                var numeralContainer = document.getElementById('numerales-' + incisoId);
                 if (numeralContainer) {
                     numeralContainer.style.display = this.checked ? 'block' : 'none';
                     if (!this.checked) {
-                        numeralContainer.querySelectorAll('.numeral-check').forEach(cb => cb.checked = false);
+                        numeralContainer.querySelectorAll('.numeral-check').forEach(function(cb) { cb.checked = false; });
                     }
                 }
                 window.generarCaratula();
             });
         });
-        document.querySelectorAll('.numeral-check').forEach(el => {
+        document.querySelectorAll('.numeral-check').forEach(function(el) {
             el.addEventListener('change', window.generarCaratula);
         });
     };
 
     window.agregarHecho = function() {
-        const hecho = document.getElementById('hecho-selector').value;
+        var hecho = document.getElementById('hecho-selector').value;
         if (!hecho) { alert('Seleccione un hecho punible.'); return; }
-        const config = CONFIG.hechos[hecho];
+        var config = CONFIG.hechos[hecho];
         if (!config) return;
         
-        const incisosSeleccionados = [];
-        document.querySelectorAll('.inciso-check:checked').forEach(el => {
-            const incisoId = el.value;
-            const inciso = config.incisos.find(i => i.id === incisoId);
+        var incisosSeleccionados = [];
+        document.querySelectorAll('.inciso-check:checked').forEach(function(el) {
+            var incisoId = el.value;
+            var inciso = config.incisos.find(function(i) { return i.id === incisoId; });
             if (inciso) {
-                const numerales = [];
-                const numeralContainer = document.getElementById(`numerales-${incisoId}`);
+                var numerales = [];
+                var numeralContainer = document.getElementById('numerales-' + incisoId);
                 if (numeralContainer) {
-                    numeralContainer.querySelectorAll('.numeral-check:checked').forEach(numEl => {
+                    numeralContainer.querySelectorAll('.numeral-check:checked').forEach(function(numEl) {
                         numerales.push(numEl.value);
                     });
                 }
@@ -1287,19 +1261,19 @@
             return;
         }
         
-        const yaExiste = hechosAgregados.some(h => {
+        var yaExiste = hechosAgregados.some(function(h) {
             if (h.hecho !== hecho) return false;
             if (h.incisos.length !== incisosSeleccionados.length) return false;
-            return h.incisos.every((inc, idx) => {
-                const otro = incisosSeleccionados[idx];
+            return h.incisos.every(function(inc, idx) {
+                var otro = incisosSeleccionados[idx];
                 if (inc.id !== otro.id) return false;
                 if (inc.numerales.length !== otro.numerales.length) return false;
-                return inc.numerales.every((n, i) => n === otro.numerales[i]);
+                return inc.numerales.every(function(n, i) { return n === otro.numerales[i]; });
             });
         });
         if (yaExiste) { alert('Esta combinación de incisos y numerales ya fue agregada.'); return; }
         
-        hechosAgregados.push({ hecho, incisos: incisosSeleccionados });
+        hechosAgregados.push({ hecho: hecho, incisos: incisosSeleccionados });
         window.renderizarHechosAgregados();
         window.generarCaratula();
         window.actualizarTab3();
@@ -1308,33 +1282,33 @@
     };
 
     window.renderizarHechosAgregados = function() {
-        const container = document.getElementById('lista-hechos');
+        var container = document.getElementById('lista-hechos');
         if (hechosAgregados.length === 0) {
             container.innerHTML = '<span class="text-muted">No hay hechos punibles agregados.</span>';
             return;
         }
-        let html = '<div style="display:flex;flex-direction:column;gap:4px;">';
-        hechosAgregados.forEach((h, index) => {
-            const config = CONFIG.hechos[h.hecho];
-            const label = config ? config.label : h.hecho;
-            let detalles = '';
-            h.incisos.forEach(inc => {
-                const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
+        var html = '<div style="display:flex;flex-direction:column;gap:4px;">';
+        hechosAgregados.forEach(function(h, index) {
+            var config = CONFIG.hechos[h.hecho];
+            var label = config ? config.label : h.hecho;
+            var detalles = '';
+            h.incisos.forEach(function(inc) {
+                var incData = config ? config.incisos.find(function(i) { return i.id === inc.id; }) : null;
                 if (incData) {
-                    let incLabel = incData.label.substring(0, 60) + (incData.label.length > 60 ? '…' : '');
-                    detalles += `<div style="padding-left:15px;font-size:12px;color:#555;">✓ ${incLabel}`;
+                    var incLabel = incData.label.substring(0, 60) + (incData.label.length > 60 ? '…' : '');
+                    detalles += '<div style="padding-left:15px;font-size:12px;color:#555;">✓ ' + incLabel;
                     if (inc.numerales && inc.numerales.length > 0) {
-                        const nums = inc.numerales.map(id => {
-                            const numData = incData.numerales ? incData.numerales.find(n => n.id === id) : null;
+                        var nums = inc.numerales.map(function(id) {
+                            var numData = incData.numerales ? incData.numerales.find(function(n) { return n.id === id; }) : null;
                             return numData ? numData.label.substring(0, 40) + (numData.label.length > 40 ? '…' : '') : id;
                         });
-                        detalles += ` (numerales: ${nums.join(', ')})`;
+                        detalles += ' (numerales: ' + nums.join(', ') + ')';
                     }
-                    detalles += `</div>`;
+                    detalles += '</div>';
                 }
             });
-            html += `<div class="list-item"><span class="label">${label}</span><button class="btn-remover" onclick="window.quitarHecho(${index})"><i class="fas fa-times"></i> Eliminar</button></div>`;
-            if (detalles) html += `<div style="padding-left:20px;margin-bottom:4px;">${detalles}</div>`;
+            html += '<div class="list-item"><span class="label">' + label + '</span><button class="btn-remover" onclick="window.quitarHecho(' + index + ')"><i class="fas fa-times"></i> Eliminar</button></div>';
+            if (detalles) html += '<div style="padding-left:20px;margin-bottom:4px;">' + detalles + '</div>';
         });
         html += '</div>';
         container.innerHTML = html;
@@ -1347,11 +1321,11 @@
         window.actualizarTab3();
     };
 
-    // ===== CARÁTULA =====
+    // ----- CARÁTULA -----
     window.generarCaratula = function() {
-        const num = document.getElementById('num-causa').value.trim();
-        const imputado = document.getElementById('imputado').value.trim();
-        const preview = document.getElementById('caratula-preview');
+        var num = document.getElementById('num-causa').value.trim();
+        var imputado = document.getElementById('imputado').value.trim();
+        var preview = document.getElementById('caratula-preview');
         if (!num || !imputado) {
             preview.innerHTML = '<span class="text-muted">Complete Nº causa e Imputado</span>';
             return;
@@ -1360,26 +1334,26 @@
             preview.innerHTML = '<span class="text-muted">Agregue al menos un hecho punible</span>';
             return;
         }
-        const hechosText = hechosAgregados.map(h => {
-            const config = CONFIG.hechos[h.hecho];
+        var hechosText = hechosAgregados.map(function(h) {
+            var config = CONFIG.hechos[h.hecho];
             return config ? config.label.replace(/^Art\.\s*\d+\s*[–-]\s*/, '') : h.hecho;
         }).join('; ');
-        preview.textContent = `Causa Nº ${num} "${imputado}" S/ ${hechosText}`;
+        preview.textContent = 'Causa Nº ' + num + ' "' + imputado + '" S/ ' + hechosText;
     };
 
-    // ===== PESTAÑAS =====
+    // ----- PESTAÑAS -----
     window.activarTab = function(tabId) {
-        document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(function(el) { el.classList.remove('active'); });
+        document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
         document.getElementById(tabId).classList.add('active');
-        document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+        document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
         if (tabId === 'tab3') window.actualizarTab3();
         if (tabId === 'tab5') window.actualizarInforme();
         if (tabId === 'tab6') window.actualizarAlertas();
     };
 
     window.toggleRebeldia = function() {
-        const activa = document.getElementById('rebeldia-activa').checked;
+        var activa = document.getElementById('rebeldia-activa').checked;
         document.getElementById('rebeldia-campos').classList.toggle('hidden', !activa);
         if (activa) {
             window.calcularDiasSuspendidos();
@@ -1392,47 +1366,47 @@
     };
 
     window.toggleReincidencia = function() {
-        const activa = document.getElementById('reincidente').checked;
+        var activa = document.getElementById('reincidente').checked;
         document.getElementById('num-reincidencias').disabled = !activa;
         if (!activa) document.getElementById('num-reincidencias').value = 0;
     };
 
-    // ===== CÁLCULO DE DÍAS =====
+    // ----- CÁLCULO DE DÍAS -----
     window.calcularDiasSuspendidos = function() {
-        const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
-        const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
-        const elDias = document.getElementById('dias-suspendidos');
+        var fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
+        var fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
+        var elDias = document.getElementById('dias-suspendidos');
         if (!fechaDeclaracion || !fechaLevantamiento) {
             elDias.textContent = '--';
             return;
         }
-        const ini = new Date(fechaDeclaracion);
-        const fin = new Date(fechaLevantamiento);
+        var ini = new Date(fechaDeclaracion);
+        var fin = new Date(fechaLevantamiento);
         if (fin < ini) {
             elDias.textContent = 'Fecha de levantamiento anterior a declaración';
             elDias.style.color = '#b33c3c';
             return;
         }
-        const diff = Math.ceil((fin - ini) / (1000*60*60*24));
-        elDias.textContent = `${diff} días`;
+        var diff = Math.ceil((fin - ini) / (1000*60*60*24));
+        elDias.textContent = diff + ' días';
         elDias.style.color = '#1a2a4a';
     };
 
     window.calcularVencimiento = function() {
-        const fechaImputacion = document.getElementById('fecha-imputacion').value;
-        const plazo = parseInt(document.getElementById('plazo-investigacion').value) || 0;
-        const elFecha = document.getElementById('fecha-vencimiento');
-        const elDias = document.getElementById('dias-restantes');
+        var fechaImputacion = document.getElementById('fecha-imputacion').value;
+        var plazo = parseInt(document.getElementById('plazo-investigacion').value) || 0;
+        var elFecha = document.getElementById('fecha-vencimiento');
+        var elDias = document.getElementById('dias-restantes');
 
-        const rebeldiaActiva = document.getElementById('rebeldia-activa').checked;
-        const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
-        let diasSuspendidos = 0;
+        var rebeldiaActiva = document.getElementById('rebeldia-activa').checked;
+        var fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
+        var diasSuspendidos = 0;
 
         if (rebeldiaActiva && fechaLevantamiento) {
-            const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
+            var fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
             if (fechaDeclaracion) {
-                const ini = new Date(fechaDeclaracion);
-                const fin = new Date(fechaLevantamiento);
+                var ini = new Date(fechaDeclaracion);
+                var fin = new Date(fechaLevantamiento);
                 if (fin >= ini) {
                     diasSuspendidos = Math.ceil((fin - ini) / (1000*60*60*24));
                 }
@@ -1452,25 +1426,25 @@
             return;
         }
 
-        const fecha = new Date(fechaImputacion);
+        var fecha = new Date(fechaImputacion);
         fecha.setMonth(fecha.getMonth() + plazo);
         fecha.setDate(fecha.getDate() + diasSuspendidos);
 
-        const hoy = new Date();
+        var hoy = new Date();
         hoy.setHours(0,0,0,0);
         fecha.setHours(0,0,0,0);
-        const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
+        var diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
 
         elFecha.textContent = fecha.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
         if (diasSuspendidos > 0) {
-            elFecha.textContent += ` (+${diasSuspendidos} días suspendidos)`;
+            elFecha.textContent += ' (+' + diasSuspendidos + ' días suspendidos)';
         }
 
         if (diff < 0) {
-            elDias.textContent = `VENCIDO (hace ${Math.abs(diff)} días)`;
+            elDias.textContent = 'VENCIDO (hace ' + Math.abs(diff) + ' días)';
             elDias.style.color = '#b33c3c';
         } else {
-            elDias.textContent = `Faltan ${diff} días`;
+            elDias.textContent = 'Faltan ' + diff + ' días';
             elDias.style.color = diff <= 15 ? '#b8860b' : '#2a7d4f';
         }
     };
@@ -1479,31 +1453,32 @@
         if (!causa.fechaImputacion || !causa.plazoInvestigacion) {
             return { dias: null, estado: 'sin_datos' };
         }
-        const fecha = new Date(causa.fechaImputacion);
-        let diasSuspendidos = 0;
+        var fecha = new Date(causa.fechaImputacion);
+        var diasSuspendidos = 0;
         if (causa.rebeldia && causa.rebeldia.activa && causa.rebeldia.levantamiento) {
-            const ini = new Date(causa.rebeldia.fecha);
-            const fin = new Date(causa.rebeldia.levantamiento);
+            var ini = new Date(causa.rebeldia.fecha);
+            var fin = new Date(causa.rebeldia.levantamiento);
             if (fin >= ini) {
                 diasSuspendidos = Math.ceil((fin - ini) / (1000*60*60*24));
             }
         }
         fecha.setMonth(fecha.getMonth() + causa.plazoInvestigacion);
         fecha.setDate(fecha.getDate() + diasSuspendidos);
-        const hoy = new Date();
+        var hoy = new Date();
         hoy.setHours(0,0,0,0);
         fecha.setHours(0,0,0,0);
-        const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
-        let estado = 'ok';
+        var diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
+        var estado = 'ok';
         if (diff < 0) estado = 'vencido';
         else if (diff <= 15) estado = 'proximo';
-        return { dias: diff, estado };
+        return { dias: diff, estado: estado };
     };
 
-    window.verificarPlazosYAlertar = function(mensajePersonalizado = '') {
-        const resumen = { vencidas: [], proximas: [], ok: [] };
-        causas.forEach(c => {
-            const info = window.calcularDiasRestantes(c);
+    window.verificarPlazosYAlertar = function(mensajePersonalizado) {
+        mensajePersonalizado = mensajePersonalizado || '';
+        var resumen = { vencidas: [], proximas: [], ok: [] };
+        causas.forEach(function(c) {
+            var info = window.calcularDiasRestantes(c);
             if (info.estado === 'vencido') {
                 resumen.vencidas.push({ num: c.numCausa, dias: info.dias });
             } else if (info.estado === 'proximo') {
@@ -1513,22 +1488,22 @@
             }
         });
 
-        let mensaje = '';
+        var mensaje = '';
         if (mensajePersonalizado) mensaje += mensajePersonalizado + '\n\n';
         if (resumen.vencidas.length === 0 && resumen.proximas.length === 0) {
             mensaje += '✅ Todas las causas tienen sus plazos en orden.';
         } else {
             if (resumen.vencidas.length > 0) {
-                mensaje += `🔴 PLAZOS VENCIDOS (${resumen.vencidas.length}):\n`;
-                resumen.vencidas.forEach(c => {
-                    mensaje += `   Causa ${c.num} → VENCIDA hace ${Math.abs(c.dias)} días\n`;
+                mensaje += '🔴 PLAZOS VENCIDOS (' + resumen.vencidas.length + '):\n';
+                resumen.vencidas.forEach(function(c) {
+                    mensaje += '   Causa ' + c.num + ' → VENCIDA hace ' + Math.abs(c.dias) + ' días\n';
                 });
                 mensaje += '\n';
             }
             if (resumen.proximas.length > 0) {
-                mensaje += `🟡 PLAZOS PRÓXIMOS A VENCER (${resumen.proximas.length}):\n`;
-                resumen.proximas.forEach(c => {
-                    mensaje += `   Causa ${c.num} → Vence en ${c.dias} días\n`;
+                mensaje += '🟡 PLAZOS PRÓXIMOS A VENCER (' + resumen.proximas.length + '):\n';
+                resumen.proximas.forEach(function(c) {
+                    mensaje += '   Causa ' + c.num + ' → Vence en ' + c.dias + ' días\n';
                 });
                 mensaje += '\n';
             }
@@ -1538,25 +1513,25 @@
     };
 
     window.actualizarFechaRequerimientoConclusivo = function() {
-        const fechaImputacion = document.getElementById('fecha-imputacion').value;
-        const plazo = parseInt(document.getElementById('plazo-investigacion').value) || 0;
-        const rebeldiaActiva = document.getElementById('rebeldia-activa').checked;
-        const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
-        const el = document.getElementById('nueva-fecha-rebeldia');
+        var fechaImputacion = document.getElementById('fecha-imputacion').value;
+        var plazo = parseInt(document.getElementById('plazo-investigacion').value) || 0;
+        var rebeldiaActiva = document.getElementById('rebeldia-activa').checked;
+        var fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
+        var el = document.getElementById('nueva-fecha-rebeldia');
         
         if (!fechaImputacion || plazo <= 0) {
             el.value = '';
             return;
         }
         
-        const fecha = new Date(fechaImputacion);
-        let diasSuspendidos = 0;
+        var fecha = new Date(fechaImputacion);
+        var diasSuspendidos = 0;
         
         if (rebeldiaActiva && fechaLevantamiento) {
-            const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
+            var fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
             if (fechaDeclaracion) {
-                const ini = new Date(fechaDeclaracion);
-                const fin = new Date(fechaLevantamiento);
+                var ini = new Date(fechaDeclaracion);
+                var fin = new Date(fechaLevantamiento);
                 if (fin >= ini) {
                     diasSuspendidos = Math.ceil((fin - ini) / (1000*60*60*24));
                 }
@@ -1568,22 +1543,22 @@
         
         el.value = fecha.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
         if (diasSuspendidos > 0) {
-            el.value += ` (+${diasSuspendidos} días suspendidos)`;
+            el.value += ' (+' + diasSuspendidos + ' días suspendidos)';
         }
     };
 
-    // ===== TAB 3 - INTERVENCIONES =====
+    // ----- TAB 3 - INTERVENCIONES -----
     window.actualizarTab3 = function() {
-        const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
-        const container = document.getElementById('tab3-contenido');
+        var hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
+        var container = document.getElementById('tab3-contenido');
         
-        let html = '';
+        var html = '';
         
         if (hechoPrincipal === '229') {
             html += window.generarCuestionarioRiesgo();
         } else if (hechoPrincipal === '225') {
             html += window.generarLiquidacionYdiligencias();
-        } else if (['128','135','135b','137'].includes(hechoPrincipal)) {
+        } else if (['128','135','135b','137'].indexOf(hechoPrincipal) !== -1) {
             html += window.generarCuestionarioSexual();
         } else if (hechoPrincipal !== '') {
             html += window.generarDiligenciasOrdinarias();
@@ -1597,24 +1572,24 @@
                 <button class="btn btn-primary" onclick="window.abrirModalIntervencion()"><i class="fas fa-plus"></i> Agregar intervención</button>
             </div>
         `;
-        html += `<div id="intervenciones-adicionales" style="margin-top:15px;"></div>`;
+        html += '<div id="intervenciones-adicionales" style="margin-top:15px;"></div>';
         
         container.innerHTML = html;
         window.restaurarIntervencionesAdicionales();
     };
 
-    // ===== DILIGENCIAS ORDINARIAS =====
+    // ----- DILIGENCIAS ORDINARIAS -----
     window.generarDiligenciasOrdinarias = function() {
-        let html = `
+        var html = `
             <h4 style="color:#1a2a4a;margin-bottom:12px;">Diligencias realizadas</h4>
             <p class="text-muted">Marque las diligencias que ya se han cumplido en la etapa investigativa.</p>
             <div class="diligencias-grid" id="diligencias-ordinarias-container">
         `;
-        DILIGENCIAS_ORDINARIAS.forEach(d => {
+        DILIGENCIAS_ORDINARIAS.forEach(function(d) {
             html += `
                 <div class="diligencia-item">
-                    <input type="checkbox" id="${d.id}" value="${d.id}" class="diligencia-ordinaria-check">
-                    <label for="${d.id}" class="diligencia-check-label">${d.label}</label>
+                    <input type="checkbox" id="' + d.id + '" value="' + d.id + '" class="diligencia-ordinaria-check">
+                    <label for="' + d.id + '" class="diligencia-check-label">' + d.label + '</label>
                 </div>
             `;
         });
@@ -1629,104 +1604,100 @@
     };
 
     window.marcarTodasOrdinarias = function(estado) {
-        document.querySelectorAll('.diligencia-ordinaria-check').forEach(cb => {
+        document.querySelectorAll('.diligencia-ordinaria-check').forEach(function(cb) {
             cb.checked = estado;
         });
     };
 
     window.obtenerDiligenciasOrdinariasMarcadas = function() {
-        const marcadas = [];
-        document.querySelectorAll('.diligencia-ordinaria-check:checked').forEach(cb => {
+        var marcadas = [];
+        document.querySelectorAll('.diligencia-ordinaria-check:checked').forEach(function(cb) {
             marcadas.push(cb.value);
         });
         return marcadas;
     };
 
     window.restaurarDiligenciasOrdinarias = function(marcadas) {
-        document.querySelectorAll('.diligencia-ordinaria-check').forEach(cb => {
-            cb.checked = marcadas.includes(cb.value);
+        document.querySelectorAll('.diligencia-ordinaria-check').forEach(function(cb) {
+            cb.checked = marcadas.indexOf(cb.value) !== -1;
         });
     };
 
-    // ===== CUESTIONARIO SEXUAL =====
+    // ----- CUESTIONARIO SEXUAL -----
     window.generarCuestionarioSexual = function() {
-        let html = `<h4 style="color:#1a2a4a;margin-bottom:12px;">Cuestionario de Valoración de Riesgo en Delitos Sexuales</h4><p class="text-muted">Complete todas las preguntas para obtener el nivel de riesgo y las medidas sugeridas.</p>`;
-        const secciones = [
+        var html = '<h4 style="color:#1a2a4a;margin-bottom:12px;">Cuestionario de Valoración de Riesgo en Delitos Sexuales</h4><p class="text-muted">Complete todas las preguntas para obtener el nivel de riesgo y las medidas sugeridas.</p>';
+        var secciones = [
             { titulo:'1. Relación víctima–imputado', ids:['s1.1','s1.2','s1.3','s1.4'] },
             { titulo:'2. Características del hecho', ids:['s2.1','s2.2','s2.3','s2.4'] },
             { titulo:'3. Peligrosidad del imputado', ids:['s3.1','s3.2','s3.3'] },
             { titulo:'4. Vulnerabilidad de la víctima', ids:['s4.1','s4.2'] },
             { titulo:'5. Elementos de prueba', ids:['s5.1'] }
         ];
-        secciones.forEach(sec => {
-            html += `<div class="cuestionario-section"><h4>${sec.titulo}</h4>`;
-            sec.ids.forEach(id => {
-                const p = preguntasSexuales.find(q => q.id === id);
+        secciones.forEach(function(sec) {
+            html += '<div class="cuestionario-section"><h4>' + sec.titulo + '</h4>';
+            sec.ids.forEach(function(id) {
+                var p = preguntasSexuales.find(function(q) { return q.id === id; });
                 if (p) {
-                    html += `<div class="cuestionario-pregunta"><span class="pregunta-texto">${p.label}</span>`;
-                    html += `<select id="sexual-${p.id}" onchange="window.calcularRiesgoSexual()"><option value="">-- Seleccionar --</option>`;
-                    p.opciones.forEach(op => {
-                        html += `<option value="${op.valor}">${op.texto}</option>`;
+                    html += '<div class="cuestionario-pregunta"><span class="pregunta-texto">' + p.label + '</span>';
+                    html += '<select id="sexual-' + p.id + '" onchange="window.calcularRiesgoSexual()"><option value="">-- Seleccionar --</option>';
+                    p.opciones.forEach(function(op) {
+                        html += '<option value="' + op.valor + '">' + op.texto + '</option>';
                     });
-                    html += `</select></div>`;
+                    html += '</select></div>';
                 }
             });
-            html += `</div>`;
+            html += '</div>';
         });
-        html += `
-            <div class="form-group"><label>Observaciones adicionales</label><textarea id="sexual-obs" rows="2" placeholder="Otras circunstancias relevantes..."></textarea></div>
-            <button class="btn btn-primary mt-10" onclick="window.calcularRiesgoSexual()"><i class="fas fa-calculator"></i> Calcular Riesgo</button>
-            <div id="resultado-riesgo-sexual" class="mt-20"></div>
-            <hr style="margin:20px 0;border-color:#e0e4ea;">
-            <h4 style="color:#1a2a4a;margin-bottom:12px;">Diligencias específicas</h4>
-            <p class="text-muted">Marque las diligencias que ya se han realizado.</p>
-            <div class="diligencias-grid" id="diligencias-sexuales-container">
-        `;
-        DILIGENCIAS_SEXUALES.forEach(d => {
+        html += '<div class="form-group"><label>Observaciones adicionales</label><textarea id="sexual-obs" rows="2" placeholder="Otras circunstancias relevantes..."></textarea></div>';
+        html += '<button class="btn btn-primary mt-10" onclick="window.calcularRiesgoSexual()"><i class="fas fa-calculator"></i> Calcular Riesgo</button>';
+        html += '<div id="resultado-riesgo-sexual" class="mt-20"></div>';
+        html += '<hr style="margin:20px 0;border-color:#e0e4ea;">';
+        html += '<h4 style="color:#1a2a4a;margin-bottom:12px;">Diligencias específicas</h4>';
+        html += '<p class="text-muted">Marque las diligencias que ya se han realizado.</p>';
+        html += '<div class="diligencias-grid" id="diligencias-sexuales-container">';
+        DILIGENCIAS_SEXUALES.forEach(function(d) {
             html += `
                 <div class="diligencia-item">
-                    <input type="checkbox" id="sex-${d.id}" value="${d.id}" class="diligencia-sexual-check">
-                    <label for="sex-${d.id}" class="diligencia-check-label">${d.label}</label>
+                    <input type="checkbox" id="sex-' + d.id + '" value="' + d.id + '" class="diligencia-sexual-check">
+                    <label for="sex-' + d.id + '" class="diligencia-check-label">' + d.label + '</label>
                 </div>
             `;
         });
-        html += `
-            </div>
-            <div style="margin-top:10px;">
-                <button class="btn btn-sm btn-outline" onclick="window.marcarTodasSexuales(true)"><i class="fas fa-check-double"></i> Marcar todas</button>
-                <button class="btn btn-sm btn-outline" onclick="window.marcarTodasSexuales(false)"><i class="fas fa-times"></i> Desmarcar todas</button>
-            </div>
-        `;
+        html += '</div>';
+        html += '<div style="margin-top:10px;">';
+        html += '<button class="btn btn-sm btn-outline" onclick="window.marcarTodasSexuales(true)"><i class="fas fa-check-double"></i> Marcar todas</button>';
+        html += '<button class="btn btn-sm btn-outline" onclick="window.marcarTodasSexuales(false)"><i class="fas fa-times"></i> Desmarcar todas</button>';
+        html += '</div>';
         return html;
     };
 
     window.calcularRiesgoSexual = function() {
-        let total = 0, respondidas = 0;
-        preguntasSexuales.forEach(p => {
-            const sel = document.getElementById(`sexual-${p.id}`);
+        var total = 0, respondidas = 0;
+        preguntasSexuales.forEach(function(p) {
+            var sel = document.getElementById('sexual-' + p.id);
             if (sel && sel.value !== '') {
                 total += parseInt(sel.value);
                 respondidas++;
             }
         });
-        const container = document.getElementById('resultado-riesgo-sexual');
+        var container = document.getElementById('resultado-riesgo-sexual');
         if (respondidas < preguntasSexuales.length) {
-            container.innerHTML = `<div class="resultado-riesgo" style="background:#fff3cd;color:#856404;border-left-color:#ffc107;"><strong>Faltan ${preguntasSexuales.length - respondidas} preguntas.</strong><br>Complete todas para calcular el nivel de riesgo.</div>`;
+            container.innerHTML = '<div class="resultado-riesgo" style="background:#fff3cd;color:#856404;border-left-color:#ffc107;"><strong>Faltan ' + (preguntasSexuales.length - respondidas) + ' preguntas.</strong><br>Complete todas para calcular el nivel de riesgo.</div>';
             return;
         }
-        let nivel = '', clase = '';
+        var nivel = '', clase = '';
         if (total <= 15) { nivel = 'BAJO'; clase = 'bajo'; }
         else if (total <= 30) { nivel = 'MEDIO'; clase = 'medio'; }
         else { nivel = 'ALTO'; clase = 'alto'; }
-        const medidas = window.obtenerMedidasProteccionSexual(nivel);
+        var medidas = window.obtenerMedidasProteccionSexual(nivel);
         container.innerHTML = `
-            <div class="resultado-riesgo ${clase}"><strong>Puntaje total: ${total} puntos</strong><br><span style="font-size:20px;">Nivel de Riesgo: ${nivel}</span></div>
-            <div class="medidas-proteccion"><h5>Medidas de Protección Sugeridas</h5><ul>${medidas.map(m => `<li>${m}</li>`).join('')}</ul></div>
+            <div class="resultado-riesgo ' + clase + '"><strong>Puntaje total: ' + total + ' puntos</strong><br><span style="font-size:20px;">Nivel de Riesgo: ' + nivel + '</span></div>
+            <div class="medidas-proteccion"><h5>Medidas de Protección Sugeridas</h5><ul>' + medidas.map(function(m) { return '<li>' + m + '</li>'; }).join('') + '</ul></div>
         `;
     };
 
     window.obtenerMedidasProteccionSexual = function(nivel) {
-        const medidas = {
+        var medidas = {
             'BAJO': [
                 'Priorizar la realización de actos o diligencias en los que participe la víctima.',
                 'Convocar a la víctima solo en casos necesarios.',
@@ -1750,95 +1721,93 @@
                 'Juicio totalmente privado.'
             ]
         };
-        let todas = [...medidas[nivel]];
-        if (nivel === 'ALTO') todas = [...medidas['ALTO'], ...medidas['MEDIO'], ...medidas['BAJO']];
-        else if (nivel === 'MEDIO') todas = [...medidas['MEDIO'], ...medidas['BAJO']];
+        var todas = medidas[nivel].slice();
+        if (nivel === 'ALTO') todas = medidas['ALTO'].concat(medidas['MEDIO']).concat(medidas['BAJO']);
+        else if (nivel === 'MEDIO') todas = medidas['MEDIO'].concat(medidas['BAJO']);
         return todas;
     };
 
     window.marcarTodasSexuales = function(estado) {
-        document.querySelectorAll('.diligencia-sexual-check').forEach(cb => {
+        document.querySelectorAll('.diligencia-sexual-check').forEach(function(cb) {
             cb.checked = estado;
         });
     };
 
     window.obtenerDiligenciasSexualesMarcadas = function() {
-        const marcadas = [];
-        document.querySelectorAll('.diligencia-sexual-check:checked').forEach(cb => {
+        var marcadas = [];
+        document.querySelectorAll('.diligencia-sexual-check:checked').forEach(function(cb) {
             marcadas.push(cb.value);
         });
         return marcadas;
     };
 
     window.restaurarDiligenciasSexuales = function(marcadas) {
-        document.querySelectorAll('.diligencia-sexual-check').forEach(cb => {
-            cb.checked = marcadas.includes(cb.value);
+        document.querySelectorAll('.diligencia-sexual-check').forEach(function(cb) {
+            cb.checked = marcadas.indexOf(cb.value) !== -1;
         });
     };
 
-    // ===== CUESTIONARIO DE RIESGO (Art. 229) =====
+    // ----- CUESTIONARIO DE RIESGO (Art. 229) -----
     window.generarCuestionarioRiesgo = function() {
-        let html = `<h4 style="color:#1a2a4a;margin-bottom:12px;">Cuestionario de Nivel de Riesgo (Art. 229)</h4><p class="text-muted">Complete todas las preguntas para obtener el nivel de riesgo y las medidas sugeridas.</p>`;
-        const secciones = [
+        var html = '<h4 style="color:#1a2a4a;margin-bottom:12px;">Cuestionario de Nivel de Riesgo (Art. 229)</h4><p class="text-muted">Complete todas las preguntas para obtener el nivel de riesgo y las medidas sugeridas.</p>';
+        var secciones = [
             { titulo:'1. Relación entre víctima y supuesto agresor', ids:['r1.1','r1.2','r1.3','r1.4'] },
             { titulo:'2. Antecedentes de intimidación', ids:['r2.1','r2.2','r2.3','r2.4'] },
             { titulo:'3. Perfil del supuesto agresor', ids:['r3.1','r3.2','r3.3','r3.4','r3.5','r3.6','r3.7','r3.8','r3.9','r3.10'] },
             { titulo:'4. Vulnerabilidad de la víctima', ids:['r4.1','r4.2','r4.3','r4.4','r4.5','r4.6','r4.7','r4.8'] },
             { titulo:'5. Trascendencia del dato', ids:['r5.1','r5.2','r5.3'] }
         ];
-        secciones.forEach(sec => {
-            html += `<div class="cuestionario-section"><h4>${sec.titulo}</h4>`;
-            sec.ids.forEach(id => {
-                const p = preguntasRiesgo.find(q => q.id === id);
+        secciones.forEach(function(sec) {
+            html += '<div class="cuestionario-section"><h4>' + sec.titulo + '</h4>';
+            sec.ids.forEach(function(id) {
+                var p = preguntasRiesgo.find(function(q) { return q.id === id; });
                 if (p) {
-                    html += `<div class="cuestionario-pregunta"><span class="pregunta-texto">${p.label}</span>`;
-                    html += `<select id="riesgo-${p.id}" onchange="window.calcularRiesgo()"><option value="">-- Seleccionar --</option>`;
-                    p.opciones.forEach(op => {
-                        html += `<option value="${op.valor}">${op.texto}</option>`;
+                    html += '<div class="cuestionario-pregunta"><span class="pregunta-texto">' + p.label + '</span>';
+                    html += '<select id="riesgo-' + p.id + '" onchange="window.calcularRiesgo()"><option value="">-- Seleccionar --</option>';
+                    p.opciones.forEach(function(op) {
+                        html += '<option value="' + op.valor + '">' + op.texto + '</option>';
                     });
-                    html += `</select></div>`;
+                    html += '</select></div>';
                 }
             });
-            html += `</div>`;
+            html += '</div>';
         });
-        html += `
-            <div class="form-group"><label>6. Otros factores o circunstancias</label><textarea id="riesgo-otros" rows="2" placeholder="Otras circunstancias relevantes..."></textarea></div>
-            <button class="btn btn-primary mt-10" onclick="window.calcularRiesgo()"><i class="fas fa-calculator"></i> Calcular Riesgo</button>
-            <div id="resultado-riesgo-container" class="mt-20"></div>
-        `;
+        html += '<div class="form-group"><label>6. Otros factores o circunstancias</label><textarea id="riesgo-otros" rows="2" placeholder="Otras circunstancias relevantes..."></textarea></div>';
+        html += '<button class="btn btn-primary mt-10" onclick="window.calcularRiesgo()"><i class="fas fa-calculator"></i> Calcular Riesgo</button>';
+        html += '<div id="resultado-riesgo-container" class="mt-20"></div>';
         return html;
     };
 
     window.calcularRiesgo = function() {
-        let total = 0, respondidas = 0;
-        preguntasRiesgo.forEach(p => {
-            const sel = document.getElementById(`riesgo-${p.id}`);
+        var total = 0, respondidas = 0;
+        preguntasRiesgo.forEach(function(p) {
+            var sel = document.getElementById('riesgo-' + p.id);
             if (sel && sel.value !== '') {
                 total += parseInt(sel.value);
                 respondidas++;
             }
         });
-        const container = document.getElementById('resultado-riesgo-container');
+        var container = document.getElementById('resultado-riesgo-container');
         if (respondidas < preguntasRiesgo.length) {
-            container.innerHTML = `<div class="resultado-riesgo" style="background:#fff3cd;color:#856404;border-left-color:#ffc107;"><strong>Faltan ${preguntasRiesgo.length - respondidas} preguntas.</strong><br>Complete todas para calcular el nivel de riesgo.</div>`;
+            container.innerHTML = '<div class="resultado-riesgo" style="background:#fff3cd;color:#856404;border-left-color:#ffc107;"><strong>Faltan ' + (preguntasRiesgo.length - respondidas) + ' preguntas.</strong><br>Complete todas para calcular el nivel de riesgo.</div>';
             riesgoPuntaje = 0; riesgoNivel = '';
             return;
         }
-        let nivel = '', clase = '';
+        var nivel = '', clase = '';
         if (total <= 25) { nivel = 'BAJO'; clase = 'bajo'; }
         else if (total <= 55) { nivel = 'MEDIO'; clase = 'medio'; }
         else { nivel = 'ALTO'; clase = 'alto'; }
         riesgoPuntaje = total;
         riesgoNivel = nivel;
-        const medidas = window.obtenerMedidasProteccion(nivel);
+        var medidas = window.obtenerMedidasProteccion(nivel);
         container.innerHTML = `
-            <div class="resultado-riesgo ${clase}"><strong>Puntaje total: ${total} puntos</strong><br><span style="font-size:20px;">Nivel de Riesgo: ${nivel}</span></div>
-            <div class="medidas-proteccion"><h5>Medidas de Protección Sugeridas</h5><ul>${medidas.map(m => `<li>${m}</li>`).join('')}</ul></div>
+            <div class="resultado-riesgo ' + clase + '"><strong>Puntaje total: ' + total + ' puntos</strong><br><span style="font-size:20px;">Nivel de Riesgo: ' + nivel + '</span></div>
+            <div class="medidas-proteccion"><h5>Medidas de Protección Sugeridas</h5><ul>' + medidas.map(function(m) { return '<li>' + m + '</li>'; }).join('') + '</ul></div>
         `;
     };
 
     window.obtenerMedidasProteccion = function(nivel) {
-        const medidas = {
+        var medidas = {
             'BAJO': [
                 'Priorizar la realización de actos o diligencias en los que participe la víctima.',
                 'Convocar a la víctima solo en casos necesarios.',
@@ -1865,15 +1834,15 @@
                 'Requerir al tribunal la realización del juicio oral y público en forma parcial o totalmente privada.'
             ]
         };
-        let todas = [...medidas[nivel]];
-        if (nivel === 'ALTO') todas = [...medidas['ALTO'], ...medidas['MEDIO'], ...medidas['BAJO']];
-        else if (nivel === 'MEDIO') todas = [...medidas['MEDIO'], ...medidas['BAJO']];
+        var todas = medidas[nivel].slice();
+        if (nivel === 'ALTO') todas = medidas['ALTO'].concat(medidas['MEDIO']).concat(medidas['BAJO']);
+        else if (nivel === 'MEDIO') todas = medidas['MEDIO'].concat(medidas['BAJO']);
         return todas;
     };
 
-    // ===== LIQUIDACIÓN Y DILIGENCIAS (Art. 225) =====
+    // ----- LIQUIDACIÓN Y DILIGENCIAS (Art. 225) -----
     window.generarLiquidacionYdiligencias = function() {
-        const DILIGENCIAS_ALIMENTOS = [
+        var DILIGENCIAS_ALIMENTOS = [
             { id: 'dil-testifical', label: 'Testifical (recabar info sobre causas o acuerdos anteriores)' },
             { id: 'dil-cert-nacimiento', label: 'Certificado de Nacimiento (Autenticado)' },
             { id: 'dil-oficio-trabajadora-social', label: 'Oficio Trabajadora Social' },
@@ -1891,7 +1860,7 @@
             { id: 'dil-oficio-registros-publicos', label: 'Oficio Registros Públicos' },
             { id: 'dil-oficio-indagatoria', label: 'Oficio Indagatoria' }
         ];
-        let html = `
+        var html = `
             <h4 style="color:#1a2a4a;margin-bottom:12px;">Liquidación de Alimentos</h4>
             <p class="text-muted">Complete los montos para calcular el saldo pendiente.</p>
             <div class="form-row">
@@ -1914,11 +1883,11 @@
             <p class="text-muted">Marque las diligencias que ya se han cumplido.</p>
             <div class="diligencias-grid" id="diligencias-alimentos-container">
         `;
-        DILIGENCIAS_ALIMENTOS.forEach(d => {
+        DILIGENCIAS_ALIMENTOS.forEach(function(d) {
             html += `
                 <div class="diligencia-item">
-                    <input type="checkbox" id="${d.id}" value="${d.id}" class="diligencia-alimentos-check">
-                    <label for="${d.id}" class="diligencia-check-label">${d.label}</label>
+                    <input type="checkbox" id="' + d.id + '" value="' + d.id + '" class="diligencia-alimentos-check">
+                    <label for="' + d.id + '" class="diligencia-check-label">' + d.label + '</label>
                 </div>
             `;
         });
@@ -1933,15 +1902,15 @@
     };
 
     window.calcularLiquidacion = function() {
-        const debido = parseFloat(document.getElementById('monto-debido').value) || 0;
-        const abonado = parseFloat(document.getElementById('monto-abonado').value) || 0;
-        const saldo = debido - abonado;
-        const el = document.getElementById('liquidacion-resultado');
+        var debido = parseFloat(document.getElementById('monto-debido').value) || 0;
+        var abonado = parseFloat(document.getElementById('monto-abonado').value) || 0;
+        var saldo = debido - abonado;
+        var el = document.getElementById('liquidacion-resultado');
         if (saldo > 0) {
-            el.textContent = `Saldo pendiente: ${saldo.toLocaleString()} Gs.`;
+            el.textContent = 'Saldo pendiente: ' + saldo.toLocaleString() + ' Gs.';
             el.style.color = '#b33c3c';
         } else if (saldo < 0) {
-            el.textContent = `Saldo a favor: ${Math.abs(saldo).toLocaleString()} Gs.`;
+            el.textContent = 'Saldo a favor: ' + Math.abs(saldo).toLocaleString() + ' Gs.';
             el.style.color = '#2a7d4f';
         } else {
             el.textContent = 'Saldo: 0 Gs. (Totalmente pagado)';
@@ -1950,28 +1919,27 @@
     };
 
     window.marcarTodasAlimentos = function(estado) {
-        document.querySelectorAll('.diligencia-alimentos-check').forEach(cb => {
+        document.querySelectorAll('.diligencia-alimentos-check').forEach(function(cb) {
             cb.checked = estado;
         });
     };
 
     window.obtenerDiligenciasAlimentosMarcadas = function() {
-        const marcadas = [];
-        document.querySelectorAll('.diligencia-alimentos-check:checked').forEach(cb => {
+        var marcadas = [];
+        document.querySelectorAll('.diligencia-alimentos-check:checked').forEach(function(cb) {
             marcadas.push(cb.value);
         });
         return marcadas;
     };
 
     window.restaurarDiligenciasAlimentos = function(marcadas) {
-        document.querySelectorAll('.diligencia-alimentos-check').forEach(cb => {
-            cb.checked = marcadas.includes(cb.value);
+        document.querySelectorAll('.diligencia-alimentos-check').forEach(function(cb) {
+            cb.checked = marcadas.indexOf(cb.value) !== -1;
         });
     };
 
-    // ===== MODAL PARA AGREGAR INTERVENCIÓN MANUAL (CORREGIDO) =====
-    // Variable para controlar el listener
-    let intervTipoListenerAdded = false;
+    // ----- MODAL PARA AGREGAR INTERVENCIÓN MANUAL (CORREGIDO) -----
+    var intervTipoListenerAdded = false;
 
     window.abrirModalIntervencion = function() {
         document.getElementById('modal-intervencion').classList.add('active');
@@ -1984,7 +1952,6 @@
         document.getElementById('interv-profesional-group').style.display = 'block';
         document.getElementById('interv-resultado-group').style.display = 'block';
         document.getElementById('interv-obs-group').style.display = 'block';
-        // Solo añadir el listener una vez
         if (!intervTipoListenerAdded) {
             document.getElementById('interv-tipo').addEventListener('change', function() {
                 if (this.value === 'otra') {
@@ -2006,12 +1973,12 @@
     };
 
     window.agregarIntervencionManual = function() {
-        const tipo = document.getElementById('interv-tipo').value;
-        const fecha = document.getElementById('interv-fecha').value || new Date().toISOString().slice(0,10);
-        const profesional = document.getElementById('interv-profesional').value.trim();
-        const resultado = document.getElementById('interv-resultado').value;
-        const observaciones = document.getElementById('interv-observaciones').value.trim();
-        const otraDesc = document.getElementById('interv-otra-desc').value.trim();
+        var tipo = document.getElementById('interv-tipo').value;
+        var fecha = document.getElementById('interv-fecha').value || new Date().toISOString().slice(0,10);
+        var profesional = document.getElementById('interv-profesional').value.trim();
+        var resultado = document.getElementById('interv-resultado').value;
+        var observaciones = document.getElementById('interv-observaciones').value.trim();
+        var otraDesc = document.getElementById('interv-otra-desc').value.trim();
         
         if (tipo === 'otra' && !otraDesc) {
             alert('Debe describir la intervención.');
@@ -2022,7 +1989,7 @@
             return;
         }
         
-        const nueva = {
+        var nueva = {
             id: 'interv_' + Date.now(),
             tipo: tipo,
             fecha: fecha,
@@ -2039,28 +2006,28 @@
     };
 
     window.restaurarIntervencionesAdicionales = function() {
-        const container = document.getElementById('intervenciones-adicionales');
+        var container = document.getElementById('intervenciones-adicionales');
         if (!container) return;
         if (!intervencionesGuardadas || intervencionesGuardadas.length === 0) {
             container.innerHTML = '<p class="text-muted">No hay intervenciones adicionales.</p>';
             return;
         }
-        let html = '<h4 style="color:#1a2a4a;margin-top:10px;">Intervenciones adicionales</h4>';
-        intervencionesGuardadas.forEach((item, idx) => {
-            let tipoLabel = '';
+        var html = '<h4 style="color:#1a2a4a;margin-top:10px;">Intervenciones adicionales</h4>';
+        intervencionesGuardadas.forEach(function(item, idx) {
+            var tipoLabel = '';
             if (item.tipo === 'eval_psicologica') tipoLabel = 'Evaluación Psicológica';
             else if (item.tipo === 'eval_medica') tipoLabel = 'Evaluación Médica';
             else if (item.tipo === 'otra') tipoLabel = 'Otra: ' + item.otraDesc;
             html += `
                 <div class="intervencion-item">
                     <div class="intervencion-header">
-                        <span class="intervencion-tipo">${tipoLabel}</span>
-                        <button class="btn-remover" onclick="window.eliminarIntervencion(${idx})"><i class="fas fa-times"></i> Eliminar</button>
+                        <span class="intervencion-tipo">' + tipoLabel + '</span>
+                        <button class="btn-remover" onclick="window.eliminarIntervencion(' + idx + ')"><i class="fas fa-times"></i> Eliminar</button>
                     </div>
-                    <div class="intervencion-fecha">Fecha: ${item.fecha || 'No definida'}</div>
-                    ${item.profesional ? `<div class="intervencion-detalle"><strong>Profesional:</strong> ${item.profesional}</div>` : ''}
-                    ${item.resultado ? `<div class="intervencion-detalle"><strong>Resultado:</strong> ${item.resultado}</div>` : ''}
-                    ${item.observaciones ? `<div class="intervencion-detalle"><strong>Observaciones:</strong> ${item.observaciones}</div>` : ''}
+                    <div class="intervencion-fecha">Fecha: ' + (item.fecha || 'No definida') + '</div>
+                    ' + (item.profesional ? '<div class="intervencion-detalle"><strong>Profesional:</strong> ' + item.profesional + '</div>' : '') + '
+                    ' + (item.resultado ? '<div class="intervencion-detalle"><strong>Resultado:</strong> ' + item.resultado + '</div>' : '') + '
+                    ' + (item.observaciones ? '<div class="intervencion-detalle"><strong>Observaciones:</strong> ' + item.observaciones + '</div>' : '') + '
                 </div>
             `;
         });
@@ -2073,25 +2040,27 @@
         window.restaurarIntervencionesAdicionales();
     };
 
-    // ===== GUARDADO POR PESTAÑA =====
+    // ----- GUARDADO POR PESTAÑA -----
     window.getCausaActual = function() {
         if (!causaActualId) return null;
-        return causas.find(c => c.id === causaActualId) || null;
+        return causas.find(function(c) { return c.id === causaActualId; }) || null;
     };
 
     window.actualizarCausa = function(datos) {
         if (!causaActualId) {
-            const nuevaCausa = { id: Date.now().toString(), ...datos, fechaCreacion: new Date().toISOString() };
+            var nuevaCausa = { id: Date.now().toString() };
+            for (var key in datos) { nuevaCausa[key] = datos[key]; }
+            nuevaCausa.fechaCreacion = new Date().toISOString();
             causas.push(nuevaCausa);
             causaActualId = nuevaCausa.id;
-            document.getElementById('form-title').textContent = `Editar Causa: ${nuevaCausa.numCausa || 'Nueva'}`;
+            document.getElementById('form-title').textContent = 'Editar Causa: ' + (nuevaCausa.numCausa || 'Nueva');
             window.guardarDatos();
             window.renderizarCausas();
             return nuevaCausa;
         } else {
-            const idx = causas.findIndex(c => c.id === causaActualId);
+            var idx = causas.findIndex(function(c) { return c.id === causaActualId; });
             if (idx !== -1) {
-                causas[idx] = { ...causas[idx], ...datos };
+                for (var key in datos) { causas[idx][key] = datos[key]; }
                 window.guardarDatos();
                 window.renderizarCausas();
                 return causas[idx];
@@ -2102,8 +2071,8 @@
 
     window.actualizarEstadoSeccion = function(tabId, guardado) {
         seccionesGuardadas[tabId] = guardado;
-        const estadoEl = document.getElementById(`estado-${tabId}`);
-        const badgeEl = document.getElementById(`badge-${tabId}`);
+        var estadoEl = document.getElementById('estado-' + tabId);
+        var badgeEl = document.getElementById('badge-' + tabId);
         if (estadoEl) {
             estadoEl.textContent = guardado ? '✓ Guardado' : 'Sin guardar';
             estadoEl.className = 'estado' + (guardado ? ' guardado' : '');
@@ -2112,13 +2081,13 @@
     };
 
     window.guardarPestana1 = function() {
-        const num = document.getElementById('num-causa').value.trim();
-        const imputado = document.getElementById('imputado').value.trim();
+        var num = document.getElementById('num-causa').value.trim();
+        var imputado = document.getElementById('imputado').value.trim();
         if (!num || !imputado) { alert('Complete Nº Causa e Imputado.'); return; }
         if (hechosAgregados.length === 0) { alert('Agregue al menos un hecho punible.'); return; }
-        const victimas = [];
-        document.querySelectorAll('.victima-block').forEach(block => {
-            const nombre = block.querySelector('.victima-nombre').value.trim();
+        var victimas = [];
+        document.querySelectorAll('.victima-block').forEach(function(block) {
+            var nombre = block.querySelector('.victima-nombre').value.trim();
             if (nombre) {
                 victimas.push({
                     nombre: nombre,
@@ -2129,9 +2098,9 @@
                 });
             }
         });
-        const testigos = [];
-        document.querySelectorAll('.testigo-block').forEach(block => {
-            const nombre = block.querySelector('.testigo-nombre').value.trim();
+        var testigos = [];
+        document.querySelectorAll('.testigo-block').forEach(function(block) {
+            var nombre = block.querySelector('.testigo-nombre').value.trim();
             if (nombre) {
                 testigos.push({
                     nombre: nombre,
@@ -2140,7 +2109,7 @@
                 });
             }
         });
-        const datos = {
+        var datos = {
             numCausa: num,
             imputado: imputado,
             ciImputado: document.getElementById('ci-imputado').value.trim(),
@@ -2154,14 +2123,14 @@
             horaHecho: document.getElementById('hora-hecho').value,
             testigos: testigos,
             descripcionHecho: document.getElementById('descripcion-hecho').value.trim(),
-            hechos: hechosAgregados.map(h => ({ hecho: h.hecho, incisos: h.incisos })),
+            hechos: hechosAgregados.map(function(h) { return { hecho: h.hecho, incisos: h.incisos }; }),
             caratula: document.getElementById('caratula-preview').textContent,
             observacionesGenerales: document.getElementById('observaciones-generales').value.trim()
         };
-        const causa = window.actualizarCausa(datos);
+        var causa = window.actualizarCausa(datos);
         if (causa) {
             window.actualizarEstadoSeccion('tab1', true);
-            document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
+            document.getElementById('estado-causa').textContent = 'Causa: ' + causa.numCausa;
             alert('Datos Generales guardados correctamente.');
             window.verificarPlazosYAlertar('📌 Plazos actualizados tras guardar Datos Generales');
         }
@@ -2169,7 +2138,7 @@
 
     window.guardarPestana2 = function() {
         if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
-        const datos = {
+        var datos = {
             fechaImputacion: document.getElementById('fecha-imputacion').value,
             numAI: document.getElementById('num-ai').value.trim(),
             fechaAI: document.getElementById('fecha-ai').value,
@@ -2209,7 +2178,7 @@
                 otro: document.getElementById('anticipo-otro').value.trim()
             }
         };
-        const causa = window.actualizarCausa(datos);
+        var causa = window.actualizarCausa(datos);
         if (causa) {
             window.actualizarEstadoSeccion('tab2', true);
             alert('Datos del Juzgado guardados correctamente.');
@@ -2219,16 +2188,16 @@
 
     window.guardarPestana3 = function() {
         if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
-        const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
-        let datos = {};
+        var hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
+        var datos = {};
         
         if (hechoPrincipal === '229') {
-            const respuestas = {};
-            preguntasRiesgo.forEach(p => {
-                const sel = document.getElementById(`riesgo-${p.id}`);
+            var respuestas = {};
+            preguntasRiesgo.forEach(function(p) {
+                var sel = document.getElementById('riesgo-' + p.id);
                 respuestas[p.id] = sel ? sel.value : '';
             });
-            const otrosEl = document.getElementById('riesgo-otros');
+            var otrosEl = document.getElementById('riesgo-otros');
             datos.intervenciones = {
                 tipo: 'cuestionario_riesgo',
                 respuestas: respuestas,
@@ -2237,42 +2206,42 @@
                 nivel: riesgoNivel
             };
         } else if (hechoPrincipal === '225') {
-            const montoDebidoEl = document.getElementById('monto-debido');
-            const montoAbonadoEl = document.getElementById('monto-abonado');
-            const diligencias = window.obtenerDiligenciasAlimentosMarcadas();
+            var montoDebidoEl = document.getElementById('monto-debido');
+            var montoAbonadoEl = document.getElementById('monto-abonado');
+            var diligencias = window.obtenerDiligenciasAlimentosMarcadas();
             datos.intervenciones = {
                 tipo: 'liquidacion_alimentos',
                 montoDebido: montoDebidoEl ? parseFloat(montoDebidoEl.value) || 0 : 0,
                 montoAbonado: montoAbonadoEl ? parseFloat(montoAbonadoEl.value) || 0 : 0,
                 diligencias: diligencias
             };
-        } else if (['128','135','135b','137'].includes(hechoPrincipal)) {
-            const respuestas = {};
-            preguntasSexuales.forEach(p => {
-                const sel = document.getElementById(`sexual-${p.id}`);
-                respuestas[p.id] = sel ? sel.value : '';
+        } else if (['128','135','135b','137'].indexOf(hechoPrincipal) !== -1) {
+            var respuestasSex = {};
+            preguntasSexuales.forEach(function(p) {
+                var sel = document.getElementById('sexual-' + p.id);
+                respuestasSex[p.id] = sel ? sel.value : '';
             });
-            const obsEl = document.getElementById('sexual-obs');
-            const diligencias = window.obtenerDiligenciasSexualesMarcadas();
+            var obsEl = document.getElementById('sexual-obs');
+            var diligenciasSex = window.obtenerDiligenciasSexualesMarcadas();
             datos.intervenciones = {
                 tipo: 'cuestionario_sexual',
-                respuestas: respuestas,
+                respuestas: respuestasSex,
                 observaciones: obsEl ? obsEl.value : '',
-                diligencias: diligencias
+                diligencias: diligenciasSex
             };
         } else if (hechoPrincipal !== '') {
-            const diligencias = window.obtenerDiligenciasOrdinariasMarcadas();
+            var diligenciasOrd = window.obtenerDiligenciasOrdinariasMarcadas();
             datos.intervenciones = {
                 tipo: 'diligencias_ordinarias',
-                diligencias: diligencias
+                diligencias: diligenciasOrd
             };
         } else {
             datos.intervenciones = { tipo: 'ninguno' };
         }
         
-        datos.intervencionesAdicionales = intervencionesGuardadas || [];
+        datos.intervencionesAdicionales = intervencionesGuardadas.slice();
         
-        const causa = window.actualizarCausa(datos);
+        var causa = window.actualizarCausa(datos);
         if (causa) {
             window.actualizarEstadoSeccion('tab3', true);
             alert('Intervenciones guardadas correctamente.');
@@ -2280,19 +2249,19 @@
         }
     };
 
-    // ===== CARGAR CAUSA PARA EDITAR =====
+    // ----- CARGAR CAUSA PARA EDITAR -----
     window.cargarCausaParaEditar = function(id) {
-        const causa = causas.find(c => c.id === id);
+        var causa = causas.find(function(c) { return c.id === id; });
         if (!causa) return;
         causaActualId = causa.id;
-        document.getElementById('form-title').textContent = `Editar Causa: ${causa.numCausa}`;
-        document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
+        document.getElementById('form-title').textContent = 'Editar Causa: ' + causa.numCausa;
+        document.getElementById('estado-causa').textContent = 'Causa: ' + causa.numCausa;
 
-        const info = window.calcularDiasRestantes(causa);
+        var info = window.calcularDiasRestantes(causa);
         if (info.estado === 'vencido') {
-            alert(`⚠️ La causa ${causa.numCausa} tiene el plazo VENCIDO (hace ${Math.abs(info.dias)} días). Requiere acción inmediata.`);
+            alert('⚠️ La causa ' + causa.numCausa + ' tiene el plazo VENCIDO (hace ' + Math.abs(info.dias) + ' días). Requiere acción inmediata.');
         } else if (info.estado === 'proximo') {
-            alert(`⏳ La causa ${causa.numCausa} tiene plazo próximo a vencer (faltan ${info.dias} días).`);
+            alert('⏳ La causa ' + causa.numCausa + ' tiene plazo próximo a vencer (faltan ' + info.dias + ' días).');
         }
 
         document.getElementById('num-causa').value = causa.numCausa;
@@ -2304,21 +2273,21 @@
         document.getElementById('num-reincidencias').value = causa.numReincidencias || 0;
         document.getElementById('num-reincidencias').disabled = !causa.reincidente;
 
-        const victimasContainer = document.getElementById('victimas-container');
+        var victimasContainer = document.getElementById('victimas-container');
         victimasContainer.innerHTML = '';
         if (causa.victimas && causa.victimas.length > 0) {
-            causa.victimas.forEach((v) => {
-                const div = document.createElement('div');
+            causa.victimas.forEach(function(v) {
+                var div = document.createElement('div');
                 div.className = 'victima-block';
                 div.innerHTML = `
                     <div class="form-row">
-                        <div class="form-group"><label>Nombre completo</label><input type="text" class="victima-nombre" value="${v.nombre || ''}" placeholder="Nombre de la víctima"></div>
-                        <div class="form-group"><label>Cédula de identidad</label><input type="text" class="victima-ci" value="${v.ci || ''}" placeholder="CI"></div>
-                        <div class="form-group"><label>Teléfono</label><input type="text" class="victima-telefono" value="${v.telefono || ''}" placeholder="Teléfono"></div>
+                        <div class="form-group"><label>Nombre completo</label><input type="text" class="victima-nombre" value="' + (v.nombre || '') + '" placeholder="Nombre de la víctima"></div>
+                        <div class="form-group"><label>Cédula de identidad</label><input type="text" class="victima-ci" value="' + (v.ci || '') + '" placeholder="CI"></div>
+                        <div class="form-group"><label>Teléfono</label><input type="text" class="victima-telefono" value="' + (v.telefono || '') + '" placeholder="Teléfono"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Domicilio</label><input type="text" class="victima-domicilio" value="${v.domicilio || ''}" placeholder="Dirección"></div>
-                        <div class="form-group"><label>Edad</label><input type="number" class="victima-edad" value="${v.edad || ''}" placeholder="Edad" min="0"></div>
+                        <div class="form-group"><label>Domicilio</label><input type="text" class="victima-domicilio" value="' + (v.domicilio || '') + '" placeholder="Dirección"></div>
+                        <div class="form-group"><label>Edad</label><input type="number" class="victima-edad" value="' + (v.edad || '') + '" placeholder="Edad" min="0"></div>
                         <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="window.eliminarVictima(this)"><i class="fas fa-times"></i> Eliminar</button></div>
                     </div>
                 `;
@@ -2330,17 +2299,17 @@
         document.getElementById('fecha-hecho').value = causa.fechaHecho || '';
         document.getElementById('hora-hecho').value = causa.horaHecho || '';
 
-        const testigosContainer = document.getElementById('testigos-container');
+        var testigosContainer = document.getElementById('testigos-container');
         testigosContainer.innerHTML = '';
         if (causa.testigos && causa.testigos.length > 0) {
-            causa.testigos.forEach((t) => {
-                const div = document.createElement('div');
+            causa.testigos.forEach(function(t) {
+                var div = document.createElement('div');
                 div.className = 'testigo-block';
                 div.innerHTML = `
                     <div class="form-row">
-                        <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" value="${t.nombre || ''}" placeholder="Nombre del testigo"></div>
-                        <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" value="${t.ci || ''}" placeholder="CI"></div>
-                        <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" value="${t.telefono || ''}" placeholder="Teléfono"></div>
+                        <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" value="' + (t.nombre || '') + '" placeholder="Nombre del testigo"></div>
+                        <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" value="' + (t.ci || '') + '" placeholder="CI"></div>
+                        <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" value="' + (t.telefono || '') + '" placeholder="Teléfono"></div>
                         <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="window.eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button></div>
                     </div>
                 `;
@@ -2353,16 +2322,16 @@
 
         hechosAgregados = [];
         if (causa.hechos) {
-            causa.hechos.forEach(h => {
-                const config = CONFIG.hechos[h.hecho];
+            causa.hechos.forEach(function(h) {
+                var config = CONFIG.hechos[h.hecho];
                 if (config) {
-                    const incisosValidos = h.incisos.filter(inc => {
-                        const incData = config.incisos.find(i => i.id === inc.id);
+                    var incisosValidos = h.incisos.filter(function(inc) {
+                        var incData = config.incisos.find(function(i) { return i.id === inc.id; });
                         if (!incData) return false;
                         if (inc.numerales) {
-                            inc.numerales = inc.numerales.filter(numId => {
+                            inc.numerales = inc.numerales.filter(function(numId) {
                                 if (!incData.numerales) return false;
-                                return incData.numerales.some(n => n.id === numId);
+                                return incData.numerales.some(function(n) { return n.id === numId; });
                             });
                         }
                         return true;
@@ -2406,44 +2375,44 @@
         document.getElementById('anticipo-otro').value = causa.anticipos?.otro || '';
 
         window.actualizarTab3();
-        setTimeout(() => {
-            const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
+        setTimeout(function() {
+            var hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
             if (hechoPrincipal === '229' && causa.intervenciones?.tipo === 'cuestionario_riesgo') {
                 riesgoPuntaje = causa.intervenciones.puntaje || 0;
                 riesgoNivel = causa.intervenciones.nivel || '';
-                const d = causa.intervenciones;
+                var d = causa.intervenciones;
                 if (d.respuestas) {
-                    Object.keys(d.respuestas).forEach(key => {
-                        const el = document.getElementById(`riesgo-${key}`);
+                    Object.keys(d.respuestas).forEach(function(key) {
+                        var el = document.getElementById('riesgo-' + key);
                         if (el) el.value = d.respuestas[key];
                     });
                 }
-                const otrosEl = document.getElementById('riesgo-otros');
+                var otrosEl = document.getElementById('riesgo-otros');
                 if (otrosEl) otrosEl.value = d.otros || '';
                 if (d.puntaje) window.calcularRiesgo();
             } else if (hechoPrincipal === '225' && causa.intervenciones?.tipo === 'liquidacion_alimentos') {
-                const montoDebidoEl = document.getElementById('monto-debido');
-                const montoAbonadoEl = document.getElementById('monto-abonado');
+                var montoDebidoEl = document.getElementById('monto-debido');
+                var montoAbonadoEl = document.getElementById('monto-abonado');
                 if (montoDebidoEl) montoDebidoEl.value = causa.intervenciones.montoDebido || 0;
                 if (montoAbonadoEl) montoAbonadoEl.value = causa.intervenciones.montoAbonado || 0;
                 window.calcularLiquidacion();
                 if (causa.intervenciones.diligencias) {
                     window.restaurarDiligenciasAlimentos(causa.intervenciones.diligencias);
                 }
-            } else if (['128','135','135b','137'].includes(hechoPrincipal) && causa.intervenciones?.tipo === 'cuestionario_sexual') {
-                const d = causa.intervenciones;
-                if (d.respuestas) {
-                    Object.keys(d.respuestas).forEach(key => {
-                        const el = document.getElementById(`sexual-${key}`);
-                        if (el) el.value = d.respuestas[key];
+            } else if (['128','135','135b','137'].indexOf(hechoPrincipal) !== -1 && causa.intervenciones?.tipo === 'cuestionario_sexual') {
+                var dSex = causa.intervenciones;
+                if (dSex.respuestas) {
+                    Object.keys(dSex.respuestas).forEach(function(key) {
+                        var el = document.getElementById('sexual-' + key);
+                        if (el) el.value = dSex.respuestas[key];
                     });
                 }
-                const obsEl = document.getElementById('sexual-obs');
-                if (obsEl) obsEl.value = d.observaciones || '';
-                if (d.diligencias) {
-                    window.restaurarDiligenciasSexuales(d.diligencias);
+                var obsElSex = document.getElementById('sexual-obs');
+                if (obsElSex) obsElSex.value = dSex.observaciones || '';
+                if (dSex.diligencias) {
+                    window.restaurarDiligenciasSexuales(dSex.diligencias);
                 }
-                if (d.respuestas && Object.values(d.respuestas).some(v => v !== '')) {
+                if (dSex.respuestas && Object.values(dSex.respuestas).some(function(v) { return v !== ''; })) {
                     window.calcularRiesgoSexual();
                 }
             } else if (hechoPrincipal !== '' && causa.intervenciones?.tipo === 'diligencias_ordinarias') {
@@ -2452,7 +2421,7 @@
                 }
             }
             if (causa.intervencionesAdicionales) {
-                intervencionesGuardadas = causa.intervencionesAdicionales;
+                intervencionesGuardadas = causa.intervencionesAdicionales.slice();
                 window.restaurarIntervencionesAdicionales();
             } else {
                 intervencionesGuardadas = [];
@@ -2474,43 +2443,43 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // ===== RENDERIZAR LISTADO =====
+    // ----- RENDERIZAR LISTADO -----
     window.renderizarCausas = function() {
-        const grid = document.getElementById('causa-grid');
-        const contador = document.getElementById('contador-causas');
+        var grid = document.getElementById('causa-grid');
+        var contador = document.getElementById('contador-causas');
         if (causas.length === 0) {
-            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
+            grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>';
             contador.textContent = '(0)';
             return;
         }
-        contador.textContent = `(${causas.length})`;
-        let html = '';
-        causas.forEach(c => {
-            const badge = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'badge-alimentos' : 'badge-activa';
-            const badgeText = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'Alimentos' : 'Activa';
-            const caratula = c.caratula || 'Sin carátula';
+        contador.textContent = '(' + causas.length + ')';
+        var html = '';
+        causas.forEach(function(c) {
+            var badge = c.hechos && c.hechos.some(function(h) { return h.hecho === '225'; }) ? 'badge-alimentos' : 'badge-activa';
+            var badgeText = c.hechos && c.hechos.some(function(h) { return h.hecho === '225'; }) ? 'Alimentos' : 'Activa';
+            var caratula = c.caratula || 'Sin carátula';
 
-            const tieneAlertas = window.verificarAlertas(c);
-            const alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
+            var tieneAlertas = window.verificarAlertas(c);
+            var alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
 
-            let diasInfo = '';
-            const info = window.calcularDiasRestantes(c);
+            var diasInfo = '';
+            var info = window.calcularDiasRestantes(c);
             if (info.estado === 'vencido') {
-                diasInfo = `<div class="dias-restantes vencido">⚠️ VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
+                diasInfo = '<div class="dias-restantes vencido">⚠️ VENCIDO (hace ' + Math.abs(info.dias) + ' días)</div>';
             } else if (info.estado === 'proximo') {
-                diasInfo = `<div class="dias-restantes proximo">⏳ Vence en ${info.dias} días</div>`;
+                diasInfo = '<div class="dias-restantes proximo">⏳ Vence en ' + info.dias + ' días</div>';
             } else if (info.dias !== null) {
-                diasInfo = `<div class="dias-restantes">📅 Vence en ${info.dias} días</div>`;
+                diasInfo = '<div class="dias-restantes">📅 Vence en ' + info.dias + ' días</div>';
             }
 
             html += `
-                <div class="causa-card" onclick="window.cargarCausaParaEditar('${c.id}')">
-                    <div class="numero">${alertaIcon} ${c.numCausa}</div>
-                    <div class="caratula">${caratula}</div>
-                    <span class="badge ${badge}">${badgeText}</span>
-                    ${tieneAlertas ? `<span class="badge badge-alerta" style="margin-left:6px;"><i class="fas fa-exclamation-circle"></i> Alertas</span>` : ''}
-                    ${diasInfo}
-                    <button class="eliminar-btn" onclick="event.stopPropagation(); window.eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
+                <div class="causa-card" onclick="window.cargarCausaParaEditar('' + c.id + '')">
+                    <div class="numero">' + alertaIcon + ' ' + c.numCausa + '</div>
+                    <div class="caratula">' + caratula + '</div>
+                    <span class="badge ' + badge + '">' + badgeText + '</span>
+                    ' + (tieneAlertas ? '<span class="badge badge-alerta" style="margin-left:6px;"><i class="fas fa-exclamation-circle"></i> Alertas</span>' : '') + '
+                    ' + diasInfo + '
+                    <button class="eliminar-btn" onclick="event.stopPropagation(); window.eliminarCausa('' + c.id + '')"><i class="fas fa-trash-alt"></i></button>
                 </div>
             `;
         });
@@ -2518,8 +2487,8 @@
     };
 
     window.verificarAlertas = function(causa) {
-        let alertas = [];
-        const info = window.calcularDiasRestantes(causa);
+        var alertas = [];
+        var info = window.calcularDiasRestantes(causa);
         if (info.estado === 'vencido') alertas.push('plazo vencido');
         else if (info.estado === 'proximo') alertas.push('plazo próximo');
         if (causa.rebeldia && causa.rebeldia.activa) {
@@ -2527,8 +2496,8 @@
             if (!causa.rebeldia.levantamiento) alertas.push('rebeldía sin levantar');
         }
         if (causa.hechos) {
-            causa.hechos.forEach(h => {
-                const config = CONFIG.hechos[h.hecho];
+            causa.hechos.forEach(function(h) {
+                var config = CONFIG.hechos[h.hecho];
                 if (config && config.incisos && config.incisos.length > 0 && (!h.incisos || h.incisos.length === 0)) {
                     alertas.push('hecho sin incisos');
                 }
@@ -2539,16 +2508,16 @@
     };
 
     window.filtrarCausas = function() {
-        const term = document.getElementById('buscador').value.toLowerCase().trim();
-        document.querySelectorAll('.causa-card').forEach(card => {
-            const texto = card.textContent.toLowerCase();
-            card.style.display = texto.includes(term) ? '' : 'none';
+        var term = document.getElementById('buscador').value.toLowerCase().trim();
+        document.querySelectorAll('.causa-card').forEach(function(card) {
+            var texto = card.textContent.toLowerCase();
+            card.style.display = texto.indexOf(term) !== -1 ? '' : 'none';
         });
     };
 
     window.eliminarCausa = function(id) {
         if (!confirm('¿Está seguro de eliminar esta causa?')) return;
-        causas = causas.filter(c => c.id !== id);
+        causas = causas.filter(function(c) { return c.id !== id; });
         window.guardarDatos();
         window.renderizarCausas();
         if (document.getElementById('form-container').classList.contains('active')) window.cerrarFormulario();
@@ -2569,14 +2538,14 @@
         causaActualId = null;
         document.getElementById('form-title').textContent = 'Nueva Causa';
         document.getElementById('estado-causa').textContent = '';
-        document.querySelectorAll('input, select, textarea').forEach(el => {
+        document.querySelectorAll('input, select, textarea').forEach(function(el) {
             if (el.id && !el.id.startsWith('riesgo-') && !el.id.startsWith('sexual-') && el.type !== 'checkbox' && el.type !== 'hidden') {
                 if (el.tagName === 'SELECT') el.value = '';
                 else if (el.type === 'date' || el.type === 'time' || el.type === 'number' || el.type === 'text') el.value = '';
                 else if (el.tagName === 'TEXTAREA') el.value = '';
             }
         });
-        document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+        document.querySelectorAll('input[type="checkbox"]').forEach(function(el) {
             if (el.id !== 'reincidente' && el.id !== 'rebeldia-activa') el.checked = false;
         });
         document.getElementById('reincidente').checked = false;
@@ -2616,35 +2585,35 @@
         causaActualId = null;
     };
 
-    // ===== INFORME =====
+    // ----- INFORME -----
     window.actualizarInforme = function() {
-        const container = document.getElementById('informe-contenido');
-        const causa = window.getCausaActual();
+        var container = document.getElementById('informe-contenido');
+        var causa = window.getCausaActual();
         if (!causa) {
-            container.innerHTML = `<div class="text-center" style="padding:30px;"><i class="fas fa-file-pdf" style="font-size:48px;color:#1a2a4a;margin-bottom:15px;"></i><h3 style="color:#1a2a4a;">Informe de Causa</h3><p class="text-muted">Guarde los datos de la causa para generar el informe completo.</p></div>`;
+            container.innerHTML = '<div class="text-center" style="padding:30px;"><i class="fas fa-file-pdf" style="font-size:48px;color:#1a2a4a;margin-bottom:15px;"></i><h3 style="color:#1a2a4a;">Informe de Causa</h3><p class="text-muted">Guarde los datos de la causa para generar el informe completo.</p></div>';
             return;
         }
 
-        const numCausa = causa.numCausa || 'No definido';
-        const imputado = causa.imputado || 'No definido';
-        const ciImputado = causa.ciImputado || 'No registrado';
-        const domicilioImputado = causa.domicilioImputado || 'No registrado';
-        const descripcionHecho = causa.descripcionHecho || 'No especificada';
-        const reincidente = causa.reincidente ? 'Sí' : 'No';
-        const numReincidencias = causa.reincidente ? ` (${causa.numReincidencias || 0} veces)` : '';
-        const observaciones = causa.observacionesGenerales || 'No especificadas';
+        var numCausa = causa.numCausa || 'No definido';
+        var imputado = causa.imputado || 'No definido';
+        var ciImputado = causa.ciImputado || 'No registrado';
+        var domicilioImputado = causa.domicilioImputado || 'No registrado';
+        var descripcionHecho = causa.descripcionHecho || 'No especificada';
+        var reincidente = causa.reincidente ? 'Sí' : 'No';
+        var numReincidencias = causa.reincidente ? ' (' + (causa.numReincidencias || 0) + ' veces)' : '';
+        var observaciones = causa.observacionesGenerales || 'No especificadas';
 
-        let hechosHTML = '';
-        let hechosParaFundamento = [];
+        var hechosHTML = '';
+        var hechosParaFundamento = [];
         if (causa.hechos && causa.hechos.length > 0) {
             hechosHTML = '<ul style="padding-left:20px;margin:4px 0;">';
-            causa.hechos.forEach(h => {
-                const config = CONFIG.hechos[h.hecho];
+            causa.hechos.forEach(function(h) {
+                var config = CONFIG.hechos[h.hecho];
                 if (config) {
-                    const incisosSeleccionados = h.incisos || [];
-                    const incisosData = incisosSeleccionados.map(inc => {
-                        const incData = config.incisos.find(i => i.id === inc.id);
-                        return { incData, numerales: inc.numerales || [] };
+                    var incisosSeleccionados = h.incisos || [];
+                    var incisosData = incisosSeleccionados.map(function(inc) {
+                        var incData = config.incisos.find(function(i) { return i.id === inc.id; });
+                        return { incData: incData, numerales: inc.numerales || [] };
                     });
                     hechosParaFundamento.push({ 
                         articulo: config.label, 
@@ -2652,18 +2621,18 @@
                         modificaciones: config.modificaciones || [],
                         incisosSeleccionados: incisosData
                     });
-                    let incisosText = '';
+                    var incisosText = '';
                     if (incisosData.length > 0) {
                         incisosText = '<br><div style="padding-left:20px;font-size:13px;color:#444;">';
-                        incisosData.forEach(item => {
+                        incisosData.forEach(function(item) {
                             if (item.incData) {
-                                incisosText += `<div style="padding:2px 0;">${item.incData.label}</div>`;
+                                incisosText += '<div style="padding:2px 0;">' + item.incData.label + '</div>';
                                 if (item.numerales && item.numerales.length > 0 && item.incData.numerales) {
                                     incisosText += '<div style="padding-left:25px;font-size:12px;color:#555;">';
-                                    item.numerales.forEach(numId => {
-                                        const numData = item.incData.numerales.find(n => n.id === numId);
+                                    item.numerales.forEach(function(numId) {
+                                        var numData = item.incData.numerales.find(function(n) { return n.id === numId; });
                                         if (numData) {
-                                            incisosText += `<div style="padding:1px 0;">${numData.label}</div>`;
+                                            incisosText += '<div style="padding:1px 0;">' + numData.label + '</div>';
                                         }
                                     });
                                     incisosText += '</div>';
@@ -2672,7 +2641,7 @@
                         });
                         incisosText += '</div>';
                     }
-                    hechosHTML += `<li><strong>${config.label}</strong>${incisosText}</li>`;
+                    hechosHTML += '<li><strong>' + config.label + '</strong>' + incisosText + '</li>';
                 }
             });
             hechosHTML += '</ul>';
@@ -2680,15 +2649,15 @@
             hechosHTML = '<span class="text-muted">No hay hechos cargados</span>';
         }
 
-        let victimasHTML = '';
+        var victimasHTML = '';
         if (causa.victimas && causa.victimas.length > 0) {
             victimasHTML = '<ul style="padding-left:20px;margin:4px 0;">';
-            causa.victimas.forEach(v => { victimasHTML += `<li>${v.nombre || 'Sin nombre'} (CI: ${v.ci || 'N/A'})</li>`; });
+            causa.victimas.forEach(function(v) { victimasHTML += '<li>' + (v.nombre || 'Sin nombre') + ' (CI: ' + (v.ci || 'N/A') + ')</li>'; });
             victimasHTML += '</ul>';
         } else { victimasHTML = '<span class="text-muted">No hay víctimas cargadas</span>'; }
 
-        let medidasSeleccionadas = [];
-        const mapaMedidas = {
+        var medidasSeleccionadas = [];
+        var mapaMedidas = {
             notificacion: { label: 'Notificación del acta de imputación', articulo: 'Art. 128 CPP', texto: 'El imputado será notificado personalmente del acta de imputación y de los derechos que le asisten, dentro de las 24 horas de su detención o de la primera presentación.' },
             alternativas: { label: 'Medidas alternativas a la prisión', articulo: 'Art. 321 CPP', texto: 'El juez podrá imponer al imputado, en lugar de la prisión preventiva, una o varias de las siguientes obligaciones: a) la obligación de someterse a la vigilancia de una autoridad; b) la obligación de presentarse periódicamente ante el juez; c) la prohibición de salir del país; d) la prohibición de concurrir a determinados lugares; e) la obligación de reparar los daños causados; f) la obligación de prestar una caución real.' },
             privativas: { label: 'Prisión preventiva', articulo: 'Art. 319 CPP', texto: 'La prisión preventiva podrá ser decretada cuando existan elementos de convicción suficientes para considerar que el imputado es autor o partícipe de un hecho punible, y cuando concurran circunstancias que hagan presumir que el imputado intentará eludir la acción de la justicia, obstaculizar el proceso o cometer nuevos hechos punibles.' }
@@ -2698,65 +2667,65 @@
             if (causa.medidas.alternativas) medidasSeleccionadas.push(mapaMedidas.alternativas);
             if (causa.medidas.privativas) medidasSeleccionadas.push(mapaMedidas.privativas);
         }
-        let medidasText = medidasSeleccionadas.length > 0 ? medidasSeleccionadas.map(m => `${m.label} (${m.articulo})`).join(', ') : 'No se solicitaron medidas';
+        var medidasText = medidasSeleccionadas.length > 0 ? medidasSeleccionadas.map(function(m) { return m.label + ' (' + m.articulo + ')'; }).join(', ') : 'No se solicitaron medidas';
 
-        let html = `
+        var html = `
             <div class="informe-header" style="text-align:center;padding-bottom:20px;border-bottom:2px solid #1a2a4a;margin-bottom:20px;">
                 <h2 style="color:#1a2a4a;">MINISTERIO PÚBLICO</h2>
                 <div style="color:#666;font-size:14px;">INFORME DE CAUSA PENAL</div>
-                <div style="font-size:12px;color:#888;margin-top:4px;">Fecha de generación: ${new Date().toLocaleDateString('es-ES')}</div>
+                <div style="font-size:12px;color:#888;margin-top:4px;">Fecha de generación: ' + new Date().toLocaleDateString('es-ES') + '</div>
             </div>
 
             <div style="margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #e8ecf1;">
                 <h3 style="color:#1a2a4a;font-size:16px;margin-bottom:10px;background:#f0f2f5;padding:6px 12px;border-radius:4px;">1. DATOS GENERALES</h3>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Número de Causa:</span><span>${numCausa}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Imputado:</span><span>${imputado}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">CI:</span><span>${ciImputado}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Domicilio:</span><span>${domicilioImputado}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Reincidente:</span><span>${reincidente}${numReincidencias}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Descripción del hecho:</span><span>${descripcionHecho}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Observaciones Generales:</span><span>${observaciones}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Víctima(s):</span><span>${victimasHTML}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Lugar del Hecho:</span><span>${causa.lugarHecho || 'No definido'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha del Hecho:</span><span>${causa.fechaHecho || 'No definida'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Hora del Hecho:</span><span>${causa.horaHecho || 'No definida'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Carátula:</span><span style="font-weight:600;">${causa.caratula || 'No definida'}</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Número de Causa:</span><span>' + numCausa + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Imputado:</span><span>' + imputado + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">CI:</span><span>' + ciImputado + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Domicilio:</span><span>' + domicilioImputado + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Reincidente:</span><span>' + reincidente + numReincidencias + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Descripción del hecho:</span><span>' + descripcionHecho + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Observaciones Generales:</span><span>' + observaciones + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Víctima(s):</span><span>' + victimasHTML + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Lugar del Hecho:</span><span>' + (causa.lugarHecho || 'No definido') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha del Hecho:</span><span>' + (causa.fechaHecho || 'No definida') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Hora del Hecho:</span><span>' + (causa.horaHecho || 'No definida') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Carátula:</span><span style="font-weight:600;">' + (causa.caratula || 'No definida') + '</span></div>
                 <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Hechos Punibles:</span></div>
-                <div style="padding-left:20px;">${hechosHTML}</div>
+                <div style="padding-left:20px;">' + hechosHTML + '</div>
             </div>
 
             <div style="margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #e8ecf1;">
                 <h3 style="color:#1a2a4a;font-size:16px;margin-bottom:10px;background:#f0f2f5;padding:6px 12px;border-radius:4px;">2. JUZGADO</h3>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de Imputación:</span><span>${causa.fechaImputacion || 'No definida'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">AI N°:</span><span>${causa.numAI || 'No definido'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha del AI:</span><span>${causa.fechaAI || 'No definida'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">N° Juzgado / Penal de Garantías:</span><span>${causa.numJuzgado || 'No definido'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Plazo (meses):</span><span>${causa.plazoInvestigacion || 6} meses</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Medidas solicitadas:</span><span>${medidasText}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Prórroga Ordinaria:</span><span>${causa.prorrogaOrdinaria?.fechaPresentacion || 'No solicitada'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Prórroga Extraordinaria:</span><span>${causa.prorrogaExtraordinaria?.fechaPresentacion || 'No solicitada'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Rebeldía activa:</span><span>${causa.rebeldia?.activa ? 'Sí' : 'No'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de declaración:</span><span>${causa.rebeldia?.fecha || 'No definida'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de levantamiento:</span><span>${causa.rebeldia?.levantamiento || 'No definida'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Días suspendidos:</span><span>${causa.rebeldia?.diasSuspendidos || '--'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de requerimiento conclusivo:</span><span>${causa.rebeldia?.nuevaFechaRequerir || 'No definida'}</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Anticipos de Pruebas:</span><span>${window.obtenerAnticiposText(causa.anticipos)}</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de Imputación:</span><span>' + (causa.fechaImputacion || 'No definida') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">AI N°:</span><span>' + (causa.numAI || 'No definido') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha del AI:</span><span>' + (causa.fechaAI || 'No definida') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">N° Juzgado / Penal de Garantías:</span><span>' + (causa.numJuzgado || 'No definido') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Plazo (meses):</span><span>' + (causa.plazoInvestigacion || 6) + ' meses</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Medidas solicitadas:</span><span>' + medidasText + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Prórroga Ordinaria:</span><span>' + (causa.prorrogaOrdinaria?.fechaPresentacion || 'No solicitada') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Prórroga Extraordinaria:</span><span>' + (causa.prorrogaExtraordinaria?.fechaPresentacion || 'No solicitada') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Rebeldía activa:</span><span>' + (causa.rebeldia?.activa ? 'Sí' : 'No') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de declaración:</span><span>' + (causa.rebeldia?.fecha || 'No definida') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de levantamiento:</span><span>' + (causa.rebeldia?.levantamiento || 'No definida') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Días suspendidos:</span><span>' + (causa.rebeldia?.diasSuspendidos || '--') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Fecha de requerimiento conclusivo:</span><span>' + (causa.rebeldia?.nuevaFechaRequerir || 'No definida') + '</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Anticipos de Pruebas:</span><span>' + window.obtenerAnticiposText(causa.anticipos) + '</span></div>
             </div>
 
             <div style="margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #e8ecf1;">
                 <h3 style="color:#1a2a4a;font-size:16px;margin-bottom:10px;background:#f0f2f5;padding:6px 12px;border-radius:4px;">3. INTERVENCIONES</h3>
-                ${window.generarIntervencionesHTML(causa)}
-                ${window.generarIntervencionesAdicionalesHTML(causa)}
+                ' + window.generarIntervencionesHTML(causa) + '
+                ' + window.generarIntervencionesAdicionalesHTML(causa) + '
             </div>
 
             <div style="margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #e8ecf1;">
                 <h3 style="color:#1a2a4a;font-size:16px;margin-bottom:10px;background:#f0f2f5;padding:6px 12px;border-radius:4px;">4. FUNDAMENTACIÓN LEGAL</h3>
-                ${window.generarFundamentoLegal(causa, hechosParaFundamento, medidasSeleccionadas)}
+                ' + window.generarFundamentoLegal(causa, hechosParaFundamento, medidasSeleccionadas) + '
             </div>
 
             <div style="margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid #e8ecf1;">
                 <h3 style="color:#1a2a4a;font-size:16px;margin-bottom:10px;background:#f0f2f5;padding:6px 12px;border-radius:4px;">5. ALERTAS</h3>
-                ${window.generarAlertasHTML(causa)}
+                ' + window.generarAlertasHTML(causa) + '
             </div>
 
             <div style="text-align:center;padding-top:10px;border-top:2px solid #1a2a4a;margin-top:10px;">
@@ -2768,7 +2737,7 @@
 
     window.obtenerAnticiposText = function(anticipos) {
         if (!anticipos) return 'No definidos';
-        const items = [];
+        var items = [];
         if (anticipos.camaraGessell) items.push('Cámara Gessell');
         if (anticipos.pericia) items.push('Pericia');
         if (anticipos.inspeccion) items.push('Inspección');
@@ -2780,47 +2749,47 @@
 
     window.generarIntervencionesHTML = function(causa) {
         if (!causa.intervenciones) return '<span class="text-muted">No hay intervenciones cargadas.</span>';
-        const tipo = causa.intervenciones.tipo;
+        var tipo = causa.intervenciones.tipo;
         if (tipo === 'cuestionario_riesgo') {
             return `
                 <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Tipo:</span><span>Cuestionario de Riesgo (Art. 229)</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Puntaje:</span><span>${causa.intervenciones.puntaje || 0} puntos</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Nivel de Riesgo:</span><span style="font-weight:700;color:${causa.intervenciones.nivel === 'ALTO' ? '#b33c3c' : causa.intervenciones.nivel === 'MEDIO' ? '#b8860b' : '#2a7d4f'};">${causa.intervenciones.nivel || 'No definido'}</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Puntaje:</span><span>' + (causa.intervenciones.puntaje || 0) + ' puntos</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Nivel de Riesgo:</span><span style="font-weight:700;color:' + (causa.intervenciones.nivel === 'ALTO' ? '#b33c3c' : causa.intervenciones.nivel === 'MEDIO' ? '#b8860b' : '#2a7d4f') + ';">' + (causa.intervenciones.nivel || 'No definido') + '</span></div>
             `;
         } else if (tipo === 'liquidacion_alimentos') {
-            const montoDebido = causa.intervenciones.montoDebido || 0;
-            const montoAbonado = causa.intervenciones.montoAbonado || 0;
-            const saldo = montoDebido - montoAbonado;
-            const colorSaldo = saldo > 0 ? '#b33c3c' : saldo < 0 ? '#2a7d4f' : '#1a2a4a';
-            let html = `
+            var montoDebido = causa.intervenciones.montoDebido || 0;
+            var montoAbonado = causa.intervenciones.montoAbonado || 0;
+            var saldo = montoDebido - montoAbonado;
+            var colorSaldo = saldo > 0 ? '#b33c3c' : saldo < 0 ? '#2a7d4f' : '#1a2a4a';
+            var html = `
                 <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Tipo:</span><span>Liquidación de Alimentos (Art. 225)</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Monto debido:</span><span>${montoDebido.toLocaleString()} Gs.</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Monto abonado:</span><span>${montoAbonado.toLocaleString()} Gs.</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Saldo:</span><span style="font-weight:700;color:${colorSaldo};">${saldo.toLocaleString()} Gs.</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Monto debido:</span><span>' + montoDebido.toLocaleString() + ' Gs.</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Monto abonado:</span><span>' + montoAbonado.toLocaleString() + ' Gs.</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Saldo:</span><span style="font-weight:700;color:' + colorSaldo + ';">' + saldo.toLocaleString() + ' Gs.</span></div>
             `;
             if (causa.intervenciones.diligencias && causa.intervenciones.diligencias.length > 0) {
-                const diligenciasLabels = causa.intervenciones.diligencias.map(id => {
-                    const d = [{ id:'dil-testifical', label:'Testifical' }, { id:'dil-cert-nacimiento', label:'Certificado de Nacimiento' }, { id:'dil-oficio-trabajadora-social', label:'Oficio Trabajadora Social' }, { id:'dil-oficio-banco', label:'Oficio al banco' }, { id:'dil-calculo-liquidacion', label:'Cálculo de deudas' }, { id:'dil-oficio-info-daie', label:'Oficio Info DAIE' }, { id:'dil-oficio-dnit', label:'Oficio DNIT' }, { id:'dil-oficio-seccion-estadisticas', label:'Oficio Sección Estadísticas' }, { id:'dil-oficio-ministerio-trabajo', label:'Oficio Ministerio del Trabajo' }, { id:'dil-oficio-municipalidad', label:'Oficio Municipalidad' }, { id:'dil-oficio-automotores', label:'Oficio Automotores' }, { id:'dil-oficio-ips', label:'Oficio IPS' }, { id:'dil-oficio-incoop', label:'Oficio INCOOP' }, { id:'dil-oficio-telefonias', label:'Oficio Telefonías' }, { id:'dil-oficio-registros-publicos', label:'Oficio Registros Públicos' }, { id:'dil-oficio-indagatoria', label:'Oficio Indagatoria' }];
-                    const found = d.find(item => item.id === id);
+                var diligenciasLabels = causa.intervenciones.diligencias.map(function(id) {
+                    var d = [{ id:'dil-testifical', label:'Testifical' }, { id:'dil-cert-nacimiento', label:'Certificado de Nacimiento' }, { id:'dil-oficio-trabajadora-social', label:'Oficio Trabajadora Social' }, { id:'dil-oficio-banco', label:'Oficio al banco' }, { id:'dil-calculo-liquidacion', label:'Cálculo de deudas' }, { id:'dil-oficio-info-daie', label:'Oficio Info DAIE' }, { id:'dil-oficio-dnit', label:'Oficio DNIT' }, { id:'dil-oficio-seccion-estadisticas', label:'Oficio Sección Estadísticas' }, { id:'dil-oficio-ministerio-trabajo', label:'Oficio Ministerio del Trabajo' }, { id:'dil-oficio-municipalidad', label:'Oficio Municipalidad' }, { id:'dil-oficio-automotores', label:'Oficio Automotores' }, { id:'dil-oficio-ips', label:'Oficio IPS' }, { id:'dil-oficio-incoop', label:'Oficio INCOOP' }, { id:'dil-oficio-telefonias', label:'Oficio Telefonías' }, { id:'dil-oficio-registros-publicos', label:'Oficio Registros Públicos' }, { id:'dil-oficio-indagatoria', label:'Oficio Indagatoria' }];
+                    var found = d.find(function(item) { return item.id === id; });
                     return found ? found.label : id;
                 });
-                html += `<div style="display:flex;padding:4px 0;font-size:14px;margin-top:8px;"><span style="font-weight:600;color:#555;min-width:200px;">Diligencias realizadas:</span><span>${diligenciasLabels.join('; ')}</span></div>`;
+                html += '<div style="display:flex;padding:4px 0;font-size:14px;margin-top:8px;"><span style="font-weight:600;color:#555;min-width:200px;">Diligencias realizadas:</span><span>' + diligenciasLabels.join('; ') + '</span></div>';
             }
             return html;
         } else if (tipo === 'cuestionario_sexual') {
             return `
                 <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Tipo:</span><span>Cuestionario de Riesgo en Delitos Sexuales</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Observaciones:</span><span>${causa.intervenciones.observaciones || 'Ninguna'}</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Observaciones:</span><span>' + (causa.intervenciones.observaciones || 'Ninguna') + '</span></div>
             `;
         } else if (tipo === 'diligencias_ordinarias') {
-            const diligencias = causa.intervenciones.diligencias || [];
-            const labels = diligencias.map(id => {
-                const d = DILIGENCIAS_ORDINARIAS.find(item => item.id === id);
+            var diligencias = causa.intervenciones.diligencias || [];
+            var labels = diligencias.map(function(id) {
+                var d = DILIGENCIAS_ORDINARIAS.find(function(item) { return item.id === id; });
                 return d ? d.label : id;
             });
             return `
                 <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Tipo:</span><span>Diligencias ordinarias</span></div>
-                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Diligencias realizadas:</span><span>${labels.length > 0 ? labels.join('; ') : 'Ninguna'}</span></div>
+                <div style="display:flex;padding:4px 0;font-size:14px;"><span style="font-weight:600;color:#555;min-width:200px;">Diligencias realizadas:</span><span>' + (labels.length > 0 ? labels.join('; ') : 'Ninguna') + '</span></div>
             `;
         } else {
             return '<span class="text-muted">No hay intervenciones específicas.</span>';
@@ -2829,18 +2798,18 @@
 
     window.generarIntervencionesAdicionalesHTML = function(causa) {
         if (!causa.intervencionesAdicionales || causa.intervencionesAdicionales.length === 0) return '';
-        let html = '<div style="margin-top:15px;"><h4 style="color:#1a2a4a;font-size:15px;">Intervenciones adicionales</h4>';
-        causa.intervencionesAdicionales.forEach(item => {
-            let tipoLabel = '';
+        var html = '<div style="margin-top:15px;"><h4 style="color:#1a2a4a;font-size:15px;">Intervenciones adicionales</h4>';
+        causa.intervencionesAdicionales.forEach(function(item) {
+            var tipoLabel = '';
             if (item.tipo === 'eval_psicologica') tipoLabel = 'Evaluación Psicológica';
             else if (item.tipo === 'eval_medica') tipoLabel = 'Evaluación Médica';
             else if (item.tipo === 'otra') tipoLabel = 'Otra: ' + item.otraDesc;
             html += `
                 <div style="background:#f8f9fa;padding:8px 12px;border-radius:4px;margin-bottom:6px;border:1px solid #e0e4ea;">
-                    <div><strong>${tipoLabel}</strong> <span style="font-size:12px;color:#888;">(${item.fecha || 'Sin fecha'})</span></div>
-                    ${item.profesional ? `<div style="font-size:13px;"><strong>Profesional:</strong> ${item.profesional}</div>` : ''}
-                    ${item.resultado ? `<div style="font-size:13px;"><strong>Resultado:</strong> ${item.resultado}</div>` : ''}
-                    ${item.observaciones ? `<div style="font-size:13px;"><strong>Observaciones:</strong> ${item.observaciones}</div>` : ''}
+                    <div><strong>' + tipoLabel + '</strong> <span style="font-size:12px;color:#888;">(' + (item.fecha || 'Sin fecha') + ')</span></div>
+                    ' + (item.profesional ? '<div style="font-size:13px;"><strong>Profesional:</strong> ' + item.profesional + '</div>' : '') + '
+                    ' + (item.resultado ? '<div style="font-size:13px;"><strong>Resultado:</strong> ' + item.resultado + '</div>' : '') + '
+                    ' + (item.observaciones ? '<div style="font-size:13px;"><strong>Observaciones:</strong> ' + item.observaciones + '</div>' : '') + '
                 </div>
             `;
         });
@@ -2849,26 +2818,26 @@
     };
 
     window.generarFundamentoLegal = function(causa, hechosParaFundamento, medidasSeleccionadas) {
-        let html = '<div style="margin-top:10px;">';
+        var html = '<div style="margin-top:10px;">';
         if (hechosParaFundamento.length > 0) {
             html += '<h4 style="color:#1a2a4a;margin:10px 0 5px;">Hechos Punibles</h4>';
-            hechosParaFundamento.forEach(item => {
-                html += `<div class="fundamento-articulo"><strong>${item.articulo}</strong>`;
+            hechosParaFundamento.forEach(function(item) {
+                html += '<div class="fundamento-articulo"><strong>' + item.articulo + '</strong>';
                 if (item.modificaciones && item.modificaciones.length > 0) {
-                    html += `<div style="font-size:12px;color:#b8860b;margin-top:2px;">Modificado por: ${item.modificaciones.map(m => m.ley).join(', ')}</div>`;
+                    html += '<div style="font-size:12px;color:#b8860b;margin-top:2px;">Modificado por: ' + item.modificaciones.map(function(m) { return m.ley; }).join(', ') + '</div>';
                 }
-                html += `<div class="texto-ley">${item.texto}</div>`;
+                html += '<div class="texto-ley">' + item.texto + '</div>';
                 if (item.incisosSeleccionados && item.incisosSeleccionados.length > 0) {
                     html += '<div style="margin-top:6px;padding-left:10px;border-left:2px solid #d4a843;">';
-                    item.incisosSeleccionados.forEach(inc => {
+                    item.incisosSeleccionados.forEach(function(inc) {
                         if (inc.incData) {
-                            html += `<div style="font-size:13px;padding:2px 0;color:#333;">${inc.incData.label}</div>`;
+                            html += '<div style="font-size:13px;padding:2px 0;color:#333;">' + inc.incData.label + '</div>';
                             if (inc.numerales && inc.numerales.length > 0 && inc.incData.numerales) {
                                 html += '<div style="padding-left:25px;font-size:12px;color:#555;">';
-                                inc.numerales.forEach(numId => {
-                                    const numData = inc.incData.numerales.find(n => n.id === numId);
+                                inc.numerales.forEach(function(numId) {
+                                    var numData = inc.incData.numerales.find(function(n) { return n.id === numId; });
                                     if (numData) {
-                                        html += `<div style="padding:1px 0;">${numData.label}</div>`;
+                                        html += '<div style="padding:1px 0;">' + numData.label + '</div>';
                                     }
                                 });
                                 html += '</div>';
@@ -2882,11 +2851,11 @@
         }
         if (medidasSeleccionadas.length > 0) {
             html += '<h4 style="color:#1a2a4a;margin:10px 0 5px;">Medidas Solicitadas</h4>';
-            medidasSeleccionadas.forEach(item => {
+            medidasSeleccionadas.forEach(function(item) {
                 html += `
                     <div class="fundamento-articulo">
-                        <strong>${item.articulo} – ${item.label}</strong>
-                        <div class="texto-ley">${item.texto}</div>
+                        <strong>' + item.articulo + ' – ' + item.label + '</strong>
+                        <div class="texto-ley">' + item.texto + '</div>
                     </div>
                 `;
             });
@@ -2899,27 +2868,27 @@
     };
 
     window.generarAlertasHTML = function(causa) {
-        let alertas = [];
-        const info = window.calcularDiasRestantes(causa);
+        var alertas = [];
+        var info = window.calcularDiasRestantes(causa);
         if (info.estado === 'vencido') {
-            alertas.push(`⚠️ Plazo de investigación VENCIDO (hace ${Math.abs(info.dias)} días)`);
+            alertas.push('⚠️ Plazo de investigación VENCIDO (hace ' + Math.abs(info.dias) + ' días)');
         } else if (info.estado === 'proximo') {
-            alertas.push(`⏳ Plazo de investigación próximo a vencer (faltan ${info.dias} días)`);
+            alertas.push('⏳ Plazo de investigación próximo a vencer (faltan ' + info.dias + ' días)');
         }
         if (causa.rebeldia && causa.rebeldia.activa) {
             alertas.push('🔴 Imputado declarado en rebeldía');
             if (causa.rebeldia.levantamiento) {
-                alertas.push(`✅ Rebeldía levantada el ${new Date(causa.rebeldia.levantamiento).toLocaleDateString('es-ES')} – ${causa.rebeldia.diasSuspendidos || ''} suspendidos`);
+                alertas.push('✅ Rebeldía levantada el ' + new Date(causa.rebeldia.levantamiento).toLocaleDateString('es-ES') + ' – ' + (causa.rebeldia.diasSuspendidos || '') + ' suspendidos');
             }
             if (causa.rebeldia.nuevaFechaRequerir) {
-                alertas.push(`📅 Fecha de requerimiento conclusivo: ${causa.rebeldia.nuevaFechaRequerir}`);
+                alertas.push('📅 Fecha de requerimiento conclusivo: ' + causa.rebeldia.nuevaFechaRequerir);
             }
         }
         if (causa.hechos) {
-            causa.hechos.forEach(h => {
-                const config = CONFIG.hechos[h.hecho];
+            causa.hechos.forEach(function(h) {
+                var config = CONFIG.hechos[h.hecho];
                 if (config && config.incisos && config.incisos.length > 0 && (!h.incisos || h.incisos.length === 0)) {
-                    alertas.push(`⚠️ El hecho "${config.label}" no tiene incisos seleccionados`);
+                    alertas.push('⚠️ El hecho "' + config.label + '" no tiene incisos seleccionados');
                 }
             });
         }
@@ -2932,58 +2901,60 @@
         if (alertas.length === 0) {
             return '<div style="color:#2a7d4f;font-weight:500;">✅ No se detectaron alertas.</div>';
         } else {
-            return '<ul style="padding-left:20px;margin:0;">' + alertas.map(a => `<li style="font-size:14px;padding:2px 0;">${a}</li>`).join('') + '</ul>';
+            return '<ul style="padding-left:20px;margin:0;">' + alertas.map(function(a) { return '<li style="font-size:14px;padding:2px 0;">' + a + '</li>'; }).join('') + '</ul>';
         }
     };
 
     window.imprimirInforme = function() {
         window.actualizarInforme();
-        setTimeout(() => { window.print(); }, 300);
+        setTimeout(function() { window.print(); }, 300);
     };
 
-    // ===== ALERTAS (pestaña 6) =====
+    // ----- ALERTAS (pestaña 6) -----
     window.actualizarAlertas = function() {
-        const container = document.getElementById('alertas-contenido');
-        const causa = window.getCausaActual();
+        var container = document.getElementById('alertas-contenido');
+        var causa = window.getCausaActual();
         if (!causa) {
             container.innerHTML = '<p class="text-muted">Cargue o seleccione una causa para ver las alertas y resúmenes.</p>';
             return;
         }
 
-        function createCard(title, content, defaultOpen = true) {
-            const id = 'alert-card-' + title.replace(/\s/g, '');
+        function createCard(title, content, defaultOpen) {
+            defaultOpen = (defaultOpen !== undefined) ? defaultOpen : true;
+            var id = 'alert-card-' + title.replace(/\s/g, '');
             return `
                 <div class="alert-card">
-                    <div class="alert-card-header" onclick="window.toggleAlertCard('${id}')">
-                        <h4><i class="fas fa-chevron-right" id="${id}-icon" style="transform:${defaultOpen ? 'rotate(90deg)' : 'rotate(0deg)'};transition:0.2s;"></i> ${title}</h4>
+                    <div class="alert-card-header" onclick="window.toggleAlertCard('' + id + '')">
+                        <h4><i class="fas fa-chevron-right" id="' + id + '-icon" style="transform:' + (defaultOpen ? 'rotate(90deg)' : 'rotate(0deg)') + ';transition:0.2s;"></i> ' + title + '</h4>
                         <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
                     </div>
-                    <div class="alert-card-body ${defaultOpen ? '' : 'collapsed'}" id="${id}">
-                        ${content}
+                    <div class="alert-card-body ' + (defaultOpen ? '' : 'collapsed') + '" id="' + id + '">
+                        ' + content + '
                     </div>
                 </div>
             `;
         }
-        function getAlertItem(label, value, badgeClass = '') {
-            return `<div class="alert-item"><span class="label">${label}</span><span class="value ${badgeClass}">${value || 'N/D'}</span></div>`;
+        function getAlertItem(label, value, badgeClass) {
+            badgeClass = badgeClass || '';
+            return '<div class="alert-item"><span class="label">' + label + '</span><span class="value ' + badgeClass + '">' + (value || 'N/D') + '</span></div>';
         }
 
-        let html = '<div style="display:flex;flex-direction:column;gap:10px;">';
+        var html = '<div style="display:flex;flex-direction:column;gap:10px;">';
 
-        let intContent = '';
+        var intContent = '';
         if (causa.intervenciones) {
-            const tipo = causa.intervenciones.tipo;
+            var tipo = causa.intervenciones.tipo;
             if (tipo === 'cuestionario_riesgo') {
                 intContent += getAlertItem('Tipo', 'Cuestionario de Riesgo (Art. 229)');
                 intContent += getAlertItem('Puntaje', (causa.intervenciones.puntaje || 0) + ' puntos');
-                const nivel = causa.intervenciones.nivel || 'No definido';
-                const nivelClass = nivel === 'ALTO' ? 'badge-danger' : nivel === 'MEDIO' ? 'badge-warning' : 'badge-success';
+                var nivel = causa.intervenciones.nivel || 'No definido';
+                var nivelClass = nivel === 'ALTO' ? 'badge-danger' : nivel === 'MEDIO' ? 'badge-warning' : 'badge-success';
                 intContent += getAlertItem('Nivel de Riesgo', nivel, nivelClass);
             } else if (tipo === 'liquidacion_alimentos') {
                 intContent += getAlertItem('Tipo', 'Liquidación de Alimentos (Art. 225)');
-                const montoDebido = causa.intervenciones.montoDebido || 0;
-                const montoAbonado = causa.intervenciones.montoAbonado || 0;
-                const saldo = montoDebido - montoAbonado;
+                var montoDebido = causa.intervenciones.montoDebido || 0;
+                var montoAbonado = causa.intervenciones.montoAbonado || 0;
+                var saldo = montoDebido - montoAbonado;
                 intContent += getAlertItem('Monto debido', montoDebido.toLocaleString() + ' Gs.');
                 intContent += getAlertItem('Monto abonado', montoAbonado.toLocaleString() + ' Gs.');
                 intContent += getAlertItem('Saldo', saldo.toLocaleString() + ' Gs.', saldo > 0 ? 'badge-danger' : saldo < 0 ? 'badge-success' : '');
@@ -3004,56 +2975,56 @@
         }
         html += createCard('Intervenciones', intContent, true);
 
-        let addContent = '';
+        var addContent = '';
         if (causa.intervencionesAdicionales && causa.intervencionesAdicionales.length > 0) {
-            causa.intervencionesAdicionales.forEach(item => {
-                let tipoLabel = '';
+            causa.intervencionesAdicionales.forEach(function(item) {
+                var tipoLabel = '';
                 if (item.tipo === 'eval_psicologica') tipoLabel = 'Evaluación Psicológica';
                 else if (item.tipo === 'eval_medica') tipoLabel = 'Evaluación Médica';
                 else if (item.tipo === 'otra') tipoLabel = 'Otra';
-                addContent += `<div style="padding:4px 0;font-size:13px;border-bottom:1px solid #f0f2f5;">${tipoLabel} - ${item.fecha || 'Sin fecha'} ${item.profesional ? ' (Prof. '+item.profesional+')' : ''}</div>`;
+                addContent += '<div style="padding:4px 0;font-size:13px;border-bottom:1px solid #f0f2f5;">' + tipoLabel + ' - ' + (item.fecha || 'Sin fecha') + (item.profesional ? ' (Prof. ' + item.profesional + ')' : '') + '</div>';
             });
         } else {
             addContent = '<span class="text-muted">No hay intervenciones adicionales.</span>';
         }
         html += createCard('Intervenciones Adicionales', addContent, true);
 
-        let reincContent = '';
+        var reincContent = '';
         reincContent += getAlertItem('¿Reincidente?', causa.reincidente ? 'Sí' : 'No');
         if (causa.reincidente) reincContent += getAlertItem('Número de veces', causa.numReincidencias || 0);
         html += createCard('Reincidencia', reincContent, true);
 
-        let testContent = '';
+        var testContent = '';
         if (causa.testigos && causa.testigos.length > 0) {
-            testContent += `<div style="font-size:13px;color:#333;">${causa.testigos.map(t => t.nombre || 'Sin nombre').join(', ')}</div>`;
+            testContent += '<div style="font-size:13px;color:#333;">' + causa.testigos.map(function(t) { return t.nombre || 'Sin nombre'; }).join(', ') + '</div>';
             testContent += getAlertItem('Cantidad', causa.testigos.length);
         } else {
             testContent += getAlertItem('Testigos', 'No registrados');
         }
         html += createCard('Testigos', testContent, true);
 
-        let alertasContent = '';
-        let alertas = [];
-        const info = window.calcularDiasRestantes(causa);
+        var alertasContent = '';
+        var alertas = [];
+        var info = window.calcularDiasRestantes(causa);
         if (info.estado === 'vencido') {
-            alertas.push(`⚠️ Plazo de investigación VENCIDO (hace ${Math.abs(info.dias)} días)`);
+            alertas.push('⚠️ Plazo de investigación VENCIDO (hace ' + Math.abs(info.dias) + ' días)');
         } else if (info.estado === 'proximo') {
-            alertas.push(`⏳ Plazo de investigación próximo a vencer (faltan ${info.dias} días)`);
+            alertas.push('⏳ Plazo de investigación próximo a vencer (faltan ' + info.dias + ' días)');
         }
         if (causa.rebeldia && causa.rebeldia.activa) {
             alertas.push('🔴 Imputado declarado en rebeldía');
             if (causa.rebeldia.levantamiento) {
-                alertas.push(`✅ Rebeldía levantada el ${new Date(causa.rebeldia.levantamiento).toLocaleDateString('es-ES')} – ${causa.rebeldia.diasSuspendidos || ''} suspendidos`);
+                alertas.push('✅ Rebeldía levantada el ' + new Date(causa.rebeldia.levantamiento).toLocaleDateString('es-ES') + ' – ' + (causa.rebeldia.diasSuspendidos || '') + ' suspendidos');
             }
             if (causa.rebeldia.nuevaFechaRequerir) {
-                alertas.push(`📅 Fecha de requerimiento conclusivo: ${causa.rebeldia.nuevaFechaRequerir}`);
+                alertas.push('📅 Fecha de requerimiento conclusivo: ' + causa.rebeldia.nuevaFechaRequerir);
             }
         }
         if (causa.hechos) {
-            causa.hechos.forEach(h => {
-                const config = CONFIG.hechos[h.hecho];
+            causa.hechos.forEach(function(h) {
+                var config = CONFIG.hechos[h.hecho];
                 if (config && config.incisos && config.incisos.length > 0 && (!h.incisos || h.incisos.length === 0)) {
-                    alertas.push(`⚠️ El hecho "${config.label}" no tiene incisos seleccionados`);
+                    alertas.push('⚠️ El hecho "' + config.label + '" no tiene incisos seleccionados');
                 }
             });
         }
@@ -3067,7 +3038,7 @@
             alertasContent = '<div style="color:#2a7d4f;font-weight:500;">✅ No se detectaron alertas. Todos los datos están en orden.</div>';
         } else {
             alertasContent = '<ul style="padding-left:20px;margin:0;">';
-            alertas.forEach(a => { alertasContent += `<li style="font-size:14px;padding:2px 0;">${a}</li>`; });
+            alertas.forEach(function(a) { alertasContent += '<li style="font-size:14px;padding:2px 0;">' + a + '</li>'; });
             alertasContent += '</ul>';
         }
         html += createCard('Alertas', alertasContent, true);
@@ -3077,8 +3048,8 @@
     };
 
     window.toggleAlertCard = function(id) {
-        const body = document.getElementById(id);
-        const icon = document.getElementById(id + '-icon');
+        var body = document.getElementById(id);
+        var icon = document.getElementById(id + '-icon');
         if (body) {
             body.classList.toggle('collapsed');
             if (icon) {
@@ -3087,40 +3058,42 @@
         }
     };
 
-    // ===== GUARDAR Y CARGAR DATOS (localStorage) =====
+    // ============================================================
+    // GUARDAR Y CARGAR DATOS (localStorage)
+    // ============================================================
     window.guardarDatos = function() {
         try { localStorage.setItem('causasPenalesMP', JSON.stringify(causas)); } catch(e) { console.error(e); }
     };
 
     window.cargarDatos = function() {
         try {
-            const data = localStorage.getItem('causasPenalesMP');
+            var data = localStorage.getItem('causasPenalesMP');
             if (data) { causas = JSON.parse(data); }
             else { causas = []; window.guardarDatos(); }
         } catch(e) { causas = []; }
     };
 
     window.exportarDatos = function() {
-        const blob = new Blob([JSON.stringify(causas, null, 2)], { type:'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        var blob = new Blob([JSON.stringify(causas, null, 2)], { type:'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
         a.href = url;
-        a.download = `causas_${new Date().toISOString().slice(0,10)}.json`;
+        a.download = 'causas_' + new Date().toISOString().slice(0,10) + '.json';
         a.click();
         URL.revokeObjectURL(url);
     };
 
     window.importarDatos = function() {
-        const input = document.createElement('input');
+        var input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json';
         input.onchange = function(e) {
-            const file = e.target.files[0];
+            var file = e.target.files[0];
             if (!file) return;
-            const reader = new FileReader();
+            var reader = new FileReader();
             reader.onload = function(ev) {
                 try {
-                    const data = JSON.parse(ev.target.result);
+                    var data = JSON.parse(ev.target.result);
                     if (Array.isArray(data)) {
                         causas = data;
                         window.guardarDatos();
@@ -3135,15 +3108,15 @@
     };
 
     // ============================================================
-    // 11. FUNCIONES DE AUTENTICACIÓN (definidas al final para que tengan acceso al estado)
+    // FUNCIONES DE AUTENTICACIÓN (CON SINTAXIS COMPAT)
     // ============================================================
     window.login = function() {
-        const email = document.getElementById('email-input').value;
-        const password = document.getElementById('password-input').value;
-        const status = document.getElementById('auth-status');
+        var email = document.getElementById('email-input').value;
+        var password = document.getElementById('password-input').value;
+        var status = document.getElementById('auth-status');
         status.textContent = 'Iniciando sesión...';
-        signInWithEmailAndPassword(auth, email, password)
-            .then(() => {
+        auth.signInWithEmailAndPassword(email, password)
+            .then(function() {
                 status.textContent = '✅ Sesión iniciada.';
                 document.getElementById('auth-container').style.display = 'none';
                 document.getElementById('app-container').style.display = 'block';
@@ -3151,32 +3124,32 @@
                 window.renderizarCausas();
                 window.verificarPlazosYAlertar();
             })
-            .catch(error => {
+            .catch(function(error) {
                 status.textContent = '❌ ' + error.message;
             });
     };
 
     window.registrar = function() {
-        const email = document.getElementById('reg-email').value;
-        const password = document.getElementById('reg-password').value;
-        const status = document.getElementById('auth-status');
+        var email = document.getElementById('reg-email').value;
+        var password = document.getElementById('reg-password').value;
+        var status = document.getElementById('auth-status');
         if (password.length < 6) {
             status.textContent = '❌ La contraseña debe tener al menos 6 caracteres.';
             return;
         }
         status.textContent = 'Registrando usuario...';
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(() => {
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(function() {
                 status.textContent = '✅ Usuario registrado. Inicia sesión.';
                 window.mostrarLogin();
             })
-            .catch(error => {
+            .catch(function(error) {
                 status.textContent = '❌ ' + error.message;
             });
     };
 
     window.logout = function() {
-        signOut(auth).then(() => {
+        auth.signOut().then(function() {
             document.getElementById('app-container').style.display = 'none';
             document.getElementById('auth-container').style.display = 'flex';
             document.getElementById('email-input').value = '';
@@ -3198,9 +3171,9 @@
     };
 
     // ============================================================
-    // 12. OBSERVADOR DE AUTENTICACIÓN
+    // OBSERVADOR DE AUTENTICACIÓN
     // ============================================================
-    onAuthStateChanged(auth, user => {
+    auth.onAuthStateChanged(function(user) {
         if (user) {
             document.getElementById('auth-container').style.display = 'none';
             document.getElementById('app-container').style.display = 'block';
@@ -3215,13 +3188,13 @@
     });
 
     // ============================================================
-    // 13. INICIALIZAR
+    // INICIALIZAR
     // ============================================================
     window.renderizarCausas();
     window.actualizarIncisos();
     window.actualizarTab3();
-    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (versión corregida).');
-    console.log(`Causas registradas: ${causas.length}`);
+    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (versión compat).');
+    console.log('Causas registradas:', causas.length);
 </script>
 </body>
 </html>
