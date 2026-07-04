@@ -6,7 +6,7 @@
     <title>Sistema de Gestión de Causas Penales - MP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <!-- ===== FIREBASE SDK (VERSIÓN COMPAT, COMO EN EL PRIMER CÓDIGO) ===== -->
+    <!-- ===== FIREBASE SDK (VERSIÓN COMPAT) ===== -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
@@ -19,6 +19,35 @@
         .header h1 { font-size:22px; font-weight:600; }
         .header h1 i { color:#d4a843; margin-right:10px; }
         .header .subtitle { font-size:14px; opacity:0.8; font-weight:300; }
+
+        /* ===== BANNER DE AVISO ===== */
+        .aviso-banner {
+            background: #fff3cd;
+            border-bottom: 2px solid #ffc107;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 14px;
+            color: #856404;
+        }
+        .aviso-banner .aviso-texto i {
+            margin-right: 8px;
+        }
+        .aviso-banner .aviso-cerrar {
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #856404;
+            cursor: pointer;
+            padding: 0 8px;
+        }
+        .aviso-banner .aviso-cerrar:hover {
+            color: #b33c3c;
+        }
+
         .toolbar { background:#f8f9fa; padding:15px 30px; border-bottom:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
         .toolbar-left { display:flex; gap:10px; flex-wrap:wrap; }
         .toolbar-right { display:flex; gap:10px; align-items:center; }
@@ -149,6 +178,7 @@
             .header { background:#1a2a4a !important; color:#fff !important; -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:10px 20px; }
             .header h1 { font-size:16pt; }
             .header .subtitle { font-size:10pt; }
+            .aviso-banner { display:none !important; }
             .toolbar, .causa-grid, .tab-btn, .no-print, .btn, .footer-seccion, .search-box { display:none !important; }
             .form-container { display:block !important; border:none !important; padding:0 !important; margin:0 !important; background:#fff !important; opacity:1 !important; transform:none !important; }
             .tab-pane { display:block !important; padding:5px 0 !important; }
@@ -360,6 +390,16 @@
         <h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1>
         <span class="subtitle">Ministerio Público – Sistema de Gestión Integral</span>
     </header>
+
+    <!-- ===== BANNER DE AVISO ===== -->
+    <div class="aviso-banner" id="aviso-banner">
+        <div class="aviso-texto">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>AVISO IMPORTANTE:</strong> Los plazos y la carga de datos son <strong>meramente estimativos</strong>. Para confirmar fechas y constancias, revise la <strong>carpeta física</strong> correspondiente.
+        </div>
+        <button class="aviso-cerrar" onclick="window.cerrarAviso()" title="Cerrar aviso">&times;</button>
+    </div>
+
     <div class="toolbar no-print">
         <div class="toolbar-left">
             <button class="btn btn-primary" onclick="window.nuevaCausa()"><i class="fas fa-plus"></i> Nueva Causa</button>
@@ -511,7 +551,7 @@
                 <div class="sub-seccion">
                     <h4>Hechos Punibles</h4>
                     <div class="flex-wrap">
-                        <select id="hecho-selector" style="flex:1;min-width:200px;">
+                        <select id="hecho-selector" style="flex:1;min-width:200px;" onchange="window.actualizarIncisos()">
                             <option value="">-- Seleccionar hecho --</option>
                             <option value="162">Art. 162 – Hurto</option>
                             <option value="166">Art. 166 – Robo</option>
@@ -728,7 +768,7 @@
 <!-- ============================================================ -->
 <script>
     // ============================================================
-    // CONFIGURACIÓN DE FIREBASE (EXACTAMENTE LA MISMA QUE EN EL PRIMER CÓDIGO)
+    // CONFIGURACIÓN DE FIREBASE
     // ============================================================
     var firebaseConfig = {
         apiKey: "AIzaSyBpxzHKYIh1zQAw5z8ezQL5pZRVkTHAlb8",
@@ -739,9 +779,25 @@
         appId: "1:593874362548:web:321ac543b084258dc2b7e1"
     };
 
-    // Inicializar Firebase (versión compat)
     firebase.initializeApp(firebaseConfig);
     var auth = firebase.auth();
+
+    // ============================================================
+    // FUNCIÓN PARA CERRAR EL BANNER DE AVISO (con localStorage)
+    // ============================================================
+    window.cerrarAviso = function() {
+        document.getElementById('aviso-banner').style.display = 'none';
+        try { localStorage.setItem('avisoCerrado', 'true'); } catch(e) {}
+    };
+
+    // Mostrar el banner solo si no se ha cerrado antes
+    (function() {
+        try {
+            if (localStorage.getItem('avisoCerrado') === 'true') {
+                document.getElementById('aviso-banner').style.display = 'none';
+            }
+        } catch(e) {}
+    })();
 
     // ============================================================
     // CONFIGURACIÓN DE HECHOS PUNIBLES (COMPLETA)
@@ -1115,7 +1171,6 @@
         container.innerHTML = '<p class="text-muted">Usuarios gestionados directamente desde Firebase Console.</p>';
     };
 
-    // ===== FUNCIONES DEL MODAL DE RENOVAR (placeholders) =====
     window.cerrarModalRenovar = function() {
         document.getElementById('modal-renovar').classList.remove('active');
     };
@@ -3193,7 +3248,7 @@
     window.renderizarCausas();
     window.actualizarIncisos();
     window.actualizarTab3();
-    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (versión compat).');
+    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (versión compat con aviso).');
     console.log('Causas registradas:', causas.length);
 </script>
 </body>
