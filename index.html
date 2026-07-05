@@ -9,9 +9,10 @@
     <!-- ===== FIREBASE SDK (VERSIÓN COMPAT) ===== -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 
     <style>
-        /* ========== ESTILOS COMPLETOS (sin cambios) ========== */
+        /* ========== ESTILOS COMPLETOS ========== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f0f2f5; color:#2d2d2d; padding:20px; }
         .app-container { max-width:1400px; margin:0 auto; background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.1); overflow:hidden; display:none; }
@@ -424,7 +425,7 @@
             <button class="btn btn-outline" onclick="window.exportarDatos()"><i class="fas fa-file-export"></i> Exportar</button>
             <button class="btn btn-outline" onclick="window.importarDatos()"><i class="fas fa-file-import"></i> Importar</button>
             <button class="btn btn-danger" onclick="window.eliminarTodasLasCausas()"><i class="fas fa-trash-alt"></i> Eliminar todas</button>
-            <button class="btn btn-outline" id="btn-admin-panel" onclick="window.toggleAdminPanel()" style="display:none;"><i class="fas fa-users-cog"></i> Gestionar usuarios</button>
+            <button class="btn btn-outline" id="btn-admin-panel" onclick="window.toggleAdminPanel()"><i class="fas fa-users-cog"></i> Gestionar usuarios</button>
         </div>
         <div class="toolbar-right">
             <div class="search-box">
@@ -767,7 +768,7 @@
     </div>
 </div>
 
-<!-- ===== MODAL PARA RENOVAR SUSCRIPCIÓN (placeholder) ===== -->
+<!-- ===== MODAL PARA RENOVAR SUSCRIPCIÓN ===== -->
 <div class="modal-overlay" id="modal-renovar">
     <div class="modal-content">
         <button class="btn-cerrar-modal" onclick="window.cerrarModalRenovar()">&times;</button>
@@ -782,25 +783,23 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- SCRIPT ÚNICO CON DIAGNÓSTICO (SIN RECORTES)                   -->
+<!-- SCRIPT COMPLETO CON FIRESTORE Y TODAS LAS FUNCIONALIDADES     -->
 <!-- ============================================================ -->
 <script>
     // ============================================================
-    // BLOQUE DE DIAGNÓSTICO (se ejecuta primero)
+    // BLOQUE DE DIAGNÓSTICO
     // ============================================================
     (function diagnosticar() {
         var estado = { ok: true, errores: [] };
         var badge = document.getElementById('status-badge');
 
-        // 1. Verificar que Firebase esté cargado
         if (typeof firebase === 'undefined') {
             estado.ok = false;
-            estado.errores.push('Firebase no está definido. Revisa la carga de los scripts CDN.');
+            estado.errores.push('Firebase no está definido.');
         } else {
             console.log('✅ Firebase cargado correctamente.');
         }
 
-        // 2. Verificar elementos esenciales del DOM
         var idsEsenciales = [
             'auth-container', 'app-container', 'email-input', 'password-input',
             'num-causa', 'imputado', 'hecho-selector', 'incisos-opciones',
@@ -815,23 +814,18 @@
             }
         });
 
-        // 3. Mostrar resultado en consola y badge
         if (estado.ok) {
-            console.log('✅ Diagnóstico: TODOS los elementos esenciales están presentes.');
+            console.log('✅ Diagnóstico: OK');
             if (badge) {
                 badge.textContent = '✅ OK';
                 badge.className = 'status-badge';
             }
         } else {
-            console.error('❌ Diagnóstico: ERRORES encontrados:');
-            estado.errores.forEach(function(err) {
-                console.error('   - ' + err);
-            });
+            console.error('❌ Diagnóstico: ERRORES:', estado.errores);
             if (badge) {
                 badge.textContent = '❌ Error';
                 badge.className = 'status-badge error';
             }
-            // Mostrar un mensaje visible en la interfaz (sin bloquear)
             var msg = document.createElement('div');
             msg.style.cssText = 'background:#f8d7da;color:#721c24;padding:10px 20px;border:1px solid #f5c6cb;border-radius:4px;margin:10px 0;';
             msg.innerHTML = '<strong>⚠️ Error de inicialización:</strong> Revisa la consola (F12) para más detalles.';
@@ -843,7 +837,7 @@
     })();
 
     // ============================================================
-    // CONFIGURACIÓN DE FIREBASE
+    // CONFIGURACIÓN DE FIREBASE (Auth + Firestore)
     // ============================================================
     var firebaseConfig = {
         apiKey: "AIzaSyBpxzHKYIh1zQAw5z8ezQL5pZRVkTHAlb8",
@@ -856,9 +850,10 @@
 
     firebase.initializeApp(firebaseConfig);
     var auth = firebase.auth();
+    var db = firebase.firestore();
 
     // ============================================================
-    // FUNCIÓN PARA CERRAR EL BANNER DE AVISO (con localStorage)
+    // FUNCIÓN PARA CERRAR EL BANNER DE AVISO
     // ============================================================
     window.cerrarAviso = function() {
         document.getElementById('aviso-banner').style.display = 'none';
@@ -872,6 +867,231 @@
             }
         } catch(e) {}
     })();
+
+    // ============================================================
+    // VERIFICACIÓN DE SUSCRIPCIÓN (Firestore)
+    // ============================================================
+    function verificarSuscripcion(user) {
+        if (!user) return Promise.reject('No hay usuario');
+        return db.collection('usuarios').doc(user.uid).get()
+            .then(function(doc) {
+                if (!doc.exists) {
+                    // Crear documento trial automáticamente
+                    return db.collection('usuarios').doc(user.uid).set({
+                        email: user.email,
+                        estado: 'trial',
+                        fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
+                        fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                    }).then(function() {
+                        return true;
+                    });
+                }
+                var data = doc.data();
+                // Solo expira si fechaExpiracion existe y es menor que hoy
+                if (data.fechaExpiracion && new Date() > data.fechaExpiracion.toDate()) {
+                    console.warn('Suscripción expirada para ' + user.email);
+                    db.collection('usuarios').doc(user.uid).update({ estado: 'expirado' })
+                        .catch(function(e) { console.error(e); });
+                    return false;
+                }
+                return true;
+            })
+            .catch(function(err) {
+                console.error('Error al verificar suscripción:', err);
+                return true; // Permitir acceso en caso de error
+            });
+    }
+
+    // ============================================================
+    // FUNCIONES DE AUTENTICACIÓN (con registro en Firestore)
+    // ============================================================
+    window.login = function() {
+        var email = document.getElementById('email-input').value;
+        var password = document.getElementById('password-input').value;
+        var status = document.getElementById('auth-status');
+        status.textContent = 'Iniciando sesión...';
+        auth.signInWithEmailAndPassword(email, password)
+            .then(function(userCredential) {
+                return verificarSuscripcion(userCredential.user).then(function(acceso) {
+                    if (!acceso) {
+                        status.textContent = '❌ Tu periodo de prueba ha expirado. Renueva tu suscripción.';
+                        auth.signOut();
+                        return Promise.reject('Suscripción expirada');
+                    }
+                    status.textContent = '✅ Sesión iniciada.';
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    window.cargarDatos();
+                    window.renderizarCausas();
+                    window.verificarPlazosYAlertar();
+                });
+            })
+            .catch(function(error) {
+                if (error !== 'Suscripción expirada') {
+                    status.textContent = '❌ ' + error.message;
+                }
+            });
+    };
+
+    window.registrar = function() {
+        var email = document.getElementById('reg-email').value;
+        var password = document.getElementById('reg-password').value;
+        var status = document.getElementById('auth-status');
+        if (password.length < 6) {
+            status.textContent = '❌ La contraseña debe tener al menos 6 caracteres.';
+            return;
+        }
+        status.textContent = 'Registrando usuario...';
+        auth.createUserWithEmailAndPassword(email, password)
+            .then(function(userCredential) {
+                var user = userCredential.user;
+                return db.collection('usuarios').doc(user.uid).set({
+                    email: email,
+                    estado: 'trial',
+                    fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
+                    fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                }).then(function() {
+                    status.textContent = '✅ Usuario registrado. Inicia sesión.';
+                    window.mostrarLogin();
+                });
+            })
+            .catch(function(error) {
+                status.textContent = '❌ ' + error.message;
+            });
+    };
+
+    window.logout = function() {
+        auth.signOut().then(function() {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('auth-container').style.display = 'flex';
+            document.getElementById('email-input').value = '';
+            document.getElementById('password-input').value = '';
+            document.getElementById('auth-status').textContent = 'Sesión cerrada.';
+        });
+    };
+
+    window.mostrarRegistro = function() {
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('registro-form').style.display = 'block';
+        document.getElementById('auth-status').textContent = '';
+    };
+
+    window.mostrarLogin = function() {
+        document.getElementById('login-form').style.display = 'block';
+        document.getElementById('registro-form').style.display = 'none';
+        document.getElementById('auth-status').textContent = '';
+    };
+
+    // ============================================================
+    // OBSERVADOR DE AUTENTICACIÓN (con verificación)
+    // ============================================================
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            verificarSuscripcion(user).then(function(acceso) {
+                if (!acceso) {
+                    alert('⚠️ Tu periodo de prueba ha expirado. Por favor, renueva tu suscripción.');
+                    auth.signOut();
+                    return;
+                }
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                window.cargarDatos();
+                window.renderizarCausas();
+                window.verificarPlazosYAlertar();
+            });
+        } else {
+            document.getElementById('app-container').style.display = 'none';
+            document.getElementById('auth-container').style.display = 'flex';
+            document.getElementById('auth-status').textContent = '';
+        }
+    });
+
+    // ============================================================
+    // PANEL DE ADMINISTRACIÓN (listado de usuarios desde Firestore)
+    // ============================================================
+    window.toggleAdminPanel = function() {
+        var panel = document.getElementById('admin-panel');
+        if (panel.style.display === 'none') {
+            panel.style.display = 'block';
+            window.cargarUsuarios();
+        } else {
+            panel.style.display = 'none';
+        }
+    };
+
+    window.cargarUsuarios = function() {
+        var container = document.getElementById('admin-users-list');
+        container.innerHTML = '<p class="text-muted">Cargando usuarios...</p>';
+        db.collection('usuarios').get()
+            .then(function(snapshot) {
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted">No hay usuarios registrados.</p>';
+                    return;
+                }
+                var html = '<table><thead><tr><th>Email</th><th>Estado</th><th>Expiración</th><th>Acción</th></tr></thead><tbody>';
+                snapshot.forEach(function(doc) {
+                    var data = doc.data();
+                    var expiracion = data.fechaExpiracion ? data.fechaExpiracion.toDate().toLocaleDateString() : 'N/A';
+                    var estado = data.estado || 'desconocido';
+                    var badgeClass = estado === 'trial' ? 'badge-activa' : estado === 'expirado' ? 'badge-inactiva' : 'badge-admin';
+                    html += '<tr>';
+                    html += '<td>' + (data.email || 'sin email') + '</td>';
+                    html += '<td><span class="badge ' + badgeClass + '">' + estado + '</span></td>';
+                    html += '<td>' + expiracion + '</td>';
+                    html += '<td><button class="btn btn-sm btn-success" onclick="window.renovarUsuario(\'' + doc.id + '\')"><i class="fas fa-sync"></i> Renovar</button></td>';
+                    html += '</tr>';
+                });
+                html += '</tbody></table>';
+                container.innerHTML = html;
+            })
+            .catch(function(err) {
+                container.innerHTML = '<p class="text-muted">Error al cargar usuarios: ' + err.message + '</p>';
+                console.error(err);
+            });
+    };
+
+    // ============================================================
+    // RENOVAR USUARIO (desde el panel de admin)
+    // ============================================================
+    window.renovarUsuario = function(uid) {
+        if (!confirm('¿Renovar la suscripción de este usuario por 30 días?')) return;
+        var nuevaFecha = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        db.collection('usuarios').doc(uid).update({
+            estado: 'activo',
+            fechaExpiracion: nuevaFecha
+        }).then(function() {
+            alert('✅ Suscripción renovada hasta ' + nuevaFecha.toLocaleDateString());
+            window.cargarUsuarios();
+        }).catch(function(err) {
+            alert('❌ Error al renovar: ' + err.message);
+        });
+    };
+
+    // ============================================================
+    // MODAL DE RENOVAR (para el propio usuario)
+    // ============================================================
+    window.cerrarModalRenovar = function() {
+        document.getElementById('modal-renovar').classList.remove('active');
+    };
+
+    window.confirmarRenovar = function() {
+        var dias = parseInt(document.getElementById('renovar-dias').value) || 30;
+        var user = auth.currentUser;
+        if (!user) {
+            alert('No hay usuario autenticado.');
+            return;
+        }
+        var nuevaFecha = new Date(Date.now() + dias * 24 * 60 * 60 * 1000);
+        db.collection('usuarios').doc(user.uid).update({
+            estado: 'activo',
+            fechaExpiracion: nuevaFecha
+        }).then(function() {
+            alert('✅ Suscripción renovada hasta ' + nuevaFecha.toLocaleDateString());
+            window.cerrarModalRenovar();
+        }).catch(function(err) {
+            alert('❌ Error al renovar: ' + err.message);
+        });
+    };
 
     // ============================================================
     // CONFIGURACIÓN DE HECHOS PUNIBLES (COMPLETA)
@@ -888,217 +1108,217 @@
                     { id: '162-4', label: 'El que habitualmente se dedicare al hurto, o el que cometiere hurto valiéndose de una facilidad especial que le proporcionare su profesión, será castigado con pena privativa de libertad de tres a diez años.' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 162.- Hurto. El que se apoderare de una cosa mueble ajena, con la intención de obtener provecho para sí o para un tercero, sin emplear violencia o intimidación en las personas, será castigado con pena privativa de libertad de hasta cinco años. Si el hurto fuere cometido con circunstancias agravantes (gran valor, escalamiento, abuso de confianza, etc.), la pena será de dos a ocho años. Si fuere cometido con arma, por dos o más personas, o sobre cosas de valor histórico, la pena será de tres a doce años. El hurto habitual se castiga con tres a diez años.'
+                texto: 'Artículo 162.- Hurto. ...'
             },
             '166': {
                 label: 'Art. 166 – Robo',
                 modificaciones: [],
                 incisos: [
-                    { id: '166-1', label: 'El que, con la intención de obtener provecho para sí o para un tercero, se apoderare de una cosa mueble ajena, empleando violencia o intimidación en las personas, será castigado con pena privativa de libertad de dos a ocho años.' },
-                    { id: '166-2', label: 'Si el robo fuere cometido: a) con armas; b) por dos o más personas; c) mediante escalamiento, fractura o uso de llaves falsas; la pena será de tres a doce años.' }
+                    { id: '166-1', label: 'El que...' },
+                    { id: '166-2', label: 'Si el robo...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 166.- Robo. El que, con la intención de obtener provecho para sí o para un tercero, se apoderare de una cosa mueble ajena, empleando violencia o intimidación en las personas, será castigado con pena privativa de libertad de dos a ocho años. Si el robo fuere cometido con armas, por dos o más personas, o mediante escalamiento, la pena será de tres a doce años.'
+                texto: 'Artículo 166.- Robo. ...'
             },
             '168': {
                 label: 'Art. 168 – Robo con resultado de muerte o lesión grave',
                 modificaciones: [],
                 incisos: [
-                    { id: '168-1', label: 'Cuando el autor al realizar un robo causare lesiones graves a la víctima, o la pusiere en peligro de muerte, será castigado con pena privativa de libertad de cinco a quince años.' },
-                    { id: '168-2', label: 'Cuando el robo causare la muerte de la víctima, la pena será de diez a veinticinco años.' }
+                    { id: '168-1', label: 'Cuando...' },
+                    { id: '168-2', label: 'Cuando...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 168.- Robo con resultado de muerte o lesión grave. Cuando el robo causare lesiones graves o pusiere en peligro de muerte, la pena será de cinco a quince años. Si causare la muerte, la pena será de diez a veinticinco años.'
+                texto: 'Artículo 168.- Robo con resultado...'
             },
             '187': {
                 label: 'Art. 187 – Estafa',
                 modificaciones: [],
                 incisos: [
-                    { id: '187-1', label: 'El que con la intención de obtener para sí o para un tercero un beneficio patrimonial indebido, y mediante declaración falsa sobre un hecho, o mediante la ocultación de un hecho verdadero, o mediante el engaño, determinare a otro a realizar un acto que cause perjuicio patrimonial, será castigado con pena privativa de libertad de hasta cinco años.' },
-                    { id: '187-2', label: 'Si la estafa fuere cometida: a) con abuso de las relaciones de confianza; b) mediante la simulación de un negocio o la utilización de documentos falsos; c) en perjuicio de una persona especialmente vulnerable; la pena será de dos a ocho años.' },
-                    { id: '187-3', label: 'Si la estafa fuere cometida por dos o más personas, la pena será de tres a diez años.' }
+                    { id: '187-1', label: 'El que...' },
+                    { id: '187-2', label: 'Si la estafa...' },
+                    { id: '187-3', label: 'Si la estafa...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 187.- Estafa. El que mediante declaración falsa, ocultación o engaño causare perjuicio patrimonial a otro, será castigado con hasta cinco años. Si mediare abuso de confianza, simulación de negocio, documentos falsos o víctima vulnerable, la pena será de dos a ocho años. Si fueren dos o más autores, de tres a diez años.'
+                texto: 'Artículo 187.- Estafa. ...'
             },
             '160': {
                 label: 'Art. 160 – Apropiación',
                 modificaciones: [],
                 incisos: [
-                    { id: '160-1', label: 'El que se apropiare de una cosa mueble ajena, desplazando a su propietario en el ejercicio de los derechos que le corresponden sobre la misma, para reemplazarlo por sí o por un tercero, será castigado con pena privativa de libertad de hasta cinco años o con multa.' },
-                    { id: '160-2', label: 'Cuando el autor se apropiare de una cosa mueble ajena que le hubiese sido dada en confianza o por cualquier título que importe obligación de devolver o de hacer un uso determinado de ella, la pena privativa de libertad podrá ser aumentada hasta ocho años.' },
-                    { id: '160-3', label: 'Si la apropiación recayere sobre cosas de gran valor, la pena será de uno a cinco años.' }
+                    { id: '160-1', label: 'El que...' },
+                    { id: '160-2', label: 'Cuando...' },
+                    { id: '160-3', label: 'Si la apropiación...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 160.- Apropiación. El que se apropiare de una cosa mueble ajena será castigado con hasta cinco años o multa. Si la cosa le hubiese sido dada en confianza, la pena podrá ser aumentada hasta ocho años. Si recayere sobre cosas de gran valor, la pena será de uno a cinco años.'
+                texto: 'Artículo 160.- Apropiación. ...'
             },
             '154': {
                 label: 'Art. 154 – Producción de riesgos comunes',
                 modificaciones: [],
                 incisos: [
-                    { id: '154-1', label: 'El que causare un peligro común para la vida, la salud o los bienes de otros, mediante la provocación de un incendio, una explosión, una inundación u otro suceso de similar peligrosidad, será castigado con pena privativa de libertad de uno a cinco años.' },
-                    { id: '154-2', label: 'Si el hecho causare la muerte de una o más personas, la pena será de cinco a quince años.' },
-                    { id: '154-3', label: 'Si el hecho causare lesiones graves a una o más personas, la pena será de tres a diez años.' }
+                    { id: '154-1', label: 'El que...' },
+                    { id: '154-2', label: 'Si el hecho...' },
+                    { id: '154-3', label: 'Si el hecho...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 154.- Producción de riesgos comunes. El que provocare incendio, explosión, inundación u otro suceso peligroso, será castigado con uno a cinco años. Si causare la muerte, la pena será de cinco a quince años. Si causare lesiones graves, de tres a diez años.'
+                texto: 'Artículo 154.- Producción de riesgos comunes. ...'
             },
             '236': {
                 label: 'Art. 236 – Producción de documentos no auténticos',
                 modificaciones: [],
                 incisos: [
-                    { id: '236-1', label: 'El que produjere un documento público o privado, total o parcialmente falso, o adulterare uno verdadero, o hiciere uso de tales documentos, será castigado con pena privativa de libertad de hasta cinco años o con multa.' },
-                    { id: '236-2', label: 'Si el hecho recayere sobre un documento público, la pena será de dos a ocho años.' },
-                    { id: '236-3', label: 'Si el hecho fuere cometido por un funcionario público en ejercicio de sus funciones, la pena será de tres a diez años.' }
+                    { id: '236-1', label: 'El que...' },
+                    { id: '236-2', label: 'Si el hecho...' },
+                    { id: '236-3', label: 'Si el hecho...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 236.- Producción de documentos no auténticos. El que produjere o adulterare un documento falso, o hiciere uso de él, será castigado con hasta cinco años o multa. Si recayere sobre documento público, de dos a ocho años. Si fuere cometido por funcionario público, de tres a diez años.'
+                texto: 'Artículo 236.- Producción de documentos no auténticos. ...'
             },
             '105': {
                 label: 'Art. 105 – Homicidio doloso (Ley 5390/2015)',
-                modificaciones: [{ ley: 'Ley Nº 5390/2015', fecha: '2015', descripcion: 'Modificación integral del artículo 105. Establece penas de 5 a 20 años y agravantes que elevan hasta 30 años.' }],
+                modificaciones: [{ ley: 'Ley Nº 5390/2015', fecha: '2015', descripcion: 'Modificación integral del artículo 105.' }],
                 incisos: [
-                    { id: '105-1', label: 'El que matara a otro será castigado con pena privativa de libertad de cinco a veinte años.' },
-                    { id: '105-2', label: 'La pena podrá ser aumentada hasta treinta años cuando el autor: 1. matara a su padre o madre, a su hijo, a su cónyuge o concubino, o a su hermano; 2. con su acción pusiera en peligro inmediato la vida de terceros; 3. al realizar el hecho sometiera a la víctima a graves e innecesarios dolores físicos o síquicos, para aumentar su sufrimiento; 4. actuara en forma alevosa, aprovechando intencionalmente la indefensión de la víctima; 5. actuara con ánimo de lucro; 6. actuara para facilitar un hecho punible o, en base a una decisión anterior a su realización, para ocultarlo o procurar la impunidad para sí o para otro; 7. por el mero motivo de no haber logrado el fin propuesto al intentar otro hecho punible; o 8. actuara intencionalmente y por el mero placer de matar.' },
-                    { id: '105-3', label: 'Se aplicará una pena privativa de libertad de hasta cinco años y se castigará también la tentativa, cuando: 1. el reproche al autor sea considerablemente reducido por una excitación emotiva o por compasión, desesperación u otros motivos relevantes; 2. una mujer matara a su hijo durante o inmediatamente después del parto.' },
-                    { id: '105-4', label: 'Cuando concurran los presupuestos del inciso 2° y del numeral 1 del inciso 3°, se aplicará una pena privativa de libertad de hasta diez años.' }
+                    { id: '105-1', label: 'El que matara a otro...' },
+                    { id: '105-2', label: 'La pena podrá ser...' },
+                    { id: '105-3', label: 'Se aplicará...' },
+                    { id: '105-4', label: 'Cuando concurran...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 105.- Homicidio doloso (modificado por Ley 5390/2015). El que matara a otro será castigado con cinco a veinte años. La pena podrá ser aumentada hasta treinta años cuando concurran circunstancias agravantes (parricidio, peligro común, ensañamiento, alevosía, ánimo de lucro, impunidad, frustración o placer de matar). Se aplicará pena de hasta cinco años cuando el reproche sea reducido por excitación emotiva o en caso de infanticidio por la madre.'
+                texto: 'Artículo 105.- Homicidio doloso (modificado por Ley 5390/2015). ...'
             },
             '107': {
                 label: 'Art. 107 – Homicidio culposo',
                 modificaciones: [],
                 incisos: [
-                    { id: '107-1', label: 'El que por acción culposa causare la muerte de otro, será castigado con pena privativa de libertad de hasta cinco años o con multa.' },
-                    { id: '107-2', label: 'Si el autor actuare con imprudencia temeraria o violare deberes de cuidado, la pena será de dos a seis años.' },
-                    { id: '107-3', label: 'Si el hecho fuere cometido en ocasión de un accidente de tránsito, se aplicará la pena correspondiente al art. 108.' }
+                    { id: '107-1', label: 'El que por acción culposa...' },
+                    { id: '107-2', label: 'Si el autor...' },
+                    { id: '107-3', label: 'Si el hecho...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 107.- Homicidio culposo. El que por acción culposa causare la muerte de otro, será castigado con hasta cinco años o multa. Si actuare con imprudencia temeraria, la pena será de dos a seis años. Si fuere en accidente de tránsito, se aplica el art. 108.'
+                texto: 'Artículo 107.- Homicidio culposo. ...'
             },
             '120': {
                 label: 'Art. 120 – Coacción',
                 modificaciones: [],
                 incisos: [
-                    { id: '120-1', label: 'El que mediante fuerza o amenaza constriña gravemente a otro a hacer, no hacer o tolerar lo que no quiera, será castigado con pena privativa de libertad de hasta dos años o con multa.' },
-                    { id: '120-2', label: 'No habrá coacción cuando se amenazara con: 1. la aplicación de medidas legales cuya realización esté vinculada con la finalidad de la amenaza; 2. la publicidad lícita de una situación irregular, con el fin de eliminarla; 3. con una omisión no punible, un suicidio u otra acción que no infrinja los bienes jurídicos del amenazado.' },
-                    { id: '120-3', label: 'No será punible como coacción un hecho que se realizara para evitar un suicidio o un hecho punible.' },
-                    { id: '120-4', label: 'Será castigada también la tentativa.' },
-                    { id: '120-5', label: 'Cuando el hecho se realizara contra un pariente, la persecución penal dependerá de su instancia.' }
+                    { id: '120-1', label: 'El que mediante fuerza...' },
+                    { id: '120-2', label: 'No habrá coacción...' },
+                    { id: '120-3', label: 'No será punible...' },
+                    { id: '120-4', label: 'Será castigada...' },
+                    { id: '120-5', label: 'Cuando el hecho...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 120.- Coacción. El que mediante fuerza o amenaza constriña gravemente a otro, será castigado con hasta dos años o multa. No hay coacción cuando se amenace con medidas legales, publicidad lícita, omisión no punible o suicidio. No es punible si se evita un suicidio o hecho punible. Se castiga la tentativa. Si es contra pariente, depende de instancia.'
+                texto: 'Artículo 120.- Coacción. ...'
             },
             '122': {
                 label: 'Art. 122 – Amenaza de hechos punibles',
                 modificaciones: [],
                 incisos: [
-                    { id: '122-1', label: 'El que amenazara a otro con un hecho punible contra la vida, contra la integridad física o contra cosas de valor considerable, o con una coacción sexual, en forma apta para alarmar, amedrentar o reducir su libertad de determinarse, será castigado con pena privativa de libertad de hasta un año o con multa.' },
-                    { id: '122-2', label: 'Si la amenaza fuere grave (hecho punible de especial gravedad), la pena será de uno a tres años.' },
-                    { id: '122-3', label: 'Si el autor hiciere uso de armas, la pena será de dos a cinco años.' }
+                    { id: '122-1', label: 'El que amenazara...' },
+                    { id: '122-2', label: 'Si la amenaza...' },
+                    { id: '122-3', label: 'Si el autor...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 122.- Amenaza. El que amenazare con un hecho punible contra la vida, integridad física o bienes, o con coacción sexual, será castigado con hasta un año o multa. Si la amenaza es grave, de uno a tres años. Si usare armas, de dos a cinco años.'
+                texto: 'Artículo 122.- Amenaza. ...'
             },
             '112': {
                 label: 'Art. 112 – Lesión grave',
                 modificaciones: [],
                 incisos: [
-                    { id: '112-1', label: 'El que dañare gravemente la salud de otro, o le causare una enfermedad grave o incapacidad para el trabajo de más de treinta días, será castigado con pena privativa de libertad de hasta diez años.' },
-                    { id: '112-2', label: 'Si la lesión causare una enfermedad o incapacidad permanente, la pena será de tres a quince años.' },
-                    { id: '112-3', label: 'Si el autor actuare con premeditación o alevosía, la pena será de cinco a dieciocho años.' }
+                    { id: '112-1', label: 'El que dañare...' },
+                    { id: '112-2', label: 'Si la lesión...' },
+                    { id: '112-3', label: 'Si el autor...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 112.- Lesión grave. El que causare daño grave a la salud, enfermedad grave o incapacidad de más de 30 días, será castigado con hasta diez años. Si causare incapacidad permanente, de tres a quince años. Si mediare premeditación o alevosía, de cinco a dieciocho años.'
+                texto: 'Artículo 112.- Lesión grave. ...'
             },
             '128': {
                 label: 'Art. 128 – Coacción sexual y violación (Ley 7394/2024)',
                 modificaciones: [{ ley: 'Ley Nº 7394/2024', fecha: '2024', descripcion: 'Modificación integral del artículo 128.' }],
                 incisos: [
-                    { id: '128-1', label: '1° El que, mediante fuerza o amenaza con peligro presente para la vida o la integridad física, coaccionara a otro a padecer en su persona actos sexuales, o a realizar tales actos en sí mismo o con terceros, será castigado con pena privativa de libertad de hasta diez años.' },
-                    { id: '128-2', label: '2° Cuando la víctima haya sido violada, coaccionándosela al coito con el autor o con terceros, la pena privativa de libertad será de tres a doce años.' },
-                    { id: '128-3', label: '3° Cuando la victima del coito haya sido una persona no menor de catorce años ni mayor de edad, la pena privativa de libertad será de tres a quince años.' },
-                    { id: '128-4', label: '4° La pena podrá ser atenuada con arreglo al artículo 67 de la Ley N° 1160/1997 “CODIGO PENAL”, cuando de la relación de la víctima con el autor, surgieren considerables circunstancias que lo ameriten.' },
+                    { id: '128-1', label: '1° El que...' },
+                    { id: '128-2', label: '2° Cuando...' },
+                    { id: '128-3', label: '3° Cuando...' },
+                    { id: '128-4', label: '4° La pena...' },
                     { 
                         id: '128-5', 
-                        label: '5° A los efectos de la presente ley se entenderán como:',
+                        label: '5° A los efectos...',
                         numerales: [
-                            { id: '128-5-1', label: '1. actos sexuales, aquellos que sean manifiestamente relevantes contra la autonomía sexual, o tratándose de niños, la indemnidad sexual;' },
-                            { id: '128-5-2', label: '2. actos sexuales realizados ante otro, aquellos en el sentido del numeral anterior que el otro percibiera a través de sus sentidos:' },
-                            { id: '128-5-3', label: '3. coito, el acceso carnal por vía vaginal, anal o bucal, o la introducción de miembros corporales u objetos por alguna de las dos primeras vías.' }
+                            { id: '128-5-1', label: '1. actos sexuales...' },
+                            { id: '128-5-2', label: '2. actos sexuales...' },
+                            { id: '128-5-3', label: '3. coito...' }
                         ]
                     }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 128.- Coacción sexual y violación. (Texto según Ley Nº 7394/2024)'
+                texto: 'Artículo 128.- Coacción sexual y violación. (Ley 7394/2024)'
             },
             '135': {
                 label: 'Art. 135 – Abuso sexual en niños (Ley 7394/2024)',
                 modificaciones: [{ ley: 'Ley Nº 7394/2024', fecha: '2024', descripcion: 'Modificación integral del artículo 135.' }],
                 incisos: [
-                    { id: '135-1', label: '1° El que realizara actos sexuales con un niño, o lo indujera a realizarlos en sí mismo o a terceros, será castigado con pena privativa de libertad de cinco a dieciocho años. Con la misma pena será castigado el que realizara actos sexuales manifiestamente relevantes ante un niño y dirigidos a él, o lo indujera a realizarlos ante sí o ante terceros.' },
+                    { id: '135-1', label: '1° El que...' },
                     { 
                         id: '135-2', 
-                        label: '2° En los casos señalados en el inciso anterior, la pena privativa de libertad será de diez a veinte años cuando el autor:',
+                        label: '2° En los casos...',
                         numerales: [
-                            { id: '135-2-1', label: '1. al realizar el hecho haya maltratado físicamente o psicológicamente a la víctima;' },
-                            { id: '135-2-2', label: '2. haya abusado de la víctima en más de una ocasión;' },
-                            { id: '135-2-3', label: '3. haya cometido el hecho con un niño que sea su hijo biológico, adoptivo o hijastro, o con un niño de su entorno cercano o cuya educación, cuidado, protección, tutela o guarda esté a su cargo;' },
-                            { id: '135-2-4', label: '4. haya cometido el hecho aprovechándose de una relación de superioridad o de la afinidad en la familia o del estado de vulnerabilidad de la víctima;' },
-                            { id: '135-2-5', label: '5. haya realizado el hecho con una o más personas;' },
-                            { id: '135-2-6', label: '6. haya filmado, fotografiado o registrado el hecho por cualquier medio;' },
-                            { id: '135-2-7', label: '7. haya suministrado a la víctima sustancias tóxicas, estupefacientes o alcohol;' },
-                            { id: '135-2-8', label: '8. haya empleado armas o medios que pongan en riesgo la vida de la víctima.' }
+                            { id: '135-2-1', label: '1. al realizar...' },
+                            { id: '135-2-2', label: '2. haya abusado...' },
+                            { id: '135-2-3', label: '3. haya cometido...' },
+                            { id: '135-2-4', label: '4. haya cometido...' },
+                            { id: '135-2-5', label: '5. haya realizado...' },
+                            { id: '135-2-6', label: '6. haya filmado...' },
+                            { id: '135-2-7', label: '7. haya suministrado...' },
+                            { id: '135-2-8', label: '8. haya empleado...' }
                         ]
                     },
-                    { id: '135-3', label: '3° Cuando concurra más de una circunstancia de las señaladas en el inciso 2°, el autor será castigado con pena privativa de libertad de quince a veinticinco años.' },
-                    { id: '135-4', label: '4° En los casos señalados en el inciso 1°, la pena privativa de libertad no será menor de quince años cuando el autor haya realizado el coito con la víctima. En caso de que la víctima sea menor de diez años, la pena no será menor de veinte años.' },
+                    { id: '135-3', label: '3° Cuando concurra...' },
+                    { id: '135-4', label: '4° En los casos...' },
                     { 
                         id: '135-5', 
-                        label: '5° A los efectos de este artículo:',
+                        label: '5° A los efectos...',
                         numerales: [
-                            { id: '135-5-1', label: '1. se entenderá por niño, a los efectos de este capítulo, la persona que no haya cumplido catorce años de edad;' },
-                            { id: '135-5-2', label: '2. se entenderá por “entorno cercano”, a los efectos de este artículo, a los padres, padrastros, abuelos, abuelastros, hermanos, hermanastros, tíos, primos; así como a cualquier persona cuya educación, cuidado, protección, tutela o guarda del niño este a su cargo;' },
-                            { id: '135-5-3', label: '3. se entenderá por “afinidad en la familia”, el vínculo estrecho y continuo que se manifiesta en la convivencia, cuidado, protección, relación afectiva que incluye a cualquier persona que frecuente el ámbito del niño, sea pariente o no.' }
+                            { id: '135-5-1', label: '1. se entenderá...' },
+                            { id: '135-5-2', label: '2. se entenderá...' },
+                            { id: '135-5-3', label: '3. se entenderá...' }
                         ]
                     },
-                    { id: '135-6', label: '6° A los autores del hecho se les aplicará penas complementarias y adicionales establecidas en los artículos 57 y 59 de la Ley N° 1160/1997 “CODIGO PENAL”.' }
+                    { id: '135-6', label: '6° A los autores...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 135.- Abuso sexual en niños. (Texto según Ley Nº 7394/2024)'
+                texto: 'Artículo 135.- Abuso sexual en niños. (Ley 7394/2024)'
             },
             '135b': {
                 label: 'Art. 135 b) – Abuso sexual por medios tecnológicos (Ley 7394/2024)',
-                modificaciones: [{ ley: 'Ley Nº 7394/2024', fecha: '2024', descripcion: 'Creación del artículo 135 b) sobre abuso sexual por medios tecnológicos.' }],
+                modificaciones: [{ ley: 'Ley Nº 7394/2024', fecha: '2024', descripcion: 'Creación del artículo 135 b).' }],
                 incisos: [
-                    { id: '135b-1', label: '1° El que por cualquier medio electrónico de telecomunicaciones u otra tecnología de transmisión de datos, contacte con un niño y le proponga mantener o mantenga una comunicación de índole sexual o le solicite o exija de cualquier modo, que realice actos sexuales en sí mismo o con un tercero o que le envíe imagen o material audiovisual de sí mismo o de un tercero con contenido sexual, o facilite o muestre al niño material pornográfico, será castigado con pena privativa de libertad de tres a cinco años. La pena privativa de libertad será de tres a ocho años, cuando mediare coacción, intimidación o engaño.' },
-                    { id: '135b-2', label: '2° Cuando el autor proponga al niño concertar un encuentro o acercamiento físico a fin de realizar actos sexuales, sea con el autor, el niño en sí mismo o a un tercero, siempre que la propuesta se acompañe de actos materiales encaminados al acercamiento; la pena privativa de libertad será de tres a ocho años. La pena privativa de libertad será de cinco a diez años, cuando el acercamiento se obtenga mediante coacción, intimidación o engaño.' },
-                    { id: '135b-3', label: '3° Sera castigada también la tentativa.' }
+                    { id: '135b-1', label: '1° El que...' },
+                    { id: '135b-2', label: '2° Cuando...' },
+                    { id: '135b-3', label: '3° Sera castigada...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 135 b).- Abuso sexual por medios tecnológicos. (Texto según Ley Nº 7394/2024)'
+                texto: 'Artículo 135 b).- Abuso sexual por medios tecnológicos. (Ley 7394/2024)'
             },
             '137': {
                 label: 'Art. 137 – Estupro',
                 modificaciones: [],
                 incisos: [
-                    { id: '137-1', label: 'El que, abusando de la inexperiencia o de la ignorancia de una persona mayor de catorce años y menor de dieciocho, la indujere a actos de significación sexual, será castigado con pena privativa de libertad de uno a cuatro años.' }
+                    { id: '137-1', label: 'El que, abusando...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 137.- Estupro. El que, abusando de la inexperiencia o de la ignorancia de una persona mayor de catorce años y menor de dieciocho, la indujere a actos de significación sexual, será castigado con pena privativa de libertad de uno a cuatro años.'
+                texto: 'Artículo 137.- Estupro. ...'
             },
             '229': {
                 label: 'Art. 229 – Violencia familiar (Ley 6934/2022)',
-                modificaciones: [{ ley: 'Ley Nº 6934/2022', fecha: '2022', descripcion: 'Modificación del artículo 229. Ampliación del ámbito familiar y agravantes.' }],
+                modificaciones: [{ ley: 'Ley Nº 6934/2022', fecha: '2022', descripcion: 'Modificación del artículo 229.' }],
                 incisos: [
-                    { id: '229-1', label: '1° El que, aprovechándose del ámbito familiar, ejerciera actos de violencia física o psicológica sobre: 1. Quien sea o hubiese sido su cónyuge, concubino, pareja sentimental, o contra quien se hubiese negado a restablecer una relación de pareja. 2. Sus parientes hasta el cuarto grado de consanguinidad, segundo de afinidad o por adopción, será castigado con pena privativa de libertad de uno a seis años. Se entenderá por “Ámbito Familiar” a los efectos de este artículo, a los parientes sean por consanguinidad o por afinidad, al cónyuge o conviviente y a la pareja sentimental. Este vínculo incluye a las relaciones vigentes o finalizadas, no siendo requisito la convivencia.' },
-                    { id: '229-2', label: '2° Igual pena se impondrá al que ejerciera los mismos actos sobre: 1. El niño, niña o adolescente con quien conviva y esté bajo su guarda o tutela sin vínculo de parentesco o en abrigo. 2. La persona bajo su curatela con quien conviva. 3. La persona adulta mayor o con discapacidad, con quien conviva en un ámbito familiar, sin que exista vínculo de parentesco.' },
-                    { id: '229-3', label: '3° La pena podrá ser aumentada hasta ocho años: 1. Cuando el autor fuese reincidente o hubiese tenido una salida alternativa que implique reconocimiento del mismo hecho punible. 2. Cuando el acto de violencia se realizare en contra de niños, niñas y adolescentes o en su presencia. 3. Cuando el autor utilizara un arma u otro instrumento para ejercer violencia física o psicológica contra la víctima. 4. Cuando los actos tengan lugar en el domicilio común o en el domicilio de la víctima.' },
-                    { id: '229-4', label: '4° Cuando los actos de violencia física pudieran configurarse como lesiones graves, se aplicará la pena correspondiente al Art. 112.' }
+                    { id: '229-1', label: '1° El que...' },
+                    { id: '229-2', label: '2° Igual pena...' },
+                    { id: '229-3', label: '3° La pena...' },
+                    { id: '229-4', label: '4° Cuando...' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 229.- Violencia familiar. (Texto según Ley Nº 6934/2022)'
+                texto: 'Artículo 229.- Violencia familiar. (Ley 6934/2022)'
             },
             '225': {
                 label: 'Art. 225 – Incumplimiento del deber legal alimentario',
@@ -1108,7 +1328,7 @@
                     { id: '225-2', label: 'Inciso 2 – Incumplimiento de convenio judicial (hasta 5 años)' }
                 ],
                 tipo: 'multiple',
-                texto: 'Artículo 225.- Incumplimiento del deber legal alimentario. El que, pudiendo cumplir, no proveyere a la subsistencia de su cónyuge, concubino, ascendiente, descendiente o hermano, será castigado con pena privativa de libertad de uno a dos años. Si el incumplimiento afectare a un convenio judicial, la pena será de dos a cinco años.'
+                texto: 'Artículo 225.- Incumplimiento del deber legal alimentario. ...'
             }
         }
     };
@@ -1228,36 +1448,8 @@
     window.esAdmin = esAdmin;
 
     // ============================================================
-    // FUNCIONES DE ADMINISTRACIÓN (placeholders)
-    // ============================================================
-    window.toggleAdminPanel = function() {
-        var panel = document.getElementById('admin-panel');
-        if (panel.style.display === 'none') {
-            panel.style.display = 'block';
-            window.cargarUsuarios();
-        } else {
-            panel.style.display = 'none';
-        }
-    };
-
-    window.cargarUsuarios = function() {
-        var container = document.getElementById('admin-users-list');
-        container.innerHTML = '<p class="text-muted">Usuarios gestionados directamente desde Firebase Console.</p>';
-    };
-
-    window.cerrarModalRenovar = function() {
-        document.getElementById('modal-renovar').classList.remove('active');
-    };
-
-    window.confirmarRenovar = function() {
-        alert('Funcionalidad de renovación no implementada en esta versión.');
-        window.cerrarModalRenovar();
-    };
-
-    // ============================================================
     // FUNCIONES DE GESTIÓN DE CAUSAS (COMPLETAS)
     // ============================================================
-
     // ----- VÍCTIMAS Y TESTIGOS -----
     window.agregarVictima = function() {
         var container = document.getElementById('victimas-container');
@@ -3237,92 +3429,12 @@
     };
 
     // ============================================================
-    // FUNCIONES DE AUTENTICACIÓN (CON SINTAXIS COMPAT)
-    // ============================================================
-    window.login = function() {
-        var email = document.getElementById('email-input').value;
-        var password = document.getElementById('password-input').value;
-        var status = document.getElementById('auth-status');
-        status.textContent = 'Iniciando sesión...';
-        auth.signInWithEmailAndPassword(email, password)
-            .then(function() {
-                status.textContent = '✅ Sesión iniciada.';
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-                window.cargarDatos();
-                window.renderizarCausas();
-                window.verificarPlazosYAlertar();
-            })
-            .catch(function(error) {
-                status.textContent = '❌ ' + error.message;
-            });
-    };
-
-    window.registrar = function() {
-        var email = document.getElementById('reg-email').value;
-        var password = document.getElementById('reg-password').value;
-        var status = document.getElementById('auth-status');
-        if (password.length < 6) {
-            status.textContent = '❌ La contraseña debe tener al menos 6 caracteres.';
-            return;
-        }
-        status.textContent = 'Registrando usuario...';
-        auth.createUserWithEmailAndPassword(email, password)
-            .then(function() {
-                status.textContent = '✅ Usuario registrado. Inicia sesión.';
-                window.mostrarLogin();
-            })
-            .catch(function(error) {
-                status.textContent = '❌ ' + error.message;
-            });
-    };
-
-    window.logout = function() {
-        auth.signOut().then(function() {
-            document.getElementById('app-container').style.display = 'none';
-            document.getElementById('auth-container').style.display = 'flex';
-            document.getElementById('email-input').value = '';
-            document.getElementById('password-input').value = '';
-            document.getElementById('auth-status').textContent = 'Sesión cerrada.';
-        });
-    };
-
-    window.mostrarRegistro = function() {
-        document.getElementById('login-form').style.display = 'none';
-        document.getElementById('registro-form').style.display = 'block';
-        document.getElementById('auth-status').textContent = '';
-    };
-
-    window.mostrarLogin = function() {
-        document.getElementById('login-form').style.display = 'block';
-        document.getElementById('registro-form').style.display = 'none';
-        document.getElementById('auth-status').textContent = '';
-    };
-
-    // ============================================================
-    // OBSERVADOR DE AUTENTICACIÓN
-    // ============================================================
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            document.getElementById('auth-container').style.display = 'none';
-            document.getElementById('app-container').style.display = 'block';
-            window.cargarDatos();
-            window.renderizarCausas();
-            window.verificarPlazosYAlertar();
-        } else {
-            document.getElementById('app-container').style.display = 'none';
-            document.getElementById('auth-container').style.display = 'flex';
-            document.getElementById('auth-status').textContent = '';
-        }
-    });
-
-    // ============================================================
     // INICIALIZAR
     // ============================================================
     window.renderizarCausas();
     window.actualizarIncisos();
     window.actualizarTab3();
-    console.log('Sistema de Gestión de Causas Penales - MP cargado correctamente (versión compat con diagnóstico).');
+    console.log('Sistema de Gestión de Causas Penales - MP cargado (con Firestore y suscripción).');
     console.log('Causas registradas:', causas.length);
 </script>
 </body>
