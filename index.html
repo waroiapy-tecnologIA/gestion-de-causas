@@ -20,49 +20,12 @@
         .header h1 { font-size:22px; font-weight:600; }
         .header h1 i { color:#d4a843; margin-right:10px; }
         .header .subtitle { font-size:14px; opacity:0.8; font-weight:300; }
-        /* Badge de estado */
-        .status-badge {
-            display:inline-block;
-            padding:4px 12px;
-            border-radius:20px;
-            font-size:12px;
-            font-weight:600;
-            margin-left:10px;
-            background:#2a7d4f;
-            color:#fff;
-        }
-        .status-badge.error {
-            background:#b33c3c;
-        }
-
-        /* ===== BANNER DE AVISO ===== */
-        .aviso-banner {
-            background: #fff3cd;
-            border-bottom: 2px solid #ffc107;
-            padding: 10px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            font-size: 14px;
-            color: #856404;
-        }
-        .aviso-banner .aviso-texto i {
-            margin-right: 8px;
-        }
-        .aviso-banner .aviso-cerrar {
-            background: transparent;
-            border: none;
-            font-size: 20px;
-            color: #856404;
-            cursor: pointer;
-            padding: 0 8px;
-        }
-        .aviso-banner .aviso-cerrar:hover {
-            color: #b33c3c;
-        }
-
+        .status-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; margin-left:10px; background:#2a7d4f; color:#fff; }
+        .status-badge.error { background:#b33c3c; }
+        .aviso-banner { background:#fff3cd; border-bottom:2px solid #ffc107; padding:10px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:14px; color:#856404; }
+        .aviso-banner .aviso-texto i { margin-right:8px; }
+        .aviso-banner .aviso-cerrar { background:transparent; border:none; font-size:20px; color:#856404; cursor:pointer; padding:0 8px; }
+        .aviso-banner .aviso-cerrar:hover { color:#b33c3c; }
         .toolbar { background:#f8f9fa; padding:15px 30px; border-bottom:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
         .toolbar-left { display:flex; gap:10px; flex-wrap:wrap; }
         .toolbar-right { display:flex; gap:10px; align-items:center; }
@@ -184,8 +147,6 @@
         .alert-item .badge-danger { background:#f8d7da; color:#721c24; padding:2px 8px; border-radius:12px; font-size:12px; }
         .alert-item .badge-success { background:#d4edda; color:#155724; padding:2px 8px; border-radius:12px; font-size:12px; }
         @media (max-width:768px) { .alert-item { flex-direction:column; align-items:flex-start; } .alert-item .label { min-width:auto; } }
-        
-        /* ========== ESTILOS DE IMPRESIÓN ========== */
         @media print {
             @page { size: legal; margin: 1.5cm; }
             body { background:#fff; padding:0; margin:0; font-size:11pt; }
@@ -252,7 +213,6 @@
             .liquidacion-link { display:none !important; }
             .diligencia-item { font-size:10pt; padding:2px 0; }
         }
-
         .tooltip-trigger { position:relative; cursor:help; }
         .tooltip-trigger .tooltip-text { visibility:hidden; width:220px; background:#1a2a4a; color:#fff; text-align:center; border-radius:6px; padding:6px 10px; position:absolute; z-index:10; bottom:125%; left:50%; transform:translateX(-50%); opacity:0; transition:opacity 0.3s; font-weight:400; font-size:12px; }
         .tooltip-trigger .tooltip-text::after { content:""; position:absolute; top:100%; left:50%; margin-left:-5px; border-width:5px; border-style:solid; border-color:#1a2a4a transparent transparent transparent; }
@@ -279,84 +239,20 @@
         .modal-content h3 { color:#1a2a4a; margin-bottom:15px; }
         .modal-content .btn-cerrar-modal { float:right; background:transparent; border:none; font-size:24px; cursor:pointer; }
         .modal-content .form-group { margin-bottom:12px; }
-
-        /* ===== ESTILOS PARA LOGIN Y SUSCRIPCIÓN ===== */
-        #auth-container {
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            min-height:80vh;
-            background:#f0f2f5;
-            padding:20px;
-        }
-        #auth-container .auth-box {
-            background:#fff;
-            padding:30px;
-            border-radius:12px;
-            box-shadow:0 4px 20px rgba(0,0,0,0.1);
-            max-width:400px;
-            width:100%;
-        }
-        #auth-container h2 {
-            color:#1a2a4a;
-            text-align:center;
-            margin-bottom:20px;
-        }
-        #auth-container .form-group {
-            margin-bottom:12px;
-        }
-        #auth-container .form-group input {
-            width:100%;
-        }
-        #auth-container .btn {
-            width:100%;
-            margin-top:10px;
-        }
-        #auth-container .auth-link {
-            text-align:center;
-            margin-top:10px;
-            font-size:13px;
-            color:#888;
-        }
-        #auth-container .auth-link a {
-            color:#1a2a4a;
-            cursor:pointer;
-            text-decoration:underline;
-        }
-        #auth-status {
-            text-align:center;
-            margin-top:10px;
-            font-size:13px;
-            color:#b33c3c;
-        }
-
-        /* Panel de administración */
-        .admin-panel {
-            background:#f8f9fa;
-            padding:20px;
-            border-radius:8px;
-            border:1px solid #e0e4ea;
-            margin-bottom:20px;
-        }
-        .admin-panel table {
-            width:100%;
-            border-collapse:collapse;
-        }
-        .admin-panel th, .admin-panel td {
-            padding:8px 12px;
-            border-bottom:1px solid #ddd;
-            text-align:left;
-        }
-        .admin-panel th {
-            background:#e8ecf1;
-            font-weight:600;
-        }
-        .admin-panel .badge {
-            display:inline-block;
-            padding:2px 10px;
-            border-radius:12px;
-            font-size:12px;
-        }
+        #auth-container { display:flex; justify-content:center; align-items:center; min-height:80vh; background:#f0f2f5; padding:20px; }
+        #auth-container .auth-box { background:#fff; padding:30px; border-radius:12px; box-shadow:0 4px 20px rgba(0,0,0,0.1); max-width:400px; width:100%; }
+        #auth-container h2 { color:#1a2a4a; text-align:center; margin-bottom:20px; }
+        #auth-container .form-group { margin-bottom:12px; }
+        #auth-container .form-group input { width:100%; }
+        #auth-container .btn { width:100%; margin-top:10px; }
+        #auth-container .auth-link { text-align:center; margin-top:10px; font-size:13px; color:#888; }
+        #auth-container .auth-link a { color:#1a2a4a; cursor:pointer; text-decoration:underline; }
+        #auth-status { text-align:center; margin-top:10px; font-size:13px; color:#b33c3c; }
+        .admin-panel { background:#f8f9fa; padding:20px; border-radius:8px; border:1px solid #e0e4ea; margin-bottom:20px; }
+        .admin-panel table { width:100%; border-collapse:collapse; }
+        .admin-panel th, .admin-panel td { padding:8px 12px; border-bottom:1px solid #ddd; text-align:left; }
+        .admin-panel th { background:#e8ecf1; font-weight:600; }
+        .admin-panel .badge { display:inline-block; padding:2px 10px; border-radius:12px; font-size:12px; }
         .badge-activa { background:#d4edda; color:#155724; }
         .badge-inactiva { background:#f8d7da; color:#721c24; }
         .badge-admin { background:#1a2a4a; color:#fff; }
@@ -727,7 +623,7 @@
     </div>
 </div>
 
-<!-- ===== MODAL PARA AGREGAR INTERVENCIÓN ===== -->
+<!-- ===== MODALES ===== -->
 <div class="modal-overlay" id="modal-intervencion">
     <div class="modal-content">
         <button class="btn-cerrar-modal" onclick="window.cerrarModalIntervencion()">&times;</button>
@@ -768,7 +664,6 @@
     </div>
 </div>
 
-<!-- ===== MODAL PARA RENOVAR SUSCRIPCIÓN ===== -->
 <div class="modal-overlay" id="modal-renovar">
     <div class="modal-content">
         <button class="btn-cerrar-modal" onclick="window.cerrarModalRenovar()">&times;</button>
@@ -783,61 +678,11 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- SCRIPT COMPLETO CON FIRESTORE Y TODAS LAS FUNCIONALIDADES     -->
+<!-- SCRIPT COMPLETO CON CORRECCIONES                              -->
 <!-- ============================================================ -->
 <script>
     // ============================================================
-    // BLOQUE DE DIAGNÓSTICO
-    // ============================================================
-    (function diagnosticar() {
-        var estado = { ok: true, errores: [] };
-        var badge = document.getElementById('status-badge');
-
-        if (typeof firebase === 'undefined') {
-            estado.ok = false;
-            estado.errores.push('Firebase no está definido.');
-        } else {
-            console.log('✅ Firebase cargado correctamente.');
-        }
-
-        var idsEsenciales = [
-            'auth-container', 'app-container', 'email-input', 'password-input',
-            'num-causa', 'imputado', 'hecho-selector', 'incisos-opciones',
-            'victimas-container', 'testigos-container', 'causa-grid',
-            'tab1', 'tab2', 'tab3', 'tab5', 'tab6',
-            'form-container', 'listado-view'
-        ];
-        idsEsenciales.forEach(function(id) {
-            if (!document.getElementById(id)) {
-                estado.ok = false;
-                estado.errores.push('Falta el elemento con ID: ' + id);
-            }
-        });
-
-        if (estado.ok) {
-            console.log('✅ Diagnóstico: OK');
-            if (badge) {
-                badge.textContent = '✅ OK';
-                badge.className = 'status-badge';
-            }
-        } else {
-            console.error('❌ Diagnóstico: ERRORES:', estado.errores);
-            if (badge) {
-                badge.textContent = '❌ Error';
-                badge.className = 'status-badge error';
-            }
-            var msg = document.createElement('div');
-            msg.style.cssText = 'background:#f8d7da;color:#721c24;padding:10px 20px;border:1px solid #f5c6cb;border-radius:4px;margin:10px 0;';
-            msg.innerHTML = '<strong>⚠️ Error de inicialización:</strong> Revisa la consola (F12) para más detalles.';
-            var container = document.getElementById('auth-container');
-            if (container) {
-                container.parentNode.insertBefore(msg, container);
-            }
-        }
-    })();
-
-    // ============================================================
-    // CONFIGURACIÓN DE FIREBASE (Auth + Firestore)
+    // CONFIGURACIÓN DE FIREBASE
     // ============================================================
     var firebaseConfig = {
         apiKey: "AIzaSyBpxzHKYIh1zQAw5z8ezQL5pZRVkTHAlb8",
@@ -853,13 +698,36 @@
     var db = firebase.firestore();
 
     // ============================================================
-    // FUNCIÓN PARA CERRAR EL BANNER DE AVISO
+    // VARIABLES GLOBALES
+    // ============================================================
+    var causas = [];
+    var hechosAgregados = [];
+    var riesgoPuntaje = 0;
+    var riesgoNivel = '';
+    var causaActualId = null;        // ID de la causa que se está editando
+    var seccionesGuardadas = { tab1: false, tab2: false, tab3: false };
+    var intervencionesGuardadas = [];
+    var usuarioActual = null;
+    var esAdmin = false;
+
+    // Exponer variables al objeto window (para uso desde HTML y consola)
+    window.causas = causas;
+    window.hechosAgregados = hechosAgregados;
+    window.riesgoPuntaje = riesgoPuntaje;
+    window.riesgoNivel = riesgoNivel;
+    window.causaActualId = causaActualId;
+    window.seccionesGuardadas = seccionesGuardadas;
+    window.intervencionesGuardadas = intervencionesGuardadas;
+    window.usuarioActual = usuarioActual;
+    window.esAdmin = esAdmin;
+
+    // ============================================================
+    // FUNCIONES DE AUTENTICACIÓN
     // ============================================================
     window.cerrarAviso = function() {
         document.getElementById('aviso-banner').style.display = 'none';
         try { localStorage.setItem('avisoCerrado', 'true'); } catch(e) {}
     };
-
     (function() {
         try {
             if (localStorage.getItem('avisoCerrado') === 'true') {
@@ -868,27 +736,22 @@
         } catch(e) {}
     })();
 
-    // ============================================================
-    // VERIFICACIÓN DE SUSCRIPCIÓN (Firestore)
-    // ============================================================
     function verificarSuscripcion(user) {
         if (!user) return Promise.reject('No hay usuario');
         return db.collection('usuarios').doc(user.uid).get()
             .then(function(doc) {
                 if (!doc.exists) {
-                    // Crear documento trial automáticamente
                     return db.collection('usuarios').doc(user.uid).set({
                         email: user.email,
                         estado: 'trial',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
                         fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-                        rol: 'user'   // 👈 NUEVO: rol por defecto
+                        rol: 'user'
                     }).then(function() {
                         return true;
                     });
                 }
                 var data = doc.data();
-                // Solo expira si fechaExpiracion existe y es menor que hoy
                 if (data.fechaExpiracion && new Date() > data.fechaExpiracion.toDate()) {
                     console.warn('Suscripción expirada para ' + user.email);
                     db.collection('usuarios').doc(user.uid).update({ estado: 'expirado' })
@@ -899,13 +762,10 @@
             })
             .catch(function(err) {
                 console.error('Error al verificar suscripción:', err);
-                return true; // Permitir acceso en caso de error
+                return true;
             });
     }
 
-    // ============================================================
-    // FUNCIONES DE AUTENTICACIÓN (con registro en Firestore)
-    // ============================================================
     window.login = function() {
         var email = document.getElementById('email-input').value;
         var password = document.getElementById('password-input').value;
@@ -920,7 +780,6 @@
                         return Promise.reject('Suscripción expirada');
                     }
                     status.textContent = '✅ Sesión iniciada.';
-                    // La app se muestra en el observador
                 });
             })
             .catch(function(error) {
@@ -947,7 +806,7 @@
                     estado: 'trial',
                     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
                     fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-                    rol: 'user'   // 👈 NUEVO: rol por defecto
+                    rol: 'user'
                 }).then(function() {
                     status.textContent = '✅ Usuario registrado. Inicia sesión.';
                     window.mostrarLogin();
@@ -965,6 +824,7 @@
             document.getElementById('email-input').value = '';
             document.getElementById('password-input').value = '';
             document.getElementById('auth-status').textContent = 'Sesión cerrada.';
+            esAdmin = false;
             window.esAdmin = false;
             document.getElementById('btn-admin-panel').style.display = 'none';
         });
@@ -982,16 +842,11 @@
         document.getElementById('auth-status').textContent = '';
     };
 
-    // ============================================================
-    // OBSERVADOR DE AUTENTICACIÓN (con verificación y rol)
-    // ============================================================
     auth.onAuthStateChanged(function(user) {
         if (user) {
-            // Obtener el documento del usuario para verificar rol y suscripción
             db.collection('usuarios').doc(user.uid).get()
                 .then(function(doc) {
                     if (!doc.exists) {
-                        // Crear documento trial automáticamente (por si acaso)
                         return db.collection('usuarios').doc(user.uid).set({
                             email: user.email,
                             estado: 'trial',
@@ -999,13 +854,17 @@
                             fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
                             rol: 'user'
                         }).then(function() {
+                            esAdmin = false;
                             window.esAdmin = false;
+                            usuarioActual = user;
                             window.usuarioActual = user;
                             return verificarSuscripcion(user);
                         });
                     } else {
                         var data = doc.data();
-                        window.esAdmin = (data.rol === 'admin');
+                        esAdmin = (data.rol === 'admin');
+                        window.esAdmin = esAdmin;
+                        usuarioActual = user;
                         window.usuarioActual = user;
                         return verificarSuscripcion(user);
                     }
@@ -1016,11 +875,9 @@
                         auth.signOut();
                         return;
                     }
-                    // Mostrar la aplicación
                     document.getElementById('auth-container').style.display = 'none';
                     document.getElementById('app-container').style.display = 'block';
-                    // Mostrar/ocultar botón de administración
-                    if (window.esAdmin) {
+                    if (esAdmin) {
                         document.getElementById('btn-admin-panel').style.display = 'inline-flex';
                     } else {
                         document.getElementById('btn-admin-panel').style.display = 'none';
@@ -1031,26 +888,25 @@
                 })
                 .catch(function(err) {
                     console.error('Error en autenticación:', err);
-                    // En caso de error, mostrar la app igualmente (por seguridad, mejor no)
-                    // Pero manejamos el error
                     alert('Error al verificar usuario: ' + err.message);
                 });
         } else {
-            // Usuario no autenticado
             document.getElementById('app-container').style.display = 'none';
             document.getElementById('auth-container').style.display = 'flex';
             document.getElementById('auth-status').textContent = '';
+            esAdmin = false;
             window.esAdmin = false;
+            usuarioActual = null;
             window.usuarioActual = null;
             document.getElementById('btn-admin-panel').style.display = 'none';
         }
     });
 
     // ============================================================
-    // PANEL DE ADMINISTRACIÓN (listado de usuarios desde Firestore)
+    // PANEL DE ADMINISTRACIÓN
     // ============================================================
     window.toggleAdminPanel = function() {
-        if (!window.esAdmin) {
+        if (!esAdmin) {
             alert('⛔ Acceso denegado. Solo el administrador puede gestionar usuarios.');
             return;
         }
@@ -1101,11 +957,8 @@
             });
     };
 
-    // ============================================================
-    // RENOVAR USUARIO (desde el panel de admin)
-    // ============================================================
     window.renovarUsuario = function(uid) {
-        if (!window.esAdmin) {
+        if (!esAdmin) {
             alert('Acceso denegado.');
             return;
         }
@@ -1122,11 +975,8 @@
         });
     };
 
-    // ============================================================
-    // HACER ADMIN (desde el panel de admin)
-    // ============================================================
     window.hacerAdmin = function(uid) {
-        if (!window.esAdmin) {
+        if (!esAdmin) {
             alert('Acceso denegado.');
             return;
         }
@@ -1141,9 +991,6 @@
         });
     };
 
-    // ============================================================
-    // MODAL DE RENOVAR (para el propio usuario)
-    // ============================================================
     window.cerrarModalRenovar = function() {
         document.getElementById('modal-renovar').classList.remove('active');
     };
@@ -1491,39 +1338,9 @@
     ];
 
     // ============================================================
-    // ESTADO GLOBAL
+    // FUNCIONES DE GESTIÓN DE CAUSAS
     // ============================================================
-    var causas = [];
-    var hechosAgregados = [];
-    var riesgoPuntaje = 0;
-    var riesgoNivel = '';
-    var causaActualId = null;
-    var seccionesGuardadas = { tab1:false, tab2:false, tab3:false };
-    var intervencionesGuardadas = [];
-    var usuarioActual = null;
-    var esAdmin = false;
 
-    // ============================================================
-    // EXPONER FUNCIONES Y VARIABLES AL OBJETO window
-    // ============================================================
-    window.CONFIG = CONFIG;
-    window.DILIGENCIAS_ORDINARIAS = DILIGENCIAS_ORDINARIAS;
-    window.DILIGENCIAS_SEXUALES = DILIGENCIAS_SEXUALES;
-    window.preguntasRiesgo = preguntasRiesgo;
-    window.preguntasSexuales = preguntasSexuales;
-    window.causas = causas;
-    window.hechosAgregados = hechosAgregados;
-    window.riesgoPuntaje = riesgoPuntaje;
-    window.riesgoNivel = riesgoNivel;
-    window.causaActualId = causaActualId;
-    window.seccionesGuardadas = seccionesGuardadas;
-    window.intervencionesGuardadas = intervencionesGuardadas;
-    window.usuarioActual = usuarioActual;
-    window.esAdmin = esAdmin;
-
-    // ============================================================
-    // FUNCIONES DE GESTIÓN DE CAUSAS (COMPLETAS)
-    // ============================================================
     // ----- VÍCTIMAS Y TESTIGOS -----
     window.agregarVictima = function() {
         var container = document.getElementById('victimas-container');
@@ -1942,7 +1759,9 @@
         }
     };
 
-    // ----- TAB 3 - INTERVENCIONES -----
+    // ============================================================
+    // TAB 3 - INTERVENCIONES
+    // ============================================================
     window.actualizarTab3 = function() {
         var hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
         var container = document.getElementById('tab3-contenido');
@@ -2333,7 +2152,7 @@
         });
     };
 
-    // ----- MODAL PARA AGREGAR INTERVENCIÓN MANUAL (CORREGIDO) -----
+    // ----- MODAL PARA AGREGAR INTERVENCIÓN MANUAL -----
     var intervTipoListenerAdded = false;
 
     window.abrirModalIntervencion = function() {
@@ -2443,25 +2262,30 @@
 
     window.actualizarCausa = function(datos) {
         if (!causaActualId) {
+            // Crear nueva causa
             var nuevaCausa = { id: Date.now().toString() };
             for (var key in datos) { nuevaCausa[key] = datos[key]; }
             nuevaCausa.fechaCreacion = new Date().toISOString();
             causas.push(nuevaCausa);
             causaActualId = nuevaCausa.id;
+            window.causaActualId = causaActualId;  // Sincronizar con window
             document.getElementById('form-title').textContent = 'Editar Causa: ' + (nuevaCausa.numCausa || 'Nueva');
             window.guardarDatos();
             window.renderizarCausas();
             return nuevaCausa;
         } else {
+            // Actualizar causa existente
             var idx = causas.findIndex(function(c) { return c.id === causaActualId; });
             if (idx !== -1) {
                 for (var key in datos) { causas[idx][key] = datos[key]; }
                 window.guardarDatos();
                 window.renderizarCausas();
                 return causas[idx];
+            } else {
+                console.warn('No se encontró la causa con ID:', causaActualId);
+                return null;
             }
         }
-        return null;
     };
 
     window.actualizarEstadoSeccion = function(tabId, guardado) {
@@ -2474,6 +2298,19 @@
         }
         if (badgeEl) badgeEl.style.display = guardado ? 'inline' : 'none';
     };
+
+    // Función auxiliar para refrescar las pestañas dependientes
+    function refrescarPestanasDependientes() {
+        // Actualizar las pestañas 3, 5 y 6 si están activas o simplemente actualizamos el contenido
+        var tab3 = document.getElementById('tab3');
+        var tab5 = document.getElementById('tab5');
+        var tab6 = document.getElementById('tab6');
+        if (tab3 && tab3.classList.contains('active')) window.actualizarTab3();
+        if (tab5 && tab5.classList.contains('active')) window.actualizarInforme();
+        if (tab6 && tab6.classList.contains('active')) window.actualizarAlertas();
+        // También actualizar siempre las alertas en segundo plano (no visible)
+        window.actualizarAlertas();
+    }
 
     window.guardarPestana1 = function() {
         var num = document.getElementById('num-causa').value.trim();
@@ -2528,6 +2365,7 @@
             document.getElementById('estado-causa').textContent = 'Causa: ' + causa.numCausa;
             alert('Datos Generales guardados correctamente.');
             window.verificarPlazosYAlertar('📌 Plazos actualizados tras guardar Datos Generales');
+            refrescarPestanasDependientes();
         }
     };
 
@@ -2578,6 +2416,7 @@
             window.actualizarEstadoSeccion('tab2', true);
             alert('Datos del Juzgado guardados correctamente.');
             window.verificarPlazosYAlertar('📌 Plazos actualizados tras guardar Datos del Juzgado');
+            refrescarPestanasDependientes();
         }
     };
 
@@ -2641,14 +2480,19 @@
             window.actualizarEstadoSeccion('tab3', true);
             alert('Intervenciones guardadas correctamente.');
             window.verificarPlazosYAlertar('📌 Plazos actualizados tras guardar Intervenciones');
+            refrescarPestanasDependientes();
         }
     };
 
     // ----- CARGAR CAUSA PARA EDITAR -----
     window.cargarCausaParaEditar = function(id) {
         var causa = causas.find(function(c) { return c.id === id; });
-        if (!causa) return;
+        if (!causa) {
+            console.error('Causa no encontrada:', id);
+            return;
+        }
         causaActualId = causa.id;
+        window.causaActualId = causaActualId;  // Sincronizar
         document.getElementById('form-title').textContent = 'Editar Causa: ' + causa.numCausa;
         document.getElementById('estado-causa').textContent = 'Causa: ' + causa.numCausa;
 
@@ -2659,6 +2503,7 @@
             alert('⏳ La causa ' + causa.numCausa + ' tiene plazo próximo a vencer (faltan ' + info.dias + ' días).');
         }
 
+        // Llenar campos de Datos Generales
         document.getElementById('num-causa').value = causa.numCausa;
         document.getElementById('imputado').value = causa.imputado;
         document.getElementById('ci-imputado').value = causa.ciImputado || '';
@@ -2668,6 +2513,7 @@
         document.getElementById('num-reincidencias').value = causa.numReincidencias || 0;
         document.getElementById('num-reincidencias').disabled = !causa.reincidente;
 
+        // Víctimas
         var victimasContainer = document.getElementById('victimas-container');
         victimasContainer.innerHTML = '';
         if (causa.victimas && causa.victimas.length > 0) {
@@ -2694,6 +2540,7 @@
         document.getElementById('fecha-hecho').value = causa.fechaHecho || '';
         document.getElementById('hora-hecho').value = causa.horaHecho || '';
 
+        // Testigos
         var testigosContainer = document.getElementById('testigos-container');
         testigosContainer.innerHTML = '';
         if (causa.testigos && causa.testigos.length > 0) {
@@ -2715,6 +2562,7 @@
         document.getElementById('descripcion-hecho').value = causa.descripcionHecho || '';
         document.getElementById('observaciones-generales').value = causa.observacionesGenerales || '';
 
+        // Hechos
         hechosAgregados = [];
         if (causa.hechos) {
             causa.hechos.forEach(function(h) {
@@ -2739,6 +2587,7 @@
         }
         window.renderizarHechosAgregados();
 
+        // Campos de Juzgado
         document.getElementById('fecha-imputacion').value = causa.fechaImputacion || '';
         document.getElementById('num-ai').value = causa.numAI || '';
         document.getElementById('fecha-ai').value = causa.fechaAI || '';
@@ -2769,6 +2618,12 @@
         document.getElementById('anticipo-testigos-vulnerables').checked = causa.anticipos?.testigosVulnerables || false;
         document.getElementById('anticipo-otro').value = causa.anticipos?.otro || '';
 
+        // Generar carátula y plazos
+        window.generarCaratula();
+        window.calcularVencimiento();
+        window.actualizarFechaRequerimientoConclusivo();
+
+        // Restaurar intervenciones
         window.actualizarTab3();
         setTimeout(function() {
             var hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
@@ -2828,9 +2683,8 @@
         window.actualizarEstadoSeccion('tab2', true);
         window.actualizarEstadoSeccion('tab3', true);
 
-        window.generarCaratula();
-        window.calcularVencimiento();
         window.actualizarAlertas();
+        window.actualizarInforme();
 
         document.getElementById('form-container').classList.add('active');
         document.getElementById('listado-view').style.display = 'none';
@@ -2912,10 +2766,17 @@
 
     window.eliminarCausa = function(id) {
         if (!confirm('¿Está seguro de eliminar esta causa?')) return;
-        causas = causas.filter(function(c) { return c.id !== id; });
+        var idx = causas.findIndex(function(c) { return c.id === id; });
+        if (idx === -1) {
+            alert('La causa no existe.');
+            return;
+        }
+        causas.splice(idx, 1);
         window.guardarDatos();
         window.renderizarCausas();
-        if (document.getElementById('form-container').classList.contains('active')) window.cerrarFormulario();
+        if (causaActualId === id) {
+            window.cerrarFormulario();
+        }
     };
 
     window.eliminarTodasLasCausas = function() {
@@ -2931,6 +2792,7 @@
 
     window.nuevaCausa = function() {
         causaActualId = null;
+        window.causaActualId = null;
         document.getElementById('form-title').textContent = 'Nueva Causa';
         document.getElementById('estado-causa').textContent = '';
         document.querySelectorAll('input, select, textarea').forEach(function(el) {
@@ -2978,6 +2840,7 @@
         document.getElementById('form-container').classList.remove('active');
         document.getElementById('listado-view').style.display = 'block';
         causaActualId = null;
+        window.causaActualId = null;
     };
 
     // ----- INFORME -----
@@ -3457,15 +3320,26 @@
     // GUARDAR Y CARGAR DATOS (localStorage)
     // ============================================================
     window.guardarDatos = function() {
-        try { localStorage.setItem('causasPenalesMP', JSON.stringify(causas)); } catch(e) { console.error(e); }
+        try {
+            localStorage.setItem('causasPenalesMP', JSON.stringify(causas));
+        } catch(e) {
+            console.error('Error al guardar datos:', e);
+        }
     };
 
     window.cargarDatos = function() {
         try {
             var data = localStorage.getItem('causasPenalesMP');
-            if (data) { causas = JSON.parse(data); }
-            else { causas = []; window.guardarDatos(); }
-        } catch(e) { causas = []; }
+            if (data) {
+                causas = JSON.parse(data);
+            } else {
+                causas = [];
+                window.guardarDatos();
+            }
+        } catch(e) {
+            console.error('Error al cargar datos:', e);
+            causas = [];
+        }
     };
 
     window.exportarDatos = function() {
@@ -3508,7 +3382,7 @@
     window.renderizarCausas();
     window.actualizarIncisos();
     window.actualizarTab3();
-    console.log('Sistema de Gestión de Causas Penales - MP cargado (con Firestore y suscripción).');
+    console.log('Sistema de Gestión de Causas Penales - MP cargado (con todas las correcciones).');
     console.log('Causas registradas:', causas.length);
 </script>
 </body>
