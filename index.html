@@ -425,7 +425,7 @@
             <button class="btn btn-outline" onclick="window.exportarDatos()"><i class="fas fa-file-export"></i> Exportar</button>
             <button class="btn btn-outline" onclick="window.importarDatos()"><i class="fas fa-file-import"></i> Importar</button>
             <button class="btn btn-danger" onclick="window.eliminarTodasLasCausas()"><i class="fas fa-trash-alt"></i> Eliminar todas</button>
-            <button class="btn btn-outline" id="btn-admin-panel" onclick="window.toggleAdminPanel()"><i class="fas fa-users-cog"></i> Gestionar usuarios</button>
+            <button class="btn btn-outline" id="btn-admin-panel" onclick="window.toggleAdminPanel()" style="display:none;"><i class="fas fa-users-cog"></i> Gestionar usuarios</button>
         </div>
         <div class="toolbar-right">
             <div class="search-box">
@@ -881,7 +881,8 @@
                         email: user.email,
                         estado: 'trial',
                         fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
-                        fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                        fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                        rol: 'user'   // 👈 NUEVO: rol por defecto
                     }).then(function() {
                         return true;
                     });
@@ -919,11 +920,7 @@
                         return Promise.reject('Suscripción expirada');
                     }
                     status.textContent = '✅ Sesión iniciada.';
-                    document.getElementById('auth-container').style.display = 'none';
-                    document.getElementById('app-container').style.display = 'block';
-                    window.cargarDatos();
-                    window.renderizarCausas();
-                    window.verificarPlazosYAlertar();
+                    // La app se muestra en el observador
                 });
             })
             .catch(function(error) {
@@ -949,7 +946,8 @@
                     email: email,
                     estado: 'trial',
                     fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
-                    fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+                    fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    rol: 'user'   // 👈 NUEVO: rol por defecto
                 }).then(function() {
                     status.textContent = '✅ Usuario registrado. Inicia sesión.';
                     window.mostrarLogin();
@@ -967,6 +965,8 @@
             document.getElementById('email-input').value = '';
             document.getElementById('password-input').value = '';
             document.getElementById('auth-status').textContent = 'Sesión cerrada.';
+            window.esAdmin = false;
+            document.getElementById('btn-admin-panel').style.display = 'none';
         });
     };
 
@@ -983,26 +983,66 @@
     };
 
     // ============================================================
-    // OBSERVADOR DE AUTENTICACIÓN (con verificación)
+    // OBSERVADOR DE AUTENTICACIÓN (con verificación y rol)
     // ============================================================
     auth.onAuthStateChanged(function(user) {
         if (user) {
-            verificarSuscripcion(user).then(function(acceso) {
-                if (!acceso) {
-                    alert('⚠️ Tu periodo de prueba ha expirado. Por favor, renueva tu suscripción.');
-                    auth.signOut();
-                    return;
-                }
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-                window.cargarDatos();
-                window.renderizarCausas();
-                window.verificarPlazosYAlertar();
-            });
+            // Obtener el documento del usuario para verificar rol y suscripción
+            db.collection('usuarios').doc(user.uid).get()
+                .then(function(doc) {
+                    if (!doc.exists) {
+                        // Crear documento trial automáticamente (por si acaso)
+                        return db.collection('usuarios').doc(user.uid).set({
+                            email: user.email,
+                            estado: 'trial',
+                            fechaCreacion: firebase.firestore.FieldValue.serverTimestamp(),
+                            fechaExpiracion: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                            rol: 'user'
+                        }).then(function() {
+                            window.esAdmin = false;
+                            window.usuarioActual = user;
+                            return verificarSuscripcion(user);
+                        });
+                    } else {
+                        var data = doc.data();
+                        window.esAdmin = (data.rol === 'admin');
+                        window.usuarioActual = user;
+                        return verificarSuscripcion(user);
+                    }
+                })
+                .then(function(acceso) {
+                    if (!acceso) {
+                        alert('⚠️ Tu periodo de prueba ha expirado. Por favor, renueva tu suscripción.');
+                        auth.signOut();
+                        return;
+                    }
+                    // Mostrar la aplicación
+                    document.getElementById('auth-container').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    // Mostrar/ocultar botón de administración
+                    if (window.esAdmin) {
+                        document.getElementById('btn-admin-panel').style.display = 'inline-flex';
+                    } else {
+                        document.getElementById('btn-admin-panel').style.display = 'none';
+                    }
+                    window.cargarDatos();
+                    window.renderizarCausas();
+                    window.verificarPlazosYAlertar();
+                })
+                .catch(function(err) {
+                    console.error('Error en autenticación:', err);
+                    // En caso de error, mostrar la app igualmente (por seguridad, mejor no)
+                    // Pero manejamos el error
+                    alert('Error al verificar usuario: ' + err.message);
+                });
         } else {
+            // Usuario no autenticado
             document.getElementById('app-container').style.display = 'none';
             document.getElementById('auth-container').style.display = 'flex';
             document.getElementById('auth-status').textContent = '';
+            window.esAdmin = false;
+            window.usuarioActual = null;
+            document.getElementById('btn-admin-panel').style.display = 'none';
         }
     });
 
@@ -1010,6 +1050,10 @@
     // PANEL DE ADMINISTRACIÓN (listado de usuarios desde Firestore)
     // ============================================================
     window.toggleAdminPanel = function() {
+        if (!window.esAdmin) {
+            alert('⛔ Acceso denegado. Solo el administrador puede gestionar usuarios.');
+            return;
+        }
         var panel = document.getElementById('admin-panel');
         if (panel.style.display === 'none') {
             panel.style.display = 'block';
@@ -1028,17 +1072,24 @@
                     container.innerHTML = '<p class="text-muted">No hay usuarios registrados.</p>';
                     return;
                 }
-                var html = '<table><thead><tr><th>Email</th><th>Estado</th><th>Expiración</th><th>Acción</th></tr></thead><tbody>';
+                var html = '<table><thead><tr><th>Email</th><th>Estado</th><th>Expiración</th><th>Rol</th><th>Acción</th></tr></thead><tbody>';
                 snapshot.forEach(function(doc) {
                     var data = doc.data();
                     var expiracion = data.fechaExpiracion ? data.fechaExpiracion.toDate().toLocaleDateString() : 'N/A';
                     var estado = data.estado || 'desconocido';
                     var badgeClass = estado === 'trial' ? 'badge-activa' : estado === 'expirado' ? 'badge-inactiva' : 'badge-admin';
+                    var rol = data.rol || 'user';
+                    var rolBadge = rol === 'admin' ? 'badge-admin' : 'badge-activa';
                     html += '<tr>';
                     html += '<td>' + (data.email || 'sin email') + '</td>';
                     html += '<td><span class="badge ' + badgeClass + '">' + estado + '</span></td>';
                     html += '<td>' + expiracion + '</td>';
-                    html += '<td><button class="btn btn-sm btn-success" onclick="window.renovarUsuario(\'' + doc.id + '\')"><i class="fas fa-sync"></i> Renovar</button></td>';
+                    html += '<td><span class="badge ' + rolBadge + '">' + rol + '</span></td>';
+                    html += '<td><button class="btn btn-sm btn-success" onclick="window.renovarUsuario(\'' + doc.id + '\')"><i class="fas fa-sync"></i> Renovar</button> ';
+                    if (rol !== 'admin') {
+                        html += '<button class="btn btn-sm btn-primary" onclick="window.hacerAdmin(\'' + doc.id + '\')"><i class="fas fa-user-cog"></i> Hacer Admin</button>';
+                    }
+                    html += '</td>';
                     html += '</tr>';
                 });
                 html += '</tbody></table>';
@@ -1054,6 +1105,10 @@
     // RENOVAR USUARIO (desde el panel de admin)
     // ============================================================
     window.renovarUsuario = function(uid) {
+        if (!window.esAdmin) {
+            alert('Acceso denegado.');
+            return;
+        }
         if (!confirm('¿Renovar la suscripción de este usuario por 30 días?')) return;
         var nuevaFecha = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         db.collection('usuarios').doc(uid).update({
@@ -1064,6 +1119,25 @@
             window.cargarUsuarios();
         }).catch(function(err) {
             alert('❌ Error al renovar: ' + err.message);
+        });
+    };
+
+    // ============================================================
+    // HACER ADMIN (desde el panel de admin)
+    // ============================================================
+    window.hacerAdmin = function(uid) {
+        if (!window.esAdmin) {
+            alert('Acceso denegado.');
+            return;
+        }
+        if (!confirm('¿Ascender a este usuario a administrador?')) return;
+        db.collection('usuarios').doc(uid).update({
+            rol: 'admin'
+        }).then(function() {
+            alert('✅ Usuario ahora es administrador.');
+            window.cargarUsuarios();
+        }).catch(function(err) {
+            alert('❌ Error: ' + err.message);
         });
     };
 
