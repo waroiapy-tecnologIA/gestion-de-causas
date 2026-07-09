@@ -549,7 +549,36 @@
                 </div>
                 <div class="footer-seccion">
                     <span class="estado" id="estado-tab2">Sin guardar</span>
-                    <button class="btn btn-guardar-seccion" onclick="guardarPestana2()"><i class="fas fa-save"></i> Guardar Datos del Juzgado</button>
+
+    <!-- ===== ESTADO DE LA CAUSA (AGREGADO MANUALMENTE) ===== -->
+<div class="sub-seccion destacada" style="background:#eef2f7; padding:15px; border-radius:8px; border-left:4px solid #d4a843; margin-bottom:20px;">
+    <h4 style="color:#1a2a4a; margin-bottom:10px;"><i class="fas fa-tag"></i> Estado de la causa</h4>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div>
+            <label style="font-weight:500; font-size:13px; color:#444;">Seleccione el estado actual <span style="color:#b33c3c;">*</span></label>
+            <select id="estado-causa-select" style="width:100%; padding:8px 12px; border:1px solid #d0d4da; border-radius:6px; font-size:14px; background:#fff;">
+                <option value="activa">Activa (investigación en curso)</option>
+                <option value="criterio-oportunidad">Criterio de Oportunidad (Art. 18 CPP)</option>
+                <option value="archivo-provisional">Archivo Provisional (Art. 334 CPP)</option>
+                <option value="archivo-definitivo">Archivo Definitivo (Art. 335 CPP)</option>
+                <option value="sobreseimiento">Sobreseimiento (Art. 336 CPP)</option>
+                <option value="elevacion-juicio">Elevación a Juicio Oral (Art. 348 CPP)</option>
+                <option value="sentencia-condenatoria">Sentencia Condenatoria</option>
+                <option value="sentencia-absolutoria">Sentencia Absolutoria</option>
+                <option value="suspension-condicional">Suspensión Condicional del Proceso (Art. 18 bis)</option>
+                <option value="acuerdo-reparatorio">Acuerdo Reparatorio (Art. 19 CPP)</option>
+                <option value="conciliacion">Conciliación (Art. 19 bis)</option>
+                <option value="remision-justicia-menores">Remisión a la justicia de menores</option>
+                <option value="inhibitoria">Inhibitoria</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+        <div>
+            <label style="font-weight:500; font-size:13px; color:#444;">Observaciones del estado</label>
+            <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..." style="width:100%; padding:8px 12px; border:1px solid #d0d4da; border-radius:6px; font-size:14px; resize:vertical; background:#fff;"></textarea>
+        </div>
+    </div>
+</div>                <button class="btn btn-guardar-seccion" onclick="guardarPestana2()"><i class="fas fa-save"></i> Guardar Datos del Juzgado</button>
                 </div>
             </div>
 
