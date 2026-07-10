@@ -106,7 +106,6 @@
         .list-item .label { color:#333; }
         .sub-seccion { background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #e0e4ea; margin-bottom:20px; }
         .sub-seccion h4 { color:#1a2a4a; margin-bottom:10px; font-size:15px; border-bottom:1px solid #e0e4ea; padding-bottom:6px; }
-        .sub-seccion.destacada { background:#eef2f7; border-left:4px solid #d4a843; }
         .victima-block, .testigo-block { background:#fff; padding:12px 15px; border-radius:6px; border:1px solid #e0e4ea; margin-bottom:10px; }
         .victima-block .btn-remover, .testigo-block .btn-remover { float:right; }
         .footer-seccion { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-top:20px; padding-top:15px; border-top:1px solid #e0e4ea; }
@@ -235,8 +234,10 @@
         .diligencias-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:6px 15px; margin-top:6px; }
         .diligencia-item { display:flex; align-items:flex-start; gap:8px; padding:3px 0; }
         .diligencia-item input[type="checkbox"] { margin-top:3px; }
+        /* Estilos para la sección de intervención dentro de Datos Generales */
         .intervencion-container { background:#f8f9fa; border:1px solid #d4a843; border-radius:8px; padding:15px; margin-top:15px; }
         .intervencion-container h4 { color:#1a2a4a; margin-bottom:10px; border-bottom:1px solid #d4a843; padding-bottom:6px; }
+        /* Estilo para firma */
         .firma-section { margin-top:25px; padding-top:15px; border-top:2px solid #1a2a4a; }
         .firma-line { margin-top:8px; border-bottom:1px solid #000; width:250px; display:inline-block; }
         .firma-label { font-size:12px; color:#555; margin-top:4px; }
@@ -378,12 +379,14 @@
                     <div class="flex-wrap">
                         <select id="hecho-selector" style="flex:1;min-width:200px;">
                             <option value="">-- Seleccionar hecho --</option>
+                            <!-- Originales (Grupo A) -->
                             <option value="128">Art. 128 – Coacción sexual y violación (Ley 7394/2024)</option>
                             <option value="135">Art. 135 – Abuso sexual en niños (Ley 7394/2024)</option>
                             <option value="135b">Art. 135 b) – Abuso sexual por medios tecnológicos (Ley 7394/2024)</option>
                             <option value="137">Art. 137 – Estupro</option>
                             <option value="229">Art. 229 – Violencia familiar (Ley 6934/2022)</option>
                             <option value="225">Art. 225 – Incumplimiento del deber legal alimentario</option>
+                            <!-- Nuevos (Grupo B) -->
                             <option value="166">Art. 166 – Hurto</option>
                             <option value="166ag">Art. 166 – Hurto agravado</option>
                             <option value="167">Art. 167 – Robo</option>
@@ -431,13 +434,23 @@
                             <input type="text" id="num-juzgado" placeholder="Ej: Juzgado Penal de Garantías N° 3"></div>
                     </div>
                 </div>
-
-                <!-- ===== NUEVA SECCIÓN DESTACADA: ESTADO DE LA CAUSA ===== -->
-                <div class="sub-seccion destacada">
-                    <h4><i class="fas fa-tag"></i> Estado de la causa</h4>
+                <div class="sub-seccion">
+                    <h4>Plazo y Requerimiento</h4>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Seleccione el estado actual <span class="required">*</span></label>
+                        <div class="form-group"><label>Plazo otorgado para presentar el requerimiento (meses)</label>
+                            <input type="number" id="plazo-investigacion" min="0" value="6" onchange="calcularVencimiento(); actualizarFechaRequerimientoConclusivo();">
+                            <span class="text-muted">Art. 325 CPP: 6 meses ordinario</span>
+                        </div>
+                        <div class="form-group"><label>Fecha de vencimiento (editable)</label>
+                            <input type="date" id="fecha-vencimiento-input" onchange="calcularDiasRestantesDesdeFecha();">
+                            <span class="text-muted">Si se modifica, el cálculo automático se actualiza</span>
+                        </div>
+                        <div class="form-group"><label>Días restantes</label>
+                            <div id="dias-restantes" style="font-size:16px;font-weight:600;color:#1a2a4a;padding-top:6px;">--</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Estado de la causa</label>
                             <select id="estado-causa-select">
                                 <option value="activa">Activa (investigación en curso)</option>
                                 <option value="criterio-oportunidad">Criterio de Oportunidad (Art. 18 CPP)</option>
@@ -455,26 +468,8 @@
                                 <option value="otro">Otro</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Observaciones del estado</label>
+                        <div class="form-group"><label>Observaciones del estado</label>
                             <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..."></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="sub-seccion">
-                    <h4>Plazo y Requerimiento</h4>
-                    <div class="form-row">
-                        <div class="form-group"><label>Plazo otorgado para presentar el requerimiento (meses)</label>
-                            <input type="number" id="plazo-investigacion" min="0" value="6" onchange="calcularVencimiento(); actualizarFechaRequerimientoConclusivo();">
-                            <span class="text-muted">Art. 325 CPP: 6 meses ordinario</span>
-                        </div>
-                        <div class="form-group"><label>Fecha de vencimiento (editable)</label>
-                            <input type="date" id="fecha-vencimiento-input" onchange="calcularDiasRestantesDesdeFecha();">
-                            <span class="text-muted">Si se modifica, el cálculo automático se actualiza</span>
-                        </div>
-                        <div class="form-group"><label>Días restantes</label>
-                            <div id="dias-restantes" style="font-size:16px;font-weight:600;color:#1a2a4a;padding-top:6px;">--</div>
                         </div>
                     </div>
                 </div>
@@ -528,6 +523,7 @@
                                 <input type="text" id="nueva-fecha-rebeldia" readonly style="background:#f0f2f5;color:#1a2a4a;font-weight:600;">
                             </div>
                         </div>
+                        <!-- Mostrar desglose de días -->
                         <div id="desglose-rebeldia" style="margin-top:10px;padding:10px;background:#f0f2f5;border-radius:6px;border-left:4px solid #d4a843;">
                             <div><strong>Desglose de plazos:</strong></div>
                             <div id="dias-transcurridos-rebeldia" style="font-size:14px;color:#333;">--</div>
@@ -978,6 +974,7 @@ document.addEventListener('DOMContentLoaded', function() {
         calcularVencimiento();
         actualizarFechaRequerimientoConclusivo();
     });
+    // Escuchar cambios en la fecha de vencimiento manual
     document.getElementById('fecha-vencimiento-input').addEventListener('change', function() {
         calcularDiasRestantesDesdeFecha();
     });
@@ -996,6 +993,7 @@ function actualizarPestanas() {
     const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
     const esA = esGrupoA(hechoPrincipal);
     const container = document.getElementById('tabs-container');
+    // Definir pestañas base
     let tabs = [
         { id:'tab1', icon:'fa-file-alt', label:'Datos Generales' },
         { id:'tab2', icon:'fa-balance-scale', label:'Juzgado' }
@@ -1007,6 +1005,7 @@ function actualizarPestanas() {
     tabs.push({ id:'tab5', icon:'fa-file-signature', label:'Informe' });
     tabs.push({ id:'tab6', icon:'fa-exclamation-triangle', label:'Alertas' });
 
+    // Construir HTML de pestañas
     let html = '';
     tabs.forEach((t, idx) => {
         const active = idx === 0 ? 'active' : '';
@@ -1018,19 +1017,24 @@ function actualizarPestanas() {
     });
     container.innerHTML = html;
 
+    // Ocultar/Mostrar paneles según corresponda
     document.querySelectorAll('.tab-pane').forEach(el => {
         el.style.display = 'none';
     });
+    // Mostrar solo los que están en tabs
     tabs.forEach(t => {
         const pane = document.getElementById(t.id);
         if (pane) pane.style.display = 'block';
     });
+    // Activar el primero
     if (tabs.length > 0) {
         const firstId = tabs[0].id;
         document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
         document.getElementById(firstId).classList.add('active');
         document.querySelector(`[data-tab="${firstId}"]`).classList.add('active');
     }
+
+    // Si estamos en Grupo A, rellenar intervenciones
     if (esA) {
         actualizarIntervenciones();
     }
@@ -1044,6 +1048,7 @@ function actualizarIntervenciones() {
     const container = document.getElementById('intervencion-contenido');
     if (hechoPrincipal === '229') {
         container.innerHTML = generarCuestionarioRiesgo();
+        // Restaurar datos si existen
         const causa = getCausaActual();
         if (causa && causa.intervenciones && causa.intervenciones.tipo === 'cuestionario') {
             restaurarCuestionario(causa.intervenciones);
@@ -1347,15 +1352,20 @@ function calcularDiasSuspendidos() {
     elDias.textContent = `${diff} días`;
     elDias.style.color = '#1a2a4a';
     
+    // Desglose
     if (fechaImputacion && plazoMeses > 0) {
         const fechaImput = new Date(fechaImputacion);
         const fechaVencOriginal = new Date(fechaImput);
         fechaVencOriginal.setMonth(fechaVencOriginal.getMonth() + plazoMeses);
         
+        // Días transcurridos desde imputación hasta declaración de rebeldía
         const transcurridos = Math.ceil((ini - fechaImput) / (1000*60*60*24));
         elTranscurridos.textContent = `⏳ Días transcurridos antes de la rebeldía: ${transcurridos} días (desde imputación hasta declaración)`;
+        
+        // Días suspendidos
         elSuspendidosDetalle.textContent = `⏸️ Días suspendidos por rebeldía: ${diff} días (desde declaración hasta levantamiento)`;
         
+        // Días restantes después de levantar
         const hoy = new Date();
         hoy.setHours(0,0,0,0);
         const fechaFinal = new Date(fechaImput);
@@ -1411,6 +1421,7 @@ function calcularVencimiento() {
     fecha.setMonth(fecha.getMonth() + plazo);
     fecha.setDate(fecha.getDate() + diasSuspendidos);
     
+    // Formatear fecha para input date
     const year = fecha.getFullYear();
     const month = String(fecha.getMonth() + 1).padStart(2, '0');
     const day = String(fecha.getDate()).padStart(2, '0');
@@ -1685,6 +1696,7 @@ function calcularDiasRestantesGlobal(causa) {
     if (!causa.fechaImputacion || !causa.plazoInvestigacion) {
         return { dias: null, estado: 'sin_datos' };
     }
+    // Si tiene fecha de vencimiento manual, usarla
     if (causa.fechaVencimiento) {
         const hoy = new Date();
         hoy.setHours(0,0,0,0);
@@ -1929,7 +1941,7 @@ function guardarPestana2() {
         actualizarEstadoSeccion('tab2', true);
         alert('Datos del Juzgado guardados correctamente.');
         verificarPlazosYAlertar('📌 Plazos actualizados tras guardar Datos del Juzgado');
-        renderizarCausas();
+        renderizarCausas(); // Actualizar tarjetas con el nuevo estado
     }
 }
 function guardarPestana3() {
@@ -2195,6 +2207,7 @@ function renderizarCausas() {
             diasInfo = `<div class="dias-restantes">📅 Vence en ${info.dias} días</div>`;
         }
 
+        // Badge de estado de la causa
         const estado = c.estadoCausa || 'activa';
         const estadoLabel = getEstadoLabel(estado);
         const estadoClass = getEstadoClass(estado);
@@ -2335,6 +2348,7 @@ function nuevaCausa() {
     document.getElementById('dias-suspendidos').textContent = '--';
     setValueSafe('nueva-fecha-rebeldia', '');
     setValueSafe('observaciones-generales', '');
+    // Restaurar estado por defecto
     setValueSafe('estado-causa-select', 'activa');
     setValueSafe('observaciones-estado', '');
     actualizarEstadoSeccion('tab1', false);
@@ -2420,7 +2434,7 @@ function actualizarAlertas() {
     let alertas = [];
     const info = calcularDiasRestantesGlobal(causa);
     if (info.estado === 'vencido') alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(info.dias)} días)`);
-    else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias)} días)`);
+    else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias} días)`);
     if (causa.rebeldia?.activa) {
         alertas.push('🔴 Rebeldía activa');
         if (!causa.rebeldia.levantamiento) alertas.push('⚠️ Rebeldía sin levantar');
@@ -2430,6 +2444,7 @@ function actualizarAlertas() {
     if (causa.rebeldia?.nuevaFechaRequerir) {
         alertas.push(`📅 Fecha de requerimiento: ${causa.rebeldia.nuevaFechaRequerir}`);
     }
+    // Alertas de estado
     if (causa.estadoCausa && causa.estadoCausa !== 'activa') {
         alertas.push(`📌 Estado actual: ${getEstadoLabel(causa.estadoCausa)}`);
     }
