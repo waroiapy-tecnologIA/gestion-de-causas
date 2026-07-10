@@ -415,7 +415,7 @@
                 </div>
             </div>
 
-            <!-- ===== TAB 2: JUZGADO ===== -->
+            <!-- ===== TAB 2: JUZGADO (CON ESTADO DE LA CAUSA) ===== -->
             <div id="tab2" class="tab-pane">
                 <div class="sub-seccion">
                     <h4>Datos de Imputación</h4>
@@ -433,13 +433,13 @@
                     </div>
                 </div>
 
-                <!-- ESTADO DE LA CAUSA -->
-                <div class="sub-seccion destacada">
-                    <h4><i class="fas fa-tag"></i> Estado de la causa</h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Seleccione el estado actual <span class="required">*</span></label>
-                            <select id="estado-causa-select">
+                <!-- ===== ESTADO DE LA CAUSA (AGREGADO MANUALMENTE) ===== -->
+                <div style="background:#eef2f7; padding:15px; border-radius:8px; border-left:4px solid #d4a843; margin-bottom:20px;">
+                    <h4 style="color:#1a2a4a; margin-bottom:10px;"><i class="fas fa-tag"></i> Estado de la causa</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <div>
+                            <label style="font-weight:500; font-size:13px; color:#444;">Seleccione el estado actual <span style="color:#b33c3c;">*</span></label>
+                            <select id="estado-causa-select" style="width:100%; padding:8px 12px; border:1px solid #d0d4da; border-radius:6px; font-size:14px; background:#fff;">
                                 <option value="activa">Activa (investigación en curso)</option>
                                 <option value="criterio-oportunidad">Criterio de Oportunidad (Art. 18 CPP)</option>
                                 <option value="archivo-provisional">Archivo Provisional (Art. 334 CPP)</option>
@@ -456,9 +456,9 @@
                                 <option value="otro">Otro</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Observaciones del estado</label>
-                            <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..."></textarea>
+                        <div>
+                            <label style="font-weight:500; font-size:13px; color:#444;">Observaciones del estado</label>
+                            <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..." style="width:100%; padding:8px 12px; border:1px solid #d0d4da; border-radius:6px; font-size:14px; resize:vertical; background:#fff;"></textarea>
                         </div>
                     </div>
                 </div>
@@ -605,11 +605,9 @@
 <script>
 // ============================================================
 // CONFIGURACIÓN DE HECHOS PUNIBLES CON INCISOS Y NUMERALES
-// (INCLUYE LOS 12 NUEVOS DELITOS CON SUS INCISOS)
 // ============================================================
 const CONFIG = {
     hechos: {
-        // ========== GRUPO A (ORIGINALES) ==========
         '128': {
             label:'Art. 128 – Coacción sexual y violación',
             modificaciones: [{ ley:'Ley Nº 7394/2024', fecha:'2024', descripcion:'Modificación integral del artículo 128.' }],
@@ -706,7 +704,6 @@ const CONFIG = {
             tipo:'multiple',
             texto: 'Artículo 225.- Incumplimiento del deber legal alimentario. El que, pudiendo cumplir, no proveyere a la subsistencia de su cónyuge, concubino, ascendiente, descendiente o hermano, será castigado con pena privativa de libertad de uno a dos años. Si el incumplimiento afectare a un convenio judicial, la pena será de dos a cinco años.'
         },
-        // ========== GRUPO B (NUEVOS) ==========
         '166': {
             label:'Art. 166 – Hurto',
             modificaciones: [],
@@ -944,68 +941,16 @@ function esGrupoA(hechoId) {
 }
 
 // ============================================================
-// FUNCIONES DE PERSISTENCIA (localStorage)
+// FUNCIONES DE PERSISTENCIA (memoria)
 // ============================================================
-function guardarEnLocalStorage() {
-    try {
-        localStorage.setItem('causasPenales', JSON.stringify(causas));
-    } catch(e) {
-        console.warn('No se pudo guardar en localStorage:', e);
-    }
+function guardarEnMemoria() {
+    // Los datos ya están en el array 'causas', no se pierden hasta recargar
+    // Para persistencia real, se podría usar localStorage, pero no lo implementamos.
 }
+
 function cargarDatos() {
-    try {
-        const data = localStorage.getItem('causasPenales');
-        if (data) {
-            causas = JSON.parse(data);
-            // Asegurar que todas las causas tengan campos nuevos (ej: estado, rebeldiaActiva, etc.)
-            causas = causas.map(c => {
-                if (!c.estado) c.estado = 'activa';
-                if (!c.hechosAgregados) c.hechosAgregados = [];
-                if (!c.victimas) c.victimas = [{ nombre:'', ci:'', telefono:'', domicilio:'', edad:'' }];
-                if (!c.testigos) c.testigos = [{ nombre:'', ci:'', telefono:'' }];
-                if (c.rebeldiaActiva === undefined) c.rebeldiaActiva = false;
-                if (!c.fechaRebeldia) c.fechaRebeldia = '';
-                if (!c.fechaLevantamientoRebeldia) c.fechaLevantamientoRebeldia = '';
-                if (!c.numResolucionRebeldia) c.numResolucionRebeldia = '';
-                if (!c.fechaVencimiento) c.fechaVencimiento = '';
-                if (!c.plazoInvestigacion) c.plazoInvestigacion = 6;
-                if (!c.observacionesEstado) c.observacionesEstado = '';
-                if (!c.fechaImputacion) c.fechaImputacion = '';
-                if (!c.numAI) c.numAI = '';
-                if (!c.fechaAI) c.fechaAI = '';
-                if (!c.numJuzgado) c.numJuzgado = '';
-                // medidas
-                if (c.medidaNotificacion === undefined) c.medidaNotificacion = false;
-                if (c.medidaAlternativas === undefined) c.medidaAlternativas = false;
-                if (c.medidaPrivativas === undefined) c.medidaPrivativas = false;
-                // prórrogas
-                if (!c.fechaProrrogaOrdinaria) c.fechaProrrogaOrdinaria = '';
-                if (!c.prorrogaOrdinariaOtorgada) c.prorrogaOrdinariaOtorgada = '';
-                if (!c.nuevaFechaOrdinaria) c.nuevaFechaOrdinaria = '';
-                if (!c.fundamentoOrdinaria) c.fundamentoOrdinaria = '';
-                if (!c.fechaProrrogaExtraordinaria) c.fechaProrrogaExtraordinaria = '';
-                if (!c.prorrogaExtraordinariaOtorgada) c.prorrogaExtraordinariaOtorgada = '';
-                if (!c.nuevaFechaExtraordinaria) c.nuevaFechaExtraordinaria = '';
-                if (!c.fundamentoExtraordinaria) c.fundamentoExtraordinaria = '';
-                // anticipos
-                if (c.anticipoCamaraGessell === undefined) c.anticipoCamaraGessell = false;
-                if (c.anticipoPericia === undefined) c.anticipoPericia = false;
-                if (c.anticipoInspeccion === undefined) c.anticipoInspeccion = false;
-                if (c.anticipoReconocimiento === undefined) c.anticipoReconocimiento = false;
-                if (c.anticipoTestigosVulnerables === undefined) c.anticipoTestigosVulnerables = false;
-                if (!c.anticipoOtro) c.anticipoOtro = '';
-                // intervenciones (cuestionario/liquidacion)
-                if (!c.intervenciones) c.intervenciones = { tipo:'', respuestas:{}, otros:'', montoDebido:0, montoAbonado:0, diligencias:[] };
-                // evaluaciones
-                if (!c.evaluaciones) c.evaluaciones = { psi:{fecha:'',profesional:'',resultado:'Pendiente',observaciones:''}, med:{fecha:'',profesional:'',resultado:'Pendiente',observaciones:''} };
-                return c;
-            });
-        }
-    } catch(e) {
-        console.warn('Error al cargar datos:', e);
-        causas = [];
-    }
+    // No hay datos guardados, comenzamos vacío
+    causas = [];
 }
 
 // ============================================================
@@ -1014,108 +959,62 @@ function cargarDatos() {
 function renderizarCausas() {
     const grid = document.getElementById('causa-grid');
     const contador = document.getElementById('contador-causas');
-    
+
     if (causas.length === 0) {
-        grid.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-folder-open"></i>
-                <p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p>
-            </div>
-        `;
+        grid.innerHTML = `<div class="empty-state"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
         contador.textContent = '(0)';
         return;
     }
-    
+
     contador.textContent = `(${causas.length})`;
     let html = '';
-    
-    causas.forEach((causa) => {
-        // Datos básicos
-        const numero = causa.numero || 'Sin número';
-        const imputado = causa.imputado || 'Sin imputado';
-        const caratula = generarCaratulaTexto(causa);
+
+    causas.forEach(causa => {
         const estado = causa.estado || 'activa';
         const estadoLabel = obtenerEstadoLabel(estado);
         const estadoBadge = `badge-estado ${estado.replace(/_/g, '-')}`;
-        
-        // Rebeldía
+
         let rebeldiaHTML = '';
         if (causa.rebeldiaActiva) {
-            const fechaReb = causa.fechaRebeldia ? new Date(causa.fechaRebeldia).toLocaleDateString('es-ES') : 'fecha no especificada';
-            rebeldiaHTML = `
-                <div style="margin-top:4px; display:flex; align-items:center; gap:6px; background:#f8d7da; padding:4px 8px; border-radius:4px; font-size:12px; color:#721c24;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span><strong>En rebeldía</strong> (desde ${fechaReb})</span>
-                </div>
-            `;
+            const fecha = causa.fechaRebeldia ? new Date(causa.fechaRebeldia).toLocaleDateString('es-ES') : 'fecha no especificada';
+            rebeldiaHTML = `<div style="background:#f8d7da;padding:4px 8px;border-radius:4px;font-size:12px;color:#721c24;margin-top:4px;">
+                <i class="fas fa-exclamation-triangle"></i> En rebeldía (desde ${fecha})
+            </div>`;
         }
-        
-        // Días restantes
+
         let diasHTML = '';
         if (causa.fechaVencimiento) {
             const dias = calcularDiasRestantes(causa.fechaVencimiento);
             const clase = dias < 0 ? 'vencido' : (dias <= 15 ? 'proximo' : '');
-            diasHTML = `<div class="dias-restantes ${clase}">📅 ${dias < 0 ? `VENCIDO (hace ${Math.abs(dias)} días)` : `Faltan ${dias} días`}</div>`;
+            diasHTML = `<div class="dias-restantes ${clase}">📅 ${dias < 0 ? 'VENCIDO (hace ' + Math.abs(dias) + ' días)' : 'Faltan ' + dias + ' días'}</div>`;
         }
-        
-        // Hechos con incisos (para dar más contenido y activar overflow)
+
         let hechosDetalle = '';
         if (causa.hechosAgregados && causa.hechosAgregados.length > 0) {
             const items = causa.hechosAgregados.map(h => {
                 const config = CONFIG.hechos[h.hecho];
                 const label = config ? config.label : h.hecho;
-                let incisosText = '';
-                if (h.incisos && h.incisos.length > 0) {
-                    incisosText = h.incisos.map(inc => {
-                        const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
-                        let txt = incData ? incData.label.substring(0, 40) : inc.id;
-                        if (inc.numerales && inc.numerales.length > 0) {
-                            txt += ` (num. ${inc.numerales.join(', ')})`;
-                        }
-                        return txt;
-                    }).join('; ');
-                }
-                return `<div style="font-size:12px;color:#444;line-height:1.3;">• ${label}${incisosText ? ' → ' + incisosText : ''}</div>`;
+                return `<div style="font-size:12px;color:#444;line-height:1.3;">• ${label}</div>`;
             }).join('');
             hechosDetalle = `<div style="margin-top:6px; border-top:1px dashed #e0e4ea; padding-top:6px;">${items}</div>`;
         }
-        
-        // Víctimas
-        let victimasHTML = '';
-        if (causa.victimas && causa.victimas.length > 0) {
-            const nombres = causa.victimas.map(v => v.nombre || 'Sin nombre').join(', ');
-            victimasHTML = `<div style="font-size:12px;color:#555;margin-top:2px;">👤 Víctima(s): ${nombres}</div>`;
-        }
-        
-        // Icono de alerta por rebeldía
-        let alertaIcon = '';
-        if (causa.rebeldiaActiva) {
-            alertaIcon = `<span class="alerta-icon" title="Declarado en rebeldía"><i class="fas fa-exclamation-triangle"></i></span>`;
-        }
-        
+
         html += `
             <div class="causa-card" onclick="abrirCausa('${causa.id}')">
-                <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${causa.id}')" title="Eliminar causa">
-                    <i class="fas fa-times"></i>
-                </button>
-                <div class="numero">
-                    ${alertaIcon} ${numero}
-                </div>
-                <div class="caratula">${caratula}</div>
+                <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${causa.id}')">×</button>
+                <div class="numero">${causa.numero || 'Sin número'}</div>
+                <div class="caratula">${generarCaratulaTexto(causa)}</div>
                 ${hechosDetalle}
-                ${victimasHTML}
-                <div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">
-                    <span class="${estadoBadge}">${estadoLabel}</span>
-                </div>
+                <div style="margin-top:6px;"><span class="${estadoBadge}">${estadoLabel}</span></div>
                 ${rebeldiaHTML}
                 ${diasHTML}
                 <div style="font-size:11px;color:#888;margin-top:6px;border-top:1px dashed #e0e4ea;padding-top:4px;">
-                    Imputado: ${imputado}
+                    Imputado: ${causa.imputado || 'Sin imputado'}
                 </div>
             </div>
         `;
     });
-    
+
     grid.innerHTML = html;
 }
 
@@ -1165,7 +1064,7 @@ function generarCaratulaTexto(causa) {
 }
 
 // ============================================================
-// FILTRAR CAUSAS (buscador)
+// FILTRAR CAUSAS
 // ============================================================
 function filtrarCausas() {
     const term = document.getElementById('buscador').value.toLowerCase().trim();
@@ -1192,7 +1091,7 @@ function filtrarCausas() {
 }
 
 // ============================================================
-// FUNCIONES DE CRUD (Crear, Abrir, Eliminar)
+// FUNCIONES DE CRUD
 // ============================================================
 function nuevaCausa() {
     causaActualId = null;
@@ -1204,13 +1103,11 @@ function nuevaCausa() {
     document.getElementById('listado-view').style.display = 'none';
     limpiarFormulario();
     actualizarPestanas();
-    // Ocultar badges
     document.querySelectorAll('.badge-guardado').forEach(b => b.style.display = 'none');
     document.querySelectorAll('.footer-seccion .estado').forEach(el => {
         el.textContent = 'Sin guardar';
         el.className = 'estado';
     });
-    // Scroll al formulario
     document.getElementById('form-container').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -1226,7 +1123,6 @@ function abrirCausa(id) {
     document.getElementById('listado-view').style.display = 'none';
     cargarCausaEnFormulario(causa);
     actualizarPestanas();
-    // Mostrar badges
     document.querySelectorAll('.badge-guardado').forEach(b => b.style.display = 'inline');
     document.querySelectorAll('.footer-seccion .estado').forEach(el => {
         el.textContent = 'Guardado';
@@ -1238,14 +1134,12 @@ function abrirCausa(id) {
 function eliminarCausa(id) {
     if (!confirm('¿Eliminar esta causa permanentemente?')) return;
     causas = causas.filter(c => c.id !== id);
-    guardarEnLocalStorage();
     renderizarCausas();
 }
 
 function eliminarTodasLasCausas() {
     if (!confirm('¿Eliminar TODAS las causas? Esta acción no se puede deshacer.')) return;
     causas = [];
-    guardarEnLocalStorage();
     renderizarCausas();
     cerrarFormulario();
 }
@@ -1310,7 +1204,7 @@ function cargarCausaEnFormulario(causa) {
         `;
         testigosContainer.appendChild(div);
     });
-    // Hechos (solo para mostrar, no se pueden editar desde aquí)
+    // Hechos
     renderizarHechosAgregados();
     generarCaratula();
     
@@ -1346,8 +1240,16 @@ function cargarCausaEnFormulario(causa) {
     setCheckedSafe('anticipo-testigos-vulnerables', causa.anticipoTestigosVulnerables || false);
     setValueSafe('anticipo-otro', causa.anticipoOtro || '');
     
-    // Tab3 (intervenciones) – se actualiza al cambiar de pestaña
-    // Tab4 (evaluaciones)
+    // Tab3
+    actualizarIntervenciones();
+    if (causa.intervenciones) {
+        if (causa.intervenciones.tipo === 'cuestionario') {
+            restaurarCuestionario(causa.intervenciones);
+        } else if (causa.intervenciones.tipo === 'liquidacion') {
+            restaurarLiquidacion(causa.intervenciones);
+        }
+    }
+    // Tab4
     if (causa.evaluaciones) {
         setValueSafe('psi-fecha', causa.evaluaciones.psi.fecha || '');
         setValueSafe('psi-profesional', causa.evaluaciones.psi.profesional || '');
@@ -1362,19 +1264,10 @@ function cargarCausaEnFormulario(causa) {
     calcularVencimiento();
     actualizarFechaRequerimientoConclusivo();
     calcularDiasSuspendidos();
-    // Cargar intervenciones específicas
-    actualizarIntervenciones();
-    if (causa.intervenciones) {
-        if (causa.intervenciones.tipo === 'cuestionario') {
-            restaurarCuestionario(causa.intervenciones);
-        } else if (causa.intervenciones.tipo === 'liquidacion') {
-            restaurarLiquidacion(causa.intervenciones);
-        }
-    }
 }
 
 // ============================================================
-// LIMPIAR FORMULARIO (para nueva causa)
+// LIMPIAR FORMULARIO
 // ============================================================
 function limpiarFormulario() {
     document.querySelectorAll('#form-container input, #form-container select, #form-container textarea').forEach(el => {
@@ -1384,7 +1277,6 @@ function limpiarFormulario() {
             el.checked = false;
         }
     });
-    // Resetear víctimas y testigos a un bloque cada uno
     const victimasContainer = document.getElementById('victimas-container');
     victimasContainer.innerHTML = `
         <div class="victima-block" data-index="0">
@@ -1415,18 +1307,15 @@ function limpiarFormulario() {
     renderizarHechosAgregados();
     generarCaratula();
     document.getElementById('incisos-opciones').innerHTML = '<span class="text-muted">Seleccione un hecho punible</span>';
-    // Resetear badges y estados
     document.querySelectorAll('.badge-guardado').forEach(b => b.style.display = 'none');
     document.querySelectorAll('.footer-seccion .estado').forEach(el => {
         el.textContent = 'Sin guardar';
         el.className = 'estado';
     });
-    // Ocultar rebeldía
     document.getElementById('rebeldia-campos').classList.add('hidden');
     document.getElementById('dias-suspendidos').textContent = '--';
     document.getElementById('dias-restantes').textContent = '--';
     document.getElementById('nueva-fecha-rebeldia').value = '';
-    // Intervenciones
     document.getElementById('intervencion-contenido').innerHTML = '<p class="text-muted">Seleccione un hecho del Grupo A para ver las intervenciones.</p>';
 }
 
@@ -1440,7 +1329,6 @@ function guardarPestana1() {
         causa = { id: id, hechosAgregados: [] };
         causas.push(causa);
     }
-    // Recoger datos
     causa.numero = document.getElementById('num-causa').value.trim();
     causa.imputado = document.getElementById('imputado').value.trim();
     causa.ciImputado = document.getElementById('ci-imputado').value.trim();
@@ -1453,7 +1341,6 @@ function guardarPestana1() {
     causa.horaHecho = document.getElementById('hora-hecho').value;
     causa.descripcion = document.getElementById('descripcion-hecho').value.trim();
     causa.observaciones = document.getElementById('observaciones-generales').value.trim();
-    // Víctimas
     const victimas = [];
     document.querySelectorAll('.victima-block').forEach(block => {
         const nombre = block.querySelector('.victima-nombre')?.value.trim() || '';
@@ -1464,7 +1351,6 @@ function guardarPestana1() {
         victimas.push({ nombre, ci, telefono, domicilio, edad });
     });
     causa.victimas = victimas;
-    // Testigos
     const testigos = [];
     document.querySelectorAll('.testigo-block').forEach(block => {
         const nombre = block.querySelector('.testigo-nombre')?.value.trim() || '';
@@ -1473,10 +1359,7 @@ function guardarPestana1() {
         testigos.push({ nombre, ci, telefono });
     });
     causa.testigos = testigos;
-    // Hechos
     causa.hechosAgregados = JSON.parse(JSON.stringify(hechosAgregados));
-    // Guardar
-    guardarEnLocalStorage();
     seccionesGuardadas.tab1 = true;
     document.getElementById('badge-tab1').style.display = 'inline';
     document.getElementById('estado-tab1').textContent = 'Guardado';
@@ -1524,7 +1407,6 @@ function guardarPestana2() {
     causa.anticipoReconocimiento = document.getElementById('anticipo-reconocimiento').checked;
     causa.anticipoTestigosVulnerables = document.getElementById('anticipo-testigos-vulnerables').checked;
     causa.anticipoOtro = document.getElementById('anticipo-otro').value.trim();
-    guardarEnLocalStorage();
     seccionesGuardadas.tab2 = true;
     document.getElementById('badge-tab2').style.display = 'inline';
     document.getElementById('estado-tab2').textContent = 'Guardado';
@@ -1541,7 +1423,6 @@ function guardarPestana3() {
     if (!causa) { alert('No hay causa seleccionada.'); return; }
     const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
     if (hechoPrincipal === '229') {
-        // Guardar cuestionario
         const respuestas = {};
         preguntasRiesgo.forEach(p => {
             const sel = document.getElementById(`riesgo-${p.id}`);
@@ -1550,7 +1431,6 @@ function guardarPestana3() {
         const otros = document.getElementById('riesgo-otros')?.value || '';
         causa.intervenciones = { tipo:'cuestionario', respuestas, otros, puntaje:riesgoPuntaje, nivel:riesgoNivel };
     } else if (hechoPrincipal === '225') {
-        // Guardar liquidación y diligencias
         const montoDebido = parseFloat(document.getElementById('monto-debido')?.value) || 0;
         const montoAbonado = parseFloat(document.getElementById('monto-abonado')?.value) || 0;
         const diligencias = obtenerDiligenciasMarcadas();
@@ -1559,7 +1439,6 @@ function guardarPestana3() {
         alert('No hay intervenciones específicas para este tipo de causa.');
         return;
     }
-    guardarEnLocalStorage();
     seccionesGuardadas.tab3 = true;
     document.getElementById('badge-tab3').style.display = 'inline';
     document.getElementById('estado-tab3').textContent = 'Guardado';
@@ -1587,7 +1466,6 @@ function guardarPestana4() {
             observaciones: document.getElementById('med-observaciones').value.trim()
         }
     };
-    guardarEnLocalStorage();
     seccionesGuardadas.tab4 = true;
     document.getElementById('badge-tab4').style.display = 'inline';
     document.getElementById('estado-tab4').textContent = 'Guardado';
@@ -1600,7 +1478,6 @@ function guardarPestana4() {
 // ============================================================
 function getCausaActual() {
     if (!causaActualId) {
-        // Intentar encontrar por número e imputado (para nueva causa sin ID)
         const num = document.getElementById('num-causa').value.trim();
         const imp = document.getElementById('imputado').value.trim();
         if (num && imp) {
@@ -1621,14 +1498,19 @@ function getCausaActual() {
 // FUNCIONES DE FECHAS Y PLAZOS
 // ============================================================
 function calcularVencimiento() {
-    const fechaImputacion = document.getElementById('fecha-imputacion').value;
-    const plazo = parseInt(document.getElementById('plazo-investigacion').value) || 0;
     const inputFechaVenc = document.getElementById('fecha-vencimiento-input');
     const elDias = document.getElementById('dias-restantes');
-
+    const fechaImputacion = document.getElementById('fecha-imputacion').value;
+    const plazo = parseInt(document.getElementById('plazo-investigacion').value) || 0;
     const rebeldiaActiva = document.getElementById('rebeldia-activa').checked;
     const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
     let diasSuspendidos = 0;
+
+    if (!fechaImputacion || plazo <= 0) {
+        inputFechaVenc.value = '';
+        elDias.textContent = '--';
+        return;
+    }
 
     if (rebeldiaActiva && fechaLevantamiento) {
         const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
@@ -1648,21 +1530,13 @@ function calcularVencimiento() {
         return;
     }
 
-    if (!fechaImputacion || plazo <= 0) {
-        inputFechaVenc.value = '';
-        elDias.textContent = '--';
-        return;
-    }
-
     const fecha = new Date(fechaImputacion);
     fecha.setMonth(fecha.getMonth() + plazo);
     fecha.setDate(fecha.getDate() + diasSuspendidos);
-    
     const year = fecha.getFullYear();
     const month = String(fecha.getMonth() + 1).padStart(2, '0');
     const day = String(fecha.getDate()).padStart(2, '0');
     inputFechaVenc.value = `${year}-${month}-${day}`;
-
     calcularDiasRestantesDesdeFecha();
 }
 
@@ -1677,10 +1551,8 @@ function actualizarFechaRequerimientoConclusivo() {
         el.value = '';
         return;
     }
-    
     const fecha = new Date(fechaImputacion);
     let diasSuspendidos = 0;
-    
     if (rebeldiaActiva && fechaLevantamiento) {
         const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
         if (fechaDeclaracion) {
@@ -1691,10 +1563,8 @@ function actualizarFechaRequerimientoConclusivo() {
             }
         }
     }
-    
     fecha.setMonth(fecha.getMonth() + plazo);
     fecha.setDate(fecha.getDate() + diasSuspendidos);
-    
     el.value = fecha.toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
     if (diasSuspendidos > 0) {
         el.value += ` (+${diasSuspendidos} días suspendidos)`;
@@ -1729,7 +1599,6 @@ function calcularDiasSuspendidos() {
     const elTranscurridos = document.getElementById('dias-transcurridos-rebeldia');
     const elSuspendidosDetalle = document.getElementById('dias-suspendidos-detalle');
     const elRestantesDetalle = document.getElementById('dias-restantes-detalle');
-    
     const fechaImputacion = document.getElementById('fecha-imputacion').value;
     const plazoMeses = parseInt(document.getElementById('plazo-investigacion').value) || 0;
     
@@ -1740,7 +1609,6 @@ function calcularDiasSuspendidos() {
         elRestantesDetalle.textContent = '--';
         return;
     }
-    
     const ini = new Date(fechaDeclaracion);
     const fin = new Date(fechaLevantamiento);
     if (fin < ini) {
@@ -2315,7 +2183,6 @@ function actualizarInforme() {
         container.innerHTML = '<p class="text-muted">Seleccione o cree una causa para generar el informe.</p>';
         return;
     }
-    // Generar informe en HTML
     let html = `
         <div class="informe-header">
             <h2 style="color:#1a2a4a;margin-bottom:4px;">INFORME DE CAUSA</h2>
@@ -2328,7 +2195,6 @@ function actualizarInforme() {
         </div>
         <div style="margin:15px 0;border-top:1px solid #e0e4ea;"></div>
     `;
-    // Hechos
     if (causa.hechosAgregados && causa.hechosAgregados.length > 0) {
         html += `<h4>Hechos Punibles</h4><ul style="margin:10px 0;padding-left:20px;">`;
         causa.hechosAgregados.forEach(h => {
@@ -2350,7 +2216,6 @@ function actualizarInforme() {
         });
         html += `</ul>`;
     }
-    // Víctimas
     if (causa.victimas && causa.victimas.length > 0) {
         html += `<h4>Víctimas</h4><ul style="margin:10px 0;padding-left:20px;">`;
         causa.victimas.forEach(v => {
@@ -2358,7 +2223,6 @@ function actualizarInforme() {
         });
         html += `</ul>`;
     }
-    // Testigos
     if (causa.testigos && causa.testigos.length > 0) {
         html += `<h4>Testigos</h4><ul style="margin:10px 0;padding-left:20px;">`;
         causa.testigos.forEach(t => {
@@ -2366,7 +2230,6 @@ function actualizarInforme() {
         });
         html += `</ul>`;
     }
-    // Datos del juzgado
     html += `<div style="margin-top:15px;border-top:1px solid #e0e4ea;padding-top:15px;">`;
     html += `<h4>Datos del Juzgado</h4>`;
     html += `<p><strong>Fecha Imputación:</strong> ${causa.fechaImputacion ? new Date(causa.fechaImputacion).toLocaleDateString('es-ES') : 'No especificada'}</p>`;
@@ -2380,7 +2243,6 @@ function actualizarInforme() {
         }
     }
     html += `</div>`;
-    // Firma
     html += `
         <div class="espacio-firma">
             <p><strong>Fiscalía N° ____</strong></p>
@@ -2436,9 +2298,7 @@ function actualizarAlertas() {
 // IMPRIMIR INFORME
 // ============================================================
 function imprimirInforme() {
-    // Asegurar que el informe esté actualizado
     actualizarInforme();
-    // Cambiar a la pestaña de informe antes de imprimir
     document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
     document.getElementById('tab5').classList.add('active');
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -2474,7 +2334,6 @@ function importarDatos() {
                 if (Array.isArray(data)) {
                     if (confirm(`Se importarán ${data.length} causas. ¿Continuar?`)) {
                         causas = data;
-                        guardarEnLocalStorage();
                         renderizarCausas();
                         alert('Datos importados correctamente.');
                     }
@@ -2531,7 +2390,6 @@ document.addEventListener('DOMContentLoaded', function() {
         calcularDiasRestantesDesdeFecha();
     });
     actualizarPestanas();
-    // Verificar plazos al cargar
     setTimeout(() => {
         if (causas.length > 0) {
             actualizarAlertas();
