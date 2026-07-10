@@ -52,10 +52,6 @@
         .causa-card .numero { font-weight:700; font-size:16px; color:#1a2a4a; display:flex; align-items:center; gap:6px; }
         .causa-card .numero .alerta-icon { color:#b33c3c; font-size:14px; }
         .causa-card .caratula { font-size:14px; color:#444; margin-top:4px; line-height:1.4; }
-        .causa-card .badge { display:inline-block; font-size:11px; padding:2px 10px; border-radius:12px; margin-top:8px; font-weight:500; }
-        .badge-activa { background:#d4edda; color:#155724; }
-        .badge-alimentos { background:#fff3cd; color:#856404; }
-        .badge-alerta { background:#f8d7da; color:#721c24; }
         .badge-estado { display:inline-block; font-size:10px; padding:2px 8px; border-radius:12px; margin-top:4px; font-weight:500; }
         .badge-estado.activa { background:#d4edda; color:#155724; }
         .badge-estado.criterio-oportunidad { background:#fff3cd; color:#856404; }
@@ -185,8 +181,6 @@
             .victima-block, .testigo-block { background:#fafafa !important; border:1px solid #ddd; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
             .checkbox-group input[type="checkbox"] { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
             .checkbox-group input[type="checkbox"]:checked { -webkit-appearance:checkbox; appearance:checkbox; }
-            .fundamento-articulo { background:#f8f9fa !important; border-left:3px solid #1a2a4a; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; margin:4px 0; padding:4px 10px; }
-            .fundamento-articulo .texto-ley { font-size:9pt; color:#333; }
             .alert-card { border:1px solid #ddd; margin-bottom:6px; page-break-inside:avoid; }
             .alert-card-header { background:#f5f5f5 !important; padding:6px 12px; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
             .alert-card-body { padding:6px 12px; }
@@ -216,8 +210,6 @@
             .text-muted { font-size:9pt; }
             .alert-item .label { font-size:9pt; min-width:120px; }
             .alert-item .value { font-size:9pt; }
-            .fundamento-articulo { font-size:9pt; }
-            .fundamento-articulo .texto-ley { font-size:8.5pt; }
             .resultado-riesgo { font-size:10pt; }
             .resultado-riesgo span { font-size:12pt; }
             .liquidacion-resultado { font-size:12pt; }
@@ -289,60 +281,49 @@
                 </div>
             </div>
             <!-- MENÚ DE PESTAÑAS (se construye dinámicamente) -->
-            <div class="tabs no-print" id="tabs-container">
-                <!-- Las pestañas se generan en JavaScript según el hecho principal -->
-            </div>
-            <!-- ===== TAB 1: DATOS GENERALES (siempre visible) ===== -->
+            <div class="tabs no-print" id="tabs-container"></div>
+            
+            <!-- ===== TAB 1: DATOS GENERALES ===== -->
             <div id="tab1" class="tab-pane active">
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Número de Causa <span class="required">*</span>
-                            <span class="tooltip-trigger"><i class="fas fa-info-circle" style="color:#1a2a4a;"></i><span class="tooltip-text">Obligatorio</span></span>
-                        </label>
+                        <label>Número de Causa <span class="required">*</span></label>
                         <input type="text" id="num-causa" placeholder="Ej: 123/2026" oninput="generarCaratula()">
                     </div>
                     <div class="form-group">
-                        <label>Nombre del Imputado <span class="required">*</span>
-                            <span class="tooltip-trigger"><i class="fas fa-info-circle" style="color:#1a2a4a;"></i><span class="tooltip-text">Obligatorio</span></span>
-                        </label>
+                        <label>Nombre del Imputado <span class="required">*</span></label>
                         <input type="text" id="imputado" placeholder="Nombre completo" oninput="generarCaratula()">
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Número de Identidad (CI)</label>
-                        <input type="text" id="ci-imputado" placeholder="Ej: 4.567.890"></div>
-                    <div class="form-group"><label>Domicilio</label>
-                        <input type="text" id="domicilio-imputado" placeholder="Dirección completa"></div>
-                    <div class="form-group"><label>Teléfono</label>
-                        <input type="text" id="telefono-imputado" placeholder="Ej: 0981-123-456"></div>
+                    <div class="form-group"><label>CI</label><input type="text" id="ci-imputado" placeholder="Ej: 4.567.890"></div>
+                    <div class="form-group"><label>Domicilio</label><input type="text" id="domicilio-imputado" placeholder="Dirección completa"></div>
+                    <div class="form-group"><label>Teléfono</label><input type="text" id="telefono-imputado" placeholder="Ej: 0981-123-456"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label>
+                    <div class="form-group">
+                        <label>¿Es reincidente?</label>
                         <div class="checkbox-group">
                             <input type="checkbox" id="reincidente" onchange="toggleReincidencia()">
                             <label for="reincidente">Sí</label>
                         </div>
                     </div>
                     <div class="form-group"><label>Número de veces</label>
-                        <input type="number" id="num-reincidencias" min="0" value="0" disabled></div>
+                        <input type="number" id="num-reincidencias" min="0" value="0" disabled>
+                    </div>
                 </div>
                 <div class="sub-seccion">
                     <h4>Víctima(s)</h4>
                     <div id="victimas-container">
                         <div class="victima-block" data-index="0">
                             <div class="form-row">
-                                <div class="form-group"><label>Nombre completo</label>
-                                    <input type="text" class="victima-nombre" placeholder="Nombre de la víctima"></div>
-                                <div class="form-group"><label>Cédula de identidad</label>
-                                    <input type="text" class="victima-ci" placeholder="CI"></div>
-                                <div class="form-group"><label>Teléfono</label>
-                                    <input type="text" class="victima-telefono" placeholder="Teléfono"></div>
+                                <div class="form-group"><label>Nombre completo</label><input type="text" class="victima-nombre" placeholder="Nombre de la víctima"></div>
+                                <div class="form-group"><label>CI</label><input type="text" class="victima-ci" placeholder="CI"></div>
+                                <div class="form-group"><label>Teléfono</label><input type="text" class="victima-telefono" placeholder="Teléfono"></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label>Domicilio</label>
-                                    <input type="text" class="victima-domicilio" placeholder="Dirección"></div>
-                                <div class="form-group"><label>Edad</label>
-                                    <input type="number" class="victima-edad" placeholder="Edad" min="0"></div>
+                                <div class="form-group"><label>Domicilio</label><input type="text" class="victima-domicilio" placeholder="Dirección"></div>
+                                <div class="form-group"><label>Edad</label><input type="number" class="victima-edad" placeholder="Edad" min="0"></div>
                                 <div class="form-group" style="justify-content:flex-end;">
                                     <button class="btn-remover" onclick="eliminarVictima(this)"><i class="fas fa-times"></i> Eliminar</button>
                                 </div>
@@ -352,24 +333,18 @@
                     <button class="btn btn-agregar" onclick="agregarVictima()"><i class="fas fa-plus"></i> Agregar otra víctima</button>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Lugar del hecho</label>
-                        <input type="text" id="lugar-hecho" placeholder="Dirección o ubicación"></div>
-                    <div class="form-group"><label>Fecha del hecho</label>
-                        <input type="date" id="fecha-hecho"></div>
-                    <div class="form-group"><label>Hora del hecho</label>
-                        <input type="time" id="hora-hecho"></div>
+                    <div class="form-group"><label>Lugar del hecho</label><input type="text" id="lugar-hecho" placeholder="Dirección o ubicación"></div>
+                    <div class="form-group"><label>Fecha del hecho</label><input type="date" id="fecha-hecho"></div>
+                    <div class="form-group"><label>Hora del hecho</label><input type="time" id="hora-hecho"></div>
                 </div>
                 <div class="sub-seccion">
                     <h4>Testigos</h4>
                     <div id="testigos-container">
                         <div class="testigo-block" data-index="0">
                             <div class="form-row">
-                                <div class="form-group"><label>Nombre completo</label>
-                                    <input type="text" class="testigo-nombre" placeholder="Nombre del testigo"></div>
-                                <div class="form-group"><label>Cédula de identidad</label>
-                                    <input type="text" class="testigo-ci" placeholder="CI"></div>
-                                <div class="form-group"><label>Teléfono</label>
-                                    <input type="text" class="testigo-telefono" placeholder="Teléfono"></div>
+                                <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" placeholder="Nombre del testigo"></div>
+                                <div class="form-group"><label>CI</label><input type="text" class="testigo-ci" placeholder="CI"></div>
+                                <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" placeholder="Teléfono"></div>
                                 <div class="form-group" style="justify-content:flex-end;">
                                     <button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button>
                                 </div>
@@ -379,15 +354,16 @@
                     <button class="btn btn-agregar" onclick="agregarTestigo()"><i class="fas fa-plus"></i> Agregar otro testigo</button>
                 </div>
                 <div class="form-group"><label>Breve descripción del hecho</label>
-                    <textarea id="descripcion-hecho" rows="3" placeholder="Describa brevemente los hechos..."></textarea></div>
+                    <textarea id="descripcion-hecho" rows="3" placeholder="Describa brevemente los hechos..."></textarea>
+                </div>
                 <div class="sub-seccion">
                     <h4>Hechos Punibles</h4>
                     <div class="flex-wrap">
                         <select id="hecho-selector" style="flex:1;min-width:200px;">
                             <option value="">-- Seleccionar hecho --</option>
-                            <option value="128">Art. 128 – Coacción sexual y violación (Ley 7394/2024)</option>
-                            <option value="135">Art. 135 – Abuso sexual en niños (Ley 7394/2024)</option>
-                            <option value="135b">Art. 135 b) – Abuso sexual por medios tecnológicos (Ley 7394/2024)</option>
+                            <option value="128">Art. 128 – Coacción sexual y violación</option>
+                            <option value="135">Art. 135 – Abuso sexual en niños</option>
+                            <option value="135b">Art. 135 b) – Abuso sexual por medios tecnológicos</option>
                             <option value="137">Art. 137 – Estupro</option>
                             <option value="229">Art. 229 – Violencia familiar (Ley 6934/2022)</option>
                             <option value="225">Art. 225 – Incumplimiento del deber legal alimentario</option>
@@ -413,7 +389,7 @@
                     <div id="caratula-preview" class="caratula-preview"><span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span></div>
                 </div>
                 <div class="form-group"><label>Observaciones Generales</label>
-                    <textarea id="observaciones-generales" rows="2" placeholder="Comentarios adicionales sobre la causa..."></textarea>
+                    <textarea id="observaciones-generales" rows="2" placeholder="Comentarios adicionales..."></textarea>
                 </div>
                 <div class="footer-seccion">
                     <span class="estado" id="estado-tab1">Sin guardar</span>
@@ -421,31 +397,31 @@
                 </div>
             </div>
 
-            <!-- ===== TAB 2: JUZGADO (siempre visible) ===== -->
+            <!-- ===== TAB 2: JUZGADO ===== -->
             <div id="tab2" class="tab-pane">
                 <div class="sub-seccion">
                     <h4>Datos de Imputación</h4>
                     <div class="form-row">
                         <div class="form-group"><label>Fecha de Imputación</label>
-                            <input type="date" id="fecha-imputacion" onchange="calcularVencimiento(); actualizarFechaRequerimientoConclusivo();"></div>
+                            <input type="date" id="fecha-imputacion"></div>
                         <div class="form-group"><label>Resuelto por AI N°</label>
                             <input type="text" id="num-ai" placeholder="N° de AI"></div>
                         <div class="form-group"><label>Fecha del AI</label>
                             <input type="date" id="fecha-ai"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Número de Juzgado / Penal de Garantías</label>
+                        <div class="form-group"><label>Número de Juzgado</label>
                             <input type="text" id="num-juzgado" placeholder="Ej: Juzgado Penal de Garantías N° 3"></div>
                     </div>
                 </div>
 
-                <!-- ===== NUEVA SECCIÓN DESTACADA: ESTADO DE LA CAUSA ===== -->
-                <div class="sub-seccion destacada">
-                    <h4><i class="fas fa-tag"></i> Estado de la causa</h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Seleccione el estado actual <span class="required">*</span></label>
-                            <select id="estado-causa-select">
+                <!-- ESTADO DE LA CAUSA -->
+                <div style="background:#eef2f7; padding:15px; border-radius:8px; border-left:4px solid #d4a843; margin-bottom:20px;">
+                    <h4 style="color:#1a2a4a; margin-bottom:10px;"><i class="fas fa-tag"></i> Estado de la causa</h4>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                        <div>
+                            <label style="font-weight:500; font-size:13px; color:#444;">Seleccione el estado actual <span style="color:#b33c3c;">*</span></label>
+                            <select id="estado-causa-select" style="width:100%; padding:8px 12px; border:1px solid #d0d4da; border-radius:6px; font-size:14px; background:#fff;">
                                 <option value="activa">Activa (investigación en curso)</option>
                                 <option value="criterio-oportunidad">Criterio de Oportunidad (Art. 18 CPP)</option>
                                 <option value="archivo-provisional">Archivo Provisional (Art. 334 CPP)</option>
@@ -462,9 +438,9 @@
                                 <option value="otro">Otro</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label>Observaciones del estado</label>
-                            <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..."></textarea>
+                        <div>
+                            <label style="font-weight:500; font-size:13px; color:#444;">Observaciones del estado</label>
+                            <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales..." style="width:100%; padding:8px 12px; border:1px solid #d0d4da; border-radius:6px; font-size:14px; resize:vertical; background:#fff;"></textarea>
                         </div>
                     </div>
                 </div>
@@ -472,66 +448,66 @@
                 <div class="sub-seccion">
                     <h4>Plazo y Requerimiento</h4>
                     <div class="form-row">
-                        <div class="form-group"><label>Plazo otorgado para presentar el requerimiento (meses)</label>
-                            <input type="number" id="plazo-investigacion" min="0" value="6" onchange="calcularVencimiento(); actualizarFechaRequerimientoConclusivo();">
-                            <span class="text-muted">Art. 325 CPP: 6 meses ordinario</span>
-                        </div>
+                        <div class="form-group"><label>Plazo (meses)</label>
+                            <input type="number" id="plazo-investigacion" min="0" value="6"></div>
                         <div class="form-group"><label>Fecha de vencimiento (editable)</label>
-                            <input type="date" id="fecha-vencimiento-input" onchange="calcularDiasRestantesDesdeFecha();">
-                            <span class="text-muted">Si se modifica, el cálculo automático se actualiza</span>
-                        </div>
+                            <input type="date" id="fecha-vencimiento-input"></div>
                         <div class="form-group"><label>Días restantes</label>
                             <div id="dias-restantes" style="font-size:16px;font-weight:600;color:#1a2a4a;padding-top:6px;">--</div>
                         </div>
                     </div>
                 </div>
+
                 <div class="sub-seccion">
-                    <h4>Tipo de Medidas <span class="text-muted">(selección múltiple)</span></h4>
+                    <h4>Medidas</h4>
                     <div class="checkbox-group"><input type="checkbox" id="medida-notificacion"><label for="medida-notificacion">Notificación del acta de imputación</label></div>
                     <div class="checkbox-group"><input type="checkbox" id="medida-alternativas"><label for="medida-alternativas">Medidas alternativas a la prisión</label></div>
                     <div class="checkbox-group"><input type="checkbox" id="medida-privativas"><label for="medida-privativas">Medidas privativas de la libertad</label></div>
                 </div>
+
                 <div class="sub-seccion">
                     <h4>Prórroga Ordinaria (Art. 325 CPP)</h4>
                     <div class="form-row">
-                        <div class="form-group"><label>Fecha de presentación</label><input type="date" id="fecha-prorroga-ordinaria"></div>
+                        <div class="form-group"><label>Fecha presentación</label><input type="date" id="fecha-prorroga-ordinaria"></div>
                         <div class="form-group"><label>¿Se otorgó?</label><select id="prorroga-ordinaria-otorgada"><option value="">-- Seleccionar --</option><option value="Si">Sí</option><option value="No">No</option></select></div>
-                        <div class="form-group"><label>Nueva fecha para requerir</label><input type="date" id="nueva-fecha-ordinaria"></div>
+                        <div class="form-group"><label>Nueva fecha</label><input type="date" id="nueva-fecha-ordinaria"></div>
                     </div>
-                    <div class="form-group"><label>Fundamento</label><textarea id="fundamento-ordinaria" rows="2" placeholder="Fundamento de la prórroga ordinaria..."></textarea></div>
+                    <div class="form-group"><label>Fundamento</label><textarea id="fundamento-ordinaria" rows="2"></textarea></div>
                 </div>
+
                 <div class="sub-seccion">
                     <h4>Prórroga Extraordinaria (Art. 326 CPP)</h4>
                     <div class="form-row">
-                        <div class="form-group"><label>Fecha de presentación</label><input type="date" id="fecha-prorroga-extraordinaria"></div>
+                        <div class="form-group"><label>Fecha presentación</label><input type="date" id="fecha-prorroga-extraordinaria"></div>
                         <div class="form-group"><label>¿Se otorgó?</label><select id="prorroga-extraordinaria-otorgada"><option value="">-- Seleccionar --</option><option value="Si">Sí</option><option value="No">No</option></select></div>
-                        <div class="form-group"><label>Nueva fecha para requerir</label><input type="date" id="nueva-fecha-extraordinaria"></div>
+                        <div class="form-group"><label>Nueva fecha</label><input type="date" id="nueva-fecha-extraordinaria"></div>
                     </div>
-                    <div class="form-group"><label>Fundamento</label><textarea id="fundamento-extraordinaria" rows="2" placeholder="Fundamento de la prórroga extraordinaria..."></textarea></div>
+                    <div class="form-group"><label>Fundamento</label><textarea id="fundamento-extraordinaria" rows="2"></textarea></div>
                 </div>
+
                 <div class="sub-seccion">
                     <h4>Rebeldía</h4>
                     <div class="checkbox-group">
-                        <input type="checkbox" id="rebeldia-activa" onchange="toggleRebeldia()">
+                        <input type="checkbox" id="rebeldia-activa">
                         <label for="rebeldia-activa"><strong>Declarado en rebeldía</strong></label>
                     </div>
                     <div id="rebeldia-campos" class="hidden">
                         <div class="form-row">
-                            <div class="form-group"><label>Fecha de declaración de rebeldía</label>
-                                <input type="date" id="fecha-rebeldia" onchange="calcularDiasSuspendidos(); calcularVencimiento(); actualizarFechaRequerimientoConclusivo();"></div>
-                            <div class="form-group"><label>Número de resolución de rebeldía</label>
+                            <div class="form-group"><label>Fecha de declaración</label>
+                                <input type="date" id="fecha-rebeldia"></div>
+                            <div class="form-group"><label>N° resolución</label>
                                 <input type="text" id="num-resolucion-rebeldia" placeholder="N° de resolución"></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group"><label>Fecha de levantamiento de la rebeldía</label>
-                                <input type="date" id="fecha-levantamiento-rebeldia" onchange="calcularDiasSuspendidos(); calcularVencimiento(); actualizarFechaRequerimientoConclusivo();"></div>
-                            <div class="form-group"><label>Días suspendidos (calculado)</label>
+                            <div class="form-group"><label>Fecha de levantamiento</label>
+                                <input type="date" id="fecha-levantamiento-rebeldia"></div>
+                            <div class="form-group"><label>Días suspendidos</label>
                                 <div id="dias-suspendidos" style="font-size:16px;font-weight:600;color:#1a2a4a;padding-top:6px;">--</div>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Fecha de requerimiento conclusivo</label>
+                                <label>Fecha requerimiento conclusivo</label>
                                 <input type="text" id="nueva-fecha-rebeldia" readonly style="background:#f0f2f5;color:#1a2a4a;font-weight:600;">
                             </div>
                         </div>
@@ -543,16 +519,17 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="sub-seccion">
-                    <h4>Anticipos Jurisdiccionales de Pruebas</h4>
-                    <p class="text-muted">Seleccione las pruebas anticipadas solicitadas (puede seleccionar varias)</p>
-                    <div class="checkbox-group"><input type="checkbox" id="anticipo-camara-gessell"><label for="anticipo-camara-gessell">Declaración testimonial anticipada (Cámara Gessell)</label></div>
+                    <h4>Anticipos Jurisdiccionales</h4>
+                    <div class="checkbox-group"><input type="checkbox" id="anticipo-camara-gessell"><label for="anticipo-camara-gessell">Cámara Gessell</label></div>
                     <div class="checkbox-group"><input type="checkbox" id="anticipo-pericia"><label for="anticipo-pericia">Pericia anticipada</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="anticipo-inspeccion"><label for="anticipo-inspeccion">Inspección judicial anticipada</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="anticipo-reconocimiento"><label for="anticipo-reconocimiento">Reconocimiento de personas anticipado</label></div>
-                    <div class="checkbox-group"><input type="checkbox" id="anticipo-testigos-vulnerables"><label for="anticipo-testigos-vulnerables">Declaración de testigos vulnerables</label></div>
-                    <div class="form-group mt-10"><label>Otro (especificar)</label><input type="text" id="anticipo-otro" placeholder="Especifique otro tipo de anticipo..."></div>
+                    <div class="checkbox-group"><input type="checkbox" id="anticipo-inspeccion"><label for="anticipo-inspeccion">Inspección anticipada</label></div>
+                    <div class="checkbox-group"><input type="checkbox" id="anticipo-reconocimiento"><label for="anticipo-reconocimiento">Reconocimiento anticipado</label></div>
+                    <div class="checkbox-group"><input type="checkbox" id="anticipo-testigos-vulnerables"><label for="anticipo-testigos-vulnerables">Testigos vulnerables</label></div>
+                    <div class="form-group mt-10"><label>Otro</label><input type="text" id="anticipo-otro" placeholder="Especifique..."></div>
                 </div>
+
                 <div class="footer-seccion">
                     <span class="estado" id="estado-tab2">Sin guardar</span>
                     <button class="btn btn-guardar-seccion" onclick="guardarPestana2()"><i class="fas fa-save"></i> Guardar Datos del Juzgado</button>
@@ -571,20 +548,22 @@
             <!-- ===== TAB 4: EVALUACIONES (solo para Grupo A) ===== -->
             <div id="tab4" class="tab-pane">
                 <div class="sub-seccion">
-                    <h4>Evaluaciones</h4>
+                    <h4>Evaluación Psicológica</h4>
                     <div class="form-row">
-                        <div class="form-group"><label>Evaluación Psicológica - Fecha</label><input type="date" id="psi-fecha"></div>
-                        <div class="form-group"><label>Evaluación Psicológica - Profesional</label><input type="text" id="psi-profesional" placeholder="Nombre del profesional"></div>
-                        <div class="form-group"><label>Evaluación Psicológica - Resultado</label><select id="psi-resultado"><option value="Pendiente">Pendiente</option><option value="Realizada">Realizada</option><option value="No corresponde">No corresponde</option></select></div>
+                        <div class="form-group"><label>Fecha</label><input type="date" id="psi-fecha"></div>
+                        <div class="form-group"><label>Profesional</label><input type="text" id="psi-profesional" placeholder="Nombre del profesional"></div>
+                        <div class="form-group"><label>Resultado</label><select id="psi-resultado"><option value="Pendiente">Pendiente</option><option value="Realizada">Realizada</option><option value="No corresponde">No corresponde</option></select></div>
                     </div>
-                    <div class="form-group"><label>Observaciones (Psicológica)</label><textarea id="psi-observaciones" rows="2" placeholder="Observaciones..."></textarea></div>
-                    <hr style="margin:20px 0;border-color:#e0e4ea;">
+                    <div class="form-group"><label>Observaciones</label><textarea id="psi-observaciones" rows="2"></textarea></div>
+                </div>
+                <div class="sub-seccion">
+                    <h4>Evaluación Médica</h4>
                     <div class="form-row">
-                        <div class="form-group"><label>Evaluación Médica - Fecha</label><input type="date" id="med-fecha"></div>
-                        <div class="form-group"><label>Evaluación Médica - Profesional</label><input type="text" id="med-profesional" placeholder="Nombre del profesional"></div>
-                        <div class="form-group"><label>Evaluación Médica - Resultado</label><select id="med-resultado"><option value="Pendiente">Pendiente</option><option value="Realizada">Realizada</option><option value="No corresponde">No corresponde</option></select></div>
+                        <div class="form-group"><label>Fecha</label><input type="date" id="med-fecha"></div>
+                        <div class="form-group"><label>Profesional</label><input type="text" id="med-profesional" placeholder="Nombre del profesional"></div>
+                        <div class="form-group"><label>Resultado</label><select id="med-resultado"><option value="Pendiente">Pendiente</option><option value="Realizada">Realizada</option><option value="No corresponde">No corresponde</option></select></div>
                     </div>
-                    <div class="form-group"><label>Observaciones (Médica)</label><textarea id="med-observaciones" rows="2" placeholder="Observaciones..."></textarea></div>
+                    <div class="form-group"><label>Observaciones</label><textarea id="med-observaciones" rows="2"></textarea></div>
                 </div>
                 <div class="footer-seccion">
                     <span class="estado" id="estado-tab4">Sin guardar</span>
@@ -592,17 +571,19 @@
                 </div>
             </div>
 
-            <!-- ===== TAB 5: INFORME (siempre visible) ===== -->
+            <!-- ===== TAB 5: INFORME ===== -->
             <div id="tab5" class="tab-pane">
-                <div id="informe-contenido" style="background:#fff;padding:20px;border-radius:8px;border:1px solid #e0e4ea;"><p class="text-muted">Complete los datos de la causa para generar el informe.</p></div>
+                <div id="informe-contenido" style="background:#fff;padding:20px;border-radius:8px;border:1px solid #e0e4ea;">
+                    <p class="text-muted">Complete los datos de la causa para generar el informe.</p>
+                </div>
                 <div class="text-center mt-20 no-print">
                     <button class="btn btn-imprimir" onclick="imprimirInforme()"><i class="fas fa-print"></i> Imprimir Informe</button>
                 </div>
             </div>
 
-            <!-- ===== TAB 6: ALERTAS (siempre visible) ===== -->
+            <!-- ===== TAB 6: ALERTAS ===== -->
             <div id="tab6" class="tab-pane">
-                <div id="alertas-contenido"><p class="text-muted">Cargue o seleccione una causa para ver las alertas y resúmenes.</p></div>
+                <div id="alertas-contenido"><p class="text-muted">Cargue o seleccione una causa para ver las alertas.</p></div>
             </div>
         </div>
     </div>
@@ -923,18 +904,6 @@ function setTextSafe(id, texto) {
     if (el) { el.textContent = texto; return true; }
     return false;
 }
-function getIncisoSeleccionado(hechoId, incisoId) {
-    const config = CONFIG.hechos[hechoId];
-    if (!config) return null;
-    return config.incisos.find(i => i.id === incisoId) || null;
-}
-function getNumeralSeleccionado(hechoId, incisoId, numeralId) {
-    const config = CONFIG.hechos[hechoId];
-    if (!config) return null;
-    const inciso = config.incisos.find(i => i.id === incisoId);
-    if (!inciso || !inciso.numerales) return null;
-    return inciso.numerales.find(n => n.id === numeralId) || null;
-}
 
 // ============================================================
 // GRUPOS DE HECHOS
@@ -1227,18 +1196,9 @@ function cerrarFormulario() {
     renderizarCausas();
 }
 
-// ============================================================
-// CERRAR SESIÓN (reinicia la app pero mantiene datos si quieres)
-// ============================================================
 function cerrarSesion() {
     if (confirm('¿Cerrar sesión? Los datos guardados en localStorage permanecerán, pero la vista se reiniciará.')) {
-        // Opción 1: recargar la página completamente (simula cierre de sesión)
         location.reload();
-        // Opción 2: limpiar todo y volver al estado inicial
-        // causas = [];
-        // guardarEnLocalStorage();
-        // renderizarCausas();
-        // cerrarFormulario();
     }
 }
 
