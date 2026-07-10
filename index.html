@@ -4,22 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Causas Penales - MP</title>
-    <!-- FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        /* ============================================================
-           ESTILOS COMPLETOS – Incluye Login, Gestión y Sistema
-           ============================================================ */
+        /* ===== ESTILOS COMPLETOS ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f0f2f5; color:#2d2d2d; padding:20px; }
-        /* ===== LOGIN / REGISTRO ===== */
-        #auth-container {
-            max-width:420px; margin:60px auto; background:#fff; padding:30px 35px;
-            border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2);
-        }
+        /* ===== LOGIN ===== */
+        #auth-container { max-width:400px; margin:60px auto; background:#fff; padding:30px 35px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
         #auth-container h2 { color:#1a2a4a; text-align:center; margin-bottom:8px; }
         #auth-container .sub { color:#888; font-size:14px; text-align:center; margin-bottom:25px; }
         #auth-container .form-group { margin-bottom:18px; }
@@ -34,7 +28,7 @@
         #auth-message { padding:10px; border-radius:6px; margin-bottom:15px; display:none; }
         #auth-message.error { background:#f8d7da; color:#721c24; display:block; }
         #auth-message.success { background:#d4edda; color:#155724; display:block; }
-        /* ===== SISTEMA PRINCIPAL ===== */
+        /* ===== APP ===== */
         #app { display:none; max-width:1400px; margin:0 auto; background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.1); overflow:hidden; }
         .header { background:#1a2a4a; color:#fff; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
         .header h1 { font-size:20px; font-weight:600; }
@@ -45,7 +39,6 @@
         .btn-logout:hover { background:#8f2e2e; }
         .btn-admin { background:#d4a843; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:13px; }
         .btn-admin:hover { background:#b8922e; }
-        /* ===== TOOLBAR ===== */
         .toolbar { background:#f8f9fa; padding:12px 30px; border-bottom:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
         .toolbar-left { display:flex; gap:8px; flex-wrap:wrap; }
         .toolbar-right { display:flex; gap:8px; }
@@ -71,7 +64,6 @@
         .search-box input { padding:6px 12px; border:none; outline:none; font-size:13px; width:180px; }
         .search-box button { background:transparent; border:none; padding:6px 12px; color:#666; cursor:pointer; }
         .search-box button:hover { color:#1a2a4a; }
-        /* ===== LISTADO DE CAUSAS ===== */
         .main-content { padding:15px 25px; }
         .section-title { font-size:17px; font-weight:600; color:#1a2a4a; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #e8ecf1; }
         .causa-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-bottom:15px; }
@@ -170,7 +162,7 @@
         .mb-10 { margin-bottom:10px; }
         .text-center { text-align:center; }
         .flex-wrap { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
-        /* ===== GESTIÓN DE USUARIOS ===== */
+        /* ===== ADMIN PANEL ===== */
         #admin-panel { display:none; background:#fff; border-radius:8px; padding:20px; margin-top:15px; border:1px solid #e0e4ea; }
         #admin-panel h3 { color:#1a2a4a; margin-bottom:15px; }
         .user-table { width:100%; border-collapse:collapse; font-size:13px; }
@@ -203,19 +195,27 @@
         .diligencias-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:4px 12px; margin-top:4px; }
         .diligencia-item { display:flex; align-items:flex-start; gap:6px; padding:2px 0; font-size:12px; }
         .diligencia-item input[type="checkbox"] { margin-top:2px; }
-        /* ===== RESPONSIVE ===== */
-        @media (max-width:768px) {
+        .inciso-group { margin:3px 0 3px 8px; border-left:2px solid #d4a843; padding-left:8px; }
+        .inciso-check-label { font-size:12px; line-height:1.3; }
+        .numeral-check-label { font-size:11px; line-height:1.2; padding-left:15px; color:#444; }
+        .fundamento-articulo { margin:6px 0; padding:5px 10px; background:#f8f9fa; border-left:3px solid #1a2a4a; border-radius:4px; }
+        .fundamento-articulo strong { color:#1a2a4a; }
+        .fundamento-articulo .texto-ley { font-size:12px; color:#333; margin-top:3px; }
+        @media (max-width:600px) {
+            .user-table, .user-table tbody, .user-table tr, .user-table td { display:block; width:100%; }
+            .user-table tr { margin-bottom:10px; border:1px solid #ddd; padding:8px; border-radius:6px; }
+            .user-table th { display:none; }
+            .user-table td { border:none; padding:4px 0; }
+            .user-table td:before { content:attr(data-label); font-weight:600; display:inline-block; width:120px; }
+            .user-table .acciones { margin-top:6px; }
+            .cuestionario-pregunta { grid-template-columns:1fr; }
             .header h1 { font-size:17px; }
             .header .subtitle { display:none; }
-            .toolbar { padding:10px 15px; flex-direction:column; align-items:stretch; }
+            .toolbar { flex-direction:column; align-items:stretch; }
             .toolbar-left, .toolbar-right { justify-content:center; }
             .causa-grid { grid-template-columns:1fr; }
             .form-row { grid-template-columns:1fr; }
-            .user-table { font-size:11px; }
-            .user-table th, .user-table td { padding:5px 8px; }
-            .cuestionario-pregunta { grid-template-columns:1fr; }
         }
-        /* ===== IMPRESIÓN ===== */
         @media print {
             @page { size: legal; margin: 1.5cm; }
             body { background:#fff; padding:0; margin:0; font-size:10pt; }
@@ -274,26 +274,6 @@
             .liquidacion-link { display:none !important; }
             .diligencia-item { font-size:8pt; padding:1px 0; }
         }
-        .tooltip-trigger { position:relative; cursor:help; }
-        .tooltip-trigger .tooltip-text { visibility:hidden; width:180px; background:#1a2a4a; color:#fff; text-align:center; border-radius:4px; padding:4px 8px; position:absolute; z-index:10; bottom:125%; left:50%; transform:translateX(-50%); opacity:0; transition:opacity 0.3s; font-weight:400; font-size:11px; }
-        .tooltip-trigger .tooltip-text::after { content:""; position:absolute; top:100%; left:50%; margin-left:-4px; border-width:4px; border-style:solid; border-color:#1a2a4a transparent transparent transparent; }
-        .tooltip-trigger:hover .tooltip-text { visibility:visible; opacity:1; }
-        .inciso-group { margin:3px 0 3px 8px; border-left:2px solid #d4a843; padding-left:8px; }
-        .inciso-check-label { font-size:12px; line-height:1.3; }
-        .numeral-check-label { font-size:11px; line-height:1.2; padding-left:15px; color:#444; }
-        .fundamento-articulo { margin:6px 0; padding:5px 10px; background:#f8f9fa; border-left:3px solid #1a2a4a; border-radius:4px; }
-        .fundamento-articulo strong { color:#1a2a4a; }
-        .fundamento-articulo .texto-ley { font-size:12px; color:#333; margin-top:3px; }
-        /* Estilos para el panel de administración en móvil */
-        .user-table .acciones { display:flex; flex-wrap:wrap; gap:3px; }
-        @media (max-width:600px) {
-            .user-table, .user-table tbody, .user-table tr, .user-table td { display:block; width:100%; }
-            .user-table tr { margin-bottom:10px; border:1px solid #ddd; padding:8px; border-radius:6px; }
-            .user-table th { display:none; }
-            .user-table td { border:none; padding:4px 0; }
-            .user-table td:before { content:attr(data-label); font-weight:600; display:inline-block; width:120px; }
-            .user-table .acciones { margin-top:6px; }
-        }
     </style>
 </head>
 <body>
@@ -324,6 +304,7 @@
     <!-- ===== SISTEMA PRINCIPAL ===== -->
     <!-- ============================================================ -->
     <div id="app">
+        <!-- ===== HEADER ===== -->
         <header class="header">
             <div>
                 <h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1>
@@ -335,6 +316,8 @@
                 <button class="btn-logout" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </header>
+
+        <!-- ===== TOOLBAR ===== -->
         <div class="toolbar no-print">
             <div class="toolbar-left">
                 <button class="btn btn-primary" onclick="nuevaCausa()"><i class="fas fa-plus"></i> Nueva Causa</button>
@@ -349,6 +332,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- ===== MAIN CONTENT ===== -->
         <div class="main-content">
             <!-- ===== LISTADO DE CAUSAS ===== -->
             <div id="listado-view">
@@ -359,7 +344,7 @@
                 <div id="causa-grid" class="causa-grid"></div>
             </div>
 
-            <!-- ===== PANEL ADMIN ===== -->
+            <!-- ===== ADMIN PANEL (fuera del formulario) ===== -->
             <div id="admin-panel">
                 <h3><i class="fas fa-users-cog"></i> Gestión de Usuarios</h3>
                 <div id="admin-users-list"><p class="text-muted">Cargando usuarios...</p></div>
@@ -374,8 +359,11 @@
                         <button class="btn-cerrar" onclick="cerrarFormulario()">&times;</button>
                     </div>
                 </div>
-                <div class="tabs no-print" id="tabs-container"></div>
-                <!-- ===== TAB 1: DATOS GENERALES ===== -->
+                <div class="tabs no-print" id="tabs-container">
+                    <!-- Generado por JavaScript -->
+                </div>
+
+                <!-- ===== TAB 1: DATOS GENERALES (siempre visible) ===== -->
                 <div id="tab1" class="tab-pane active">
                     <div class="form-row">
                         <div class="form-group">
@@ -504,7 +492,7 @@
                     </div>
                 </div>
 
-                <!-- ===== TAB 2: JUZGADO ===== -->
+                <!-- ===== TAB 2: JUZGADO (siempre visible) ===== -->
                 <div id="tab2" class="tab-pane">
                     <div class="sub-seccion">
                         <h4>Datos de Imputación</h4>
@@ -718,7 +706,7 @@
     let riesgoNivel = '';
     let causaActualId = null;
     let seccionesGuardadas = { tab1:false, tab2:false, tab3:false, tab4:false };
-    let authMode = 'login'; // 'login' o 'register'
+    let authMode = 'login';
 
     // ================================================================
     // AUTENTICACIÓN
@@ -754,16 +742,10 @@
         }
         if (authMode === 'login') {
             auth.signInWithEmailAndPassword(email, password)
-                .then(credencial => {
-                    // El estado se maneja en onAuthStateChanged
-                })
-                .catch(err => {
-                    mostrarMensaje(err.message, 'error');
-                });
+                .catch(err => { mostrarMensaje(err.message, 'error'); });
         } else {
             auth.createUserWithEmailAndPassword(email, password)
                 .then(credencial => {
-                    // Crear perfil en Firestore con estado "pendiente"
                     const user = credencial.user;
                     return db.collection('usuarios').doc(user.uid).set({
                         email: user.email,
@@ -778,9 +760,7 @@
                     document.getElementById('auth-email').value = '';
                     document.getElementById('auth-password').value = '';
                 })
-                .catch(err => {
-                    mostrarMensaje(err.message, 'error');
-                });
+                .catch(err => { mostrarMensaje(err.message, 'error'); });
         }
     }
 
@@ -798,15 +778,12 @@
     auth.onAuthStateChanged(async user => {
         if (user) {
             currentUser = user;
-            // Obtener datos del usuario desde Firestore
             try {
                 const doc = await db.collection('usuarios').doc(user.uid).get();
                 if (doc.exists) {
                     currentUserData = doc.data();
                     isAdmin = (currentUserData.email === 'waroiapy@gmail.com');
-                    // Verificar estado y expiración
                     if (isAdmin) {
-                        // Administrador siempre tiene acceso
                         mostrarApp();
                     } else if (currentUserData.estado === 'aprobado') {
                         const expiracion = currentUserData.fechaExpiracion;
@@ -978,7 +955,6 @@
     // ================================================================
     const CONFIG = {
         hechos: {
-            // ========== GRUPO A (ORIGINALES) ==========
             '128': {
                 label:'Art. 128 – Coacción sexual y violación',
                 modificaciones: [{ ley:'Ley Nº 7394/2024', fecha:'2024', descripcion:'Modificación integral del artículo 128.' }],
@@ -1075,7 +1051,6 @@
                 tipo:'multiple',
                 texto: 'Artículo 225.- Incumplimiento del deber legal alimentario. El que, pudiendo cumplir, no proveyere a la subsistencia de su cónyuge, concubino, ascendiente, descendiente o hermano, será castigado con pena privativa de libertad de uno a dos años. Si el incumplimiento afectare a un convenio judicial, la pena será de dos a cinco años.'
             },
-            // ========== GRUPO B (NUEVOS) ==========
             '166': {
                 label:'Art. 166 – Hurto',
                 modificaciones: [],
@@ -1204,66 +1179,6 @@
         }
     };
 
-    // ================================================================
-    // DILIGENCIAS ALIMENTOS
-    // ================================================================
-    const DILIGENCIAS_ALIMENTOS = [
-        { id: 'dil-testifical', label: 'Testifical' },
-        { id: 'dil-cert-nacimiento', label: 'Certificado de Nacimiento' },
-        { id: 'dil-oficio-trabajadora-social', label: 'Oficio Trabajadora Social' },
-        { id: 'dil-oficio-banco', label: 'Oficio Banco' },
-        { id: 'dil-calculo-liquidacion', label: 'Cálculo de Liquidación' },
-        { id: 'dil-oficio-info-daie', label: 'Oficio DAIE' },
-        { id: 'dil-oficio-dnit', label: 'Oficio DNIT' },
-        { id: 'dil-oficio-seccion-estadisticas', label: 'Oficio Estadísticas' },
-        { id: 'dil-oficio-ministerio-trabajo', label: 'Oficio Ministerio Trabajo' },
-        { id: 'dil-oficio-municipalidad', label: 'Oficio Municipalidad' },
-        { id: 'dil-oficio-automotores', label: 'Oficio Automotores' },
-        { id: 'dil-oficio-ips', label: 'Oficio IPS' },
-        { id: 'dil-oficio-incoop', label: 'Oficio INCOOP' },
-        { id: 'dil-oficio-telefonias', label: 'Oficio Telefonías' },
-        { id: 'dil-oficio-registros-publicos', label: 'Oficio Registros Públicos' },
-        { id: 'dil-oficio-indagatoria', label: 'Oficio Indagatoria' }
-    ];
-
-    // ================================================================
-    // PREGUNTAS RIESGO
-    // ================================================================
-    const preguntasRiesgo = [
-        { id:'r1.1', label:'1.1 – Grado de relación con el supuesto agresor', opciones:[{valor:3,texto:'Cónyuge/concubino/pareja'},{valor:3,texto:'Ex cónyuge/ex concubino/ex pareja'},{valor:2,texto:'Padres/padrastros, abuelos'},{valor:2,texto:'Hijos/nietos'},{valor:1,texto:'Hermanos/sobrinos'},{valor:1,texto:'Tíos/primos'},{valor:0,texto:'Otros'}] },
-        { id:'r1.2', label:'1.2 – ¿La víctima tiene personas a su cargo?', opciones:[{valor:3,texto:'Sí, hijos menores/discapacitados'},{valor:2,texto:'Sí, padres adultos mayores/discapacitados'},{valor:1,texto:'Sí, otros familiares'},{valor:0,texto:'No'}] },
-        { id:'r1.3', label:'1.3 – La víctima ha manifestado al supuesto agresor antes del hecho', opciones:[{valor:3,texto:'Que piensa separarse de él o dejar la casa'},{valor:2,texto:'Que lo ha denunciado o lo va a denunciar'},{valor:1,texto:'Que ha solicitado medidas de protección o piensa solicitarla'},{valor:0,texto:'No le ha manifestado nada'}] },
-        { id:'r1.4', label:'1.4 – La víctima ha tenido que salir de la casa', opciones:[{valor:3,texto:'En una acción repentina (escape)'},{valor:2,texto:'A la fuerza, expulsada por el agresor'},{valor:1,texto:'Por amenaza o miedo al agresor'},{valor:0,texto:'No ha salido de la casa'}] },
-        { id:'r2.1', label:'2.1 – ¿El supuesto agresor o conocidos han generado intimidación en la víctima?', opciones:[{valor:3,texto:'Han amenazado, acosado o atentado recientemente'},{valor:2,texto:'Han amenazado, acosado o atentado en el pasado (hasta 3 meses)'},{valor:1,texto:'No han amenazado, pero tienen antecedentes'},{valor:0,texto:'No tienen antecedentes de amenaza'}] },
-        { id:'r2.2', label:'2.2 – ¿Ha sido la víctima objeto de amenaza, acoso o atentado anteriormente?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está seguro (dubitativo)'},{valor:0,texto:'No'}] },
-        { id:'r2.3', label:'2.3 – ¿Han sido los familiares de la víctima objeto de amenaza, acoso o atentado?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está seguro (dubitativo)'},{valor:0,texto:'No'}] },
-        { id:'r2.4', label:'2.4 – El supuesto agresor ha retenido a la víctima contra su voluntad', opciones:[{valor:3,texto:'Sí, varias veces'},{valor:2,texto:'Sí, una vez'},{valor:1,texto:'No, pero le ha dicho que lo haría'},{valor:0,texto:'No'}] },
-        { id:'r3.1', label:'3.1 – El supuesto agresor acosó, controló o amedrentó sistemáticamente a la víctima', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
-        { id:'r3.2', label:'3.2 – Historial de conductas violentas con una pareja anterior', opciones:[{valor:3,texto:'Sí, con más de 3 casos'},{valor:2,texto:'Sí, con más de 1 caso'},{valor:1,texto:'Este es el primer caso'},{valor:0,texto:'No'}] },
-        { id:'r3.3', label:'3.3 – Existencia de abuso sexual o físico contra hijos u otras personas menores de edad', opciones:[{valor:3,texto:'Sí'},{valor:2,texto:'Ha intentado realizarlo'},{valor:1,texto:'Amenazó con realizarlo'},{valor:0,texto:'No'}] },
-        { id:'r3.4', label:'3.4 – Historial de conductas previas de violencia contra otras personas no familiares', opciones:[{valor:3,texto:'Sí, con más de 3 casos'},{valor:2,texto:'Sí, con más de 1 caso'},{valor:1,texto:'Este es el primer caso'},{valor:0,texto:'No'}] },
-        { id:'r3.5', label:'3.5 – Acceso y conocimiento en el uso de armas de fuego', opciones:[{valor:3,texto:'Conoce, usa y trabaja con ellas siempre'},{valor:2,texto:'Conoce y usa armas frecuentemente'},{valor:1,texto:'Cuenta con un arma, pero no la ha usado'},{valor:0,texto:'No'}] },
-        { id:'r3.6', label:'3.6 – El supuesto agresor abusa de alcohol o drogas', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
-        { id:'r3.7', label:'3.7 – Antecedentes psiquiátricos', opciones:[{valor:3,texto:'Sí, fue internado varias veces y está medicado'},{valor:2,texto:'Sí, fue internado'},{valor:1,texto:'Sí, está medicado'},{valor:0,texto:'No'}] },
-        { id:'r3.8', label:'3.8 – Intentó o amenazó con suicidarse cuando la víctima trató de apartarse', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, varias veces'},{valor:1,texto:'Sí, en una ocasión'},{valor:0,texto:'No'}] },
-        { id:'r3.9', label:'3.9 – Conductas frecuentes de crueldad, desprecio y falta de arrepentimiento', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
-        { id:'r3.10', label:'3.10 – Menosprecio a las medidas de protección dictadas', opciones:[{valor:2,texto:'Sí, varias veces'},{valor:1,texto:'Sí, en una ocasión'},{valor:0,texto:'No'}] },
-        { id:'r4.1', label:'4.1 – ¿Ha expresado la víctima temor a su seguridad o la de su familia?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No, pero parece estar nerviosa'},{valor:0,texto:'No'}] },
-        { id:'r4.2', label:'4.2 – ¿Cómo describiría la conducta de la víctima?', opciones:[{valor:3,texto:'Nerviosa, afectada emocionalmente, preocupada por el proceso'},{valor:2,texto:'Tranquila pero muestra recelo'},{valor:1,texto:'Tiene algunas preocupaciones'},{valor:0,texto:'No manifiesta preocupaciones'}] },
-        { id:'r4.3', label:'4.3 – ¿La víctima tiene una buena red de ayuda?', opciones:[{valor:3,texto:'No cuenta con red de ayuda o está aislada'},{valor:1,texto:'Tiene algunas personas que puedan apoyarle'},{valor:0,texto:'Cuenta con una red de personas'}] },
-        { id:'r4.4', label:'4.4 – Condiciones de vulnerabilidad (Reglas de Brasilia)', opciones:[{valor:2,texto:'Reúne tres o más condiciones'},{valor:1,texto:'Reúne una o más condiciones'},{valor:0,texto:'No reúne condiciones'}] },
-        { id:'r4.5', label:'4.5 – Dependencia económica del agresor', opciones:[{valor:2,texto:'Dependencia económica total'},{valor:1,texto:'Dependencia económica parcial'},{valor:0,texto:'No depende económicamente'}] },
-        { id:'r4.6', label:'4.6 – La víctima considera que el supuesto agresor es capaz de matarla', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está segura'},{valor:0,texto:'No'}] },
-        { id:'r4.7', label:'4.7 – Ha retirado denuncias previas o reanudado la relación', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No, pero reanudó la relación'},{valor:0,texto:'No'}] },
-        { id:'r4.8', label:'4.8 – Ha recibido atención en salud como consecuencia de las agresiones', opciones:[{valor:2,texto:'No, a pesar de haber sufrido violencia se negó a recibir asistencia'},{valor:1,texto:'Sí, fue asistida'},{valor:0,texto:'No ha sido necesario'}] },
-        { id:'r5.1', label:'5.1 – El dato o información proporcionada es determinante para esclarecer el hecho', opciones:[{valor:2,texto:'Permitió individualizar al agresor/hallar otros elementos de prueba'},{valor:1,texto:'Permitió hallar el elemento de prueba principal'},{valor:0,texto:'No es pertinente/relevante o se puede prescindir'}] },
-        { id:'r5.2', label:'5.2 – ¿El dato o información está sustentado en otros elementos de prueba?', opciones:[{valor:2,texto:'Corroborado ampliamente'},{valor:1,texto:'Corroborado parcialmente'},{valor:0,texto:'No fue corroborado'}] },
-        { id:'r5.3', label:'5.3 – La víctima manifiesta su voluntad de continuar el proceso', opciones:[{valor:3,texto:'No quiere continuar'},{valor:2,texto:'Duda en continuar'},{valor:1,texto:'Manifiesta su voluntad de continuar'},{valor:0,texto:'Está segura de continuar'}] }
-    ];
-
-    // ================================================================
-    // GRUPOS DE HECHOS
-    // ================================================================
     const GRUPO_A = ['128','135','135b','137','229','225'];
     const GRUPO_B = ['166','166ag','167','168','111','105','106','173','175','212','126','127'];
 
@@ -1415,8 +1330,40 @@
     }
 
     // ================================================================
-    // GENERAR CUESTIONARIO RIESGO
+    // CUESTIONARIO RIESGO
     // ================================================================
+    const preguntasRiesgo = [
+        { id:'r1.1', label:'1.1 – Grado de relación con el supuesto agresor', opciones:[{valor:3,texto:'Cónyuge/concubino/pareja'},{valor:3,texto:'Ex cónyuge/ex concubino/ex pareja'},{valor:2,texto:'Padres/padrastros, abuelos'},{valor:2,texto:'Hijos/nietos'},{valor:1,texto:'Hermanos/sobrinos'},{valor:1,texto:'Tíos/primos'},{valor:0,texto:'Otros'}] },
+        { id:'r1.2', label:'1.2 – ¿La víctima tiene personas a su cargo?', opciones:[{valor:3,texto:'Sí, hijos menores/discapacitados'},{valor:2,texto:'Sí, padres adultos mayores/discapacitados'},{valor:1,texto:'Sí, otros familiares'},{valor:0,texto:'No'}] },
+        { id:'r1.3', label:'1.3 – La víctima ha manifestado al supuesto agresor antes del hecho', opciones:[{valor:3,texto:'Que piensa separarse de él o dejar la casa'},{valor:2,texto:'Que lo ha denunciado o lo va a denunciar'},{valor:1,texto:'Que ha solicitado medidas de protección o piensa solicitarla'},{valor:0,texto:'No le ha manifestado nada'}] },
+        { id:'r1.4', label:'1.4 – La víctima ha tenido que salir de la casa', opciones:[{valor:3,texto:'En una acción repentina (escape)'},{valor:2,texto:'A la fuerza, expulsada por el agresor'},{valor:1,texto:'Por amenaza o miedo al agresor'},{valor:0,texto:'No ha salido de la casa'}] },
+        { id:'r2.1', label:'2.1 – ¿El supuesto agresor o conocidos han generado intimidación en la víctima?', opciones:[{valor:3,texto:'Han amenazado, acosado o atentado recientemente'},{valor:2,texto:'Han amenazado, acosado o atentado en el pasado (hasta 3 meses)'},{valor:1,texto:'No han amenazado, pero tienen antecedentes'},{valor:0,texto:'No tienen antecedentes de amenaza'}] },
+        { id:'r2.2', label:'2.2 – ¿Ha sido la víctima objeto de amenaza, acoso o atentado anteriormente?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está seguro (dubitativo)'},{valor:0,texto:'No'}] },
+        { id:'r2.3', label:'2.3 – ¿Han sido los familiares de la víctima objeto de amenaza, acoso o atentado?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está seguro (dubitativo)'},{valor:0,texto:'No'}] },
+        { id:'r2.4', label:'2.4 – El supuesto agresor ha retenido a la víctima contra su voluntad', opciones:[{valor:3,texto:'Sí, varias veces'},{valor:2,texto:'Sí, una vez'},{valor:1,texto:'No, pero le ha dicho que lo haría'},{valor:0,texto:'No'}] },
+        { id:'r3.1', label:'3.1 – El supuesto agresor acosó, controló o amedrentó sistemáticamente a la víctima', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
+        { id:'r3.2', label:'3.2 – Historial de conductas violentas con una pareja anterior', opciones:[{valor:3,texto:'Sí, con más de 3 casos'},{valor:2,texto:'Sí, con más de 1 caso'},{valor:1,texto:'Este es el primer caso'},{valor:0,texto:'No'}] },
+        { id:'r3.3', label:'3.3 – Existencia de abuso sexual o físico contra hijos u otras personas menores de edad', opciones:[{valor:3,texto:'Sí'},{valor:2,texto:'Ha intentado realizarlo'},{valor:1,texto:'Amenazó con realizarlo'},{valor:0,texto:'No'}] },
+        { id:'r3.4', label:'3.4 – Historial de conductas previas de violencia contra otras personas no familiares', opciones:[{valor:3,texto:'Sí, con más de 3 casos'},{valor:2,texto:'Sí, con más de 1 caso'},{valor:1,texto:'Este es el primer caso'},{valor:0,texto:'No'}] },
+        { id:'r3.5', label:'3.5 – Acceso y conocimiento en el uso de armas de fuego', opciones:[{valor:3,texto:'Conoce, usa y trabaja con ellas siempre'},{valor:2,texto:'Conoce y usa armas frecuentemente'},{valor:1,texto:'Cuenta con un arma, pero no la ha usado'},{valor:0,texto:'No'}] },
+        { id:'r3.6', label:'3.6 – El supuesto agresor abusa de alcohol o drogas', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
+        { id:'r3.7', label:'3.7 – Antecedentes psiquiátricos', opciones:[{valor:3,texto:'Sí, fue internado varias veces y está medicado'},{valor:2,texto:'Sí, fue internado'},{valor:1,texto:'Sí, está medicado'},{valor:0,texto:'No'}] },
+        { id:'r3.8', label:'3.8 – Intentó o amenazó con suicidarse cuando la víctima trató de apartarse', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, varias veces'},{valor:1,texto:'Sí, en una ocasión'},{valor:0,texto:'No'}] },
+        { id:'r3.9', label:'3.9 – Conductas frecuentes de crueldad, desprecio y falta de arrepentimiento', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
+        { id:'r3.10', label:'3.10 – Menosprecio a las medidas de protección dictadas', opciones:[{valor:2,texto:'Sí, varias veces'},{valor:1,texto:'Sí, en una ocasión'},{valor:0,texto:'No'}] },
+        { id:'r4.1', label:'4.1 – ¿Ha expresado la víctima temor a su seguridad o la de su familia?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No, pero parece estar nerviosa'},{valor:0,texto:'No'}] },
+        { id:'r4.2', label:'4.2 – ¿Cómo describiría la conducta de la víctima?', opciones:[{valor:3,texto:'Nerviosa, afectada emocionalmente, preocupada por el proceso'},{valor:2,texto:'Tranquila pero muestra recelo'},{valor:1,texto:'Tiene algunas preocupaciones'},{valor:0,texto:'No manifiesta preocupaciones'}] },
+        { id:'r4.3', label:'4.3 – ¿La víctima tiene una buena red de ayuda?', opciones:[{valor:3,texto:'No cuenta con red de ayuda o está aislada'},{valor:1,texto:'Tiene algunas personas que puedan apoyarle'},{valor:0,texto:'Cuenta con una red de personas'}] },
+        { id:'r4.4', label:'4.4 – Condiciones de vulnerabilidad (Reglas de Brasilia)', opciones:[{valor:2,texto:'Reúne tres o más condiciones'},{valor:1,texto:'Reúne una o más condiciones'},{valor:0,texto:'No reúne condiciones'}] },
+        { id:'r4.5', label:'4.5 – Dependencia económica del agresor', opciones:[{valor:2,texto:'Dependencia económica total'},{valor:1,texto:'Dependencia económica parcial'},{valor:0,texto:'No depende económicamente'}] },
+        { id:'r4.6', label:'4.6 – La víctima considera que el supuesto agresor es capaz de matarla', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está segura'},{valor:0,texto:'No'}] },
+        { id:'r4.7', label:'4.7 – Ha retirado denuncias previas o reanudado la relación', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No, pero reanudó la relación'},{valor:0,texto:'No'}] },
+        { id:'r4.8', label:'4.8 – Ha recibido atención en salud como consecuencia de las agresiones', opciones:[{valor:2,texto:'No, a pesar de haber sufrido violencia se negó a recibir asistencia'},{valor:1,texto:'Sí, fue asistida'},{valor:0,texto:'No ha sido necesario'}] },
+        { id:'r5.1', label:'5.1 – El dato o información proporcionada es determinante para esclarecer el hecho', opciones:[{valor:2,texto:'Permitió individualizar al agresor/hallar otros elementos de prueba'},{valor:1,texto:'Permitió hallar el elemento de prueba principal'},{valor:0,texto:'No es pertinente/relevante o se puede prescindir'}] },
+        { id:'r5.2', label:'5.2 – ¿El dato o información está sustentado en otros elementos de prueba?', opciones:[{valor:2,texto:'Corroborado ampliamente'},{valor:1,texto:'Corroborado parcialmente'},{valor:0,texto:'No fue corroborado'}] },
+        { id:'r5.3', label:'5.3 – La víctima manifiesta su voluntad de continuar el proceso', opciones:[{valor:3,texto:'No quiere continuar'},{valor:2,texto:'Duda en continuar'},{valor:1,texto:'Manifiesta su voluntad de continuar'},{valor:0,texto:'Está segura de continuar'}] }
+    ];
+
     function generarCuestionarioRiesgo() {
         let html = `<h4 style="color:#1a2a4a;margin-bottom:10px;">Cuestionario de Nivel de Riesgo</h4><p class="text-muted">Complete todas las preguntas.</p>`;
         const secciones = [
@@ -1537,8 +1484,27 @@
     function imprimirCuestionario() { window.print(); }
 
     // ================================================================
-    // GENERAR LIQUIDACIÓN Y DILIGENCIAS
+    // LIQUIDACIÓN Y DILIGENCIAS
     // ================================================================
+    const DILIGENCIAS_ALIMENTOS = [
+        { id: 'dil-testifical', label: 'Testifical' },
+        { id: 'dil-cert-nacimiento', label: 'Certificado de Nacimiento' },
+        { id: 'dil-oficio-trabajadora-social', label: 'Oficio Trabajadora Social' },
+        { id: 'dil-oficio-banco', label: 'Oficio Banco' },
+        { id: 'dil-calculo-liquidacion', label: 'Cálculo de Liquidación' },
+        { id: 'dil-oficio-info-daie', label: 'Oficio DAIE' },
+        { id: 'dil-oficio-dnit', label: 'Oficio DNIT' },
+        { id: 'dil-oficio-seccion-estadisticas', label: 'Oficio Estadísticas' },
+        { id: 'dil-oficio-ministerio-trabajo', label: 'Oficio Ministerio Trabajo' },
+        { id: 'dil-oficio-municipalidad', label: 'Oficio Municipalidad' },
+        { id: 'dil-oficio-automotores', label: 'Oficio Automotores' },
+        { id: 'dil-oficio-ips', label: 'Oficio IPS' },
+        { id: 'dil-oficio-incoop', label: 'Oficio INCOOP' },
+        { id: 'dil-oficio-telefonias', label: 'Oficio Telefonías' },
+        { id: 'dil-oficio-registros-publicos', label: 'Oficio Registros Públicos' },
+        { id: 'dil-oficio-indagatoria', label: 'Oficio Indagatoria' }
+    ];
+
     function generarLiquidacionYdiligencias() {
         let html = `
             <h4 style="color:#1a2a4a;margin-bottom:10px;">Liquidación de Alimentos</h4>
@@ -2325,7 +2291,6 @@
             alert(`⏳ La causa ${causa.numCausa} tiene plazo próximo a vencer (faltan ${info.dias} días).`);
         }
 
-        // Pestaña 1
         setValueSafe('num-causa', causa.numCausa);
         setValueSafe('imputado', causa.imputado);
         setValueSafe('ci-imputado', causa.ciImputado || '');
@@ -2382,7 +2347,6 @@
         setValueSafe('descripcion-hecho', causa.descripcionHecho || '');
         setValueSafe('observaciones-generales', causa.observacionesGenerales || '');
 
-        // Restaurar hechos
         hechosAgregados = [];
         if (causa.hechos) {
             causa.hechos.forEach(h => {
@@ -2407,7 +2371,6 @@
         }
         renderizarHechosAgregados();
 
-        // Pestaña 2
         setValueSafe('fecha-imputacion', causa.fechaImputacion || '');
         setValueSafe('num-ai', causa.numAI || '');
         setValueSafe('fecha-ai', causa.fechaAI || '');
@@ -2441,7 +2404,6 @@
         setCheckedSafe('anticipo-testigos-vulnerables', causa.anticipos?.testigosVulnerables || false);
         setValueSafe('anticipo-otro', causa.anticipos?.otro || '');
 
-        // Pestaña 4
         setValueSafe('psi-fecha', causa.psiFecha || '');
         setValueSafe('psi-profesional', causa.psiProfesional || '');
         setValueSafe('psi-resultado', causa.psiResultado || 'Pendiente');
@@ -2451,7 +2413,6 @@
         setValueSafe('med-resultado', causa.medResultado || 'Pendiente');
         setValueSafe('med-observaciones', causa.medObservaciones || '');
 
-        // Restaurar intervenciones
         if (causa.intervenciones) {
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
             if (hechoPrincipal === '229' && causa.intervenciones.tipo === 'cuestionario') {
