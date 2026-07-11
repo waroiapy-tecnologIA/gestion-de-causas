@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Causas Penales - MP</title>
-    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* ===== ESTILOS COMPLETOS ===== */
+        /* ===== ESTILOS COMPLETOS (sin cambios) ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f0f2f5; color:#2d2d2d; padding:20px; }
-        /* ===== LOGIN ===== */
         #auth-container { max-width:400px; margin:60px auto; background:#fff; padding:30px 35px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
         #auth-container h2 { color:#1a2a4a; text-align:center; margin-bottom:8px; }
         #auth-container .sub { color:#888; font-size:14px; text-align:center; margin-bottom:25px; }
@@ -30,7 +28,6 @@
         #auth-message { padding:10px; border-radius:6px; margin-bottom:15px; display:none; }
         #auth-message.error { background:#f8d7da; color:#721c24; display:block; }
         #auth-message.success { background:#d4edda; color:#155724; display:block; }
-        /* ===== APP ===== */
         #app { display:none; max-width:1400px; margin:0 auto; background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.1); overflow:hidden; }
         .header { background:#1a2a4a; color:#fff; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
         .header h1 { font-size:20px; font-weight:600; }
@@ -103,9 +100,9 @@
         .causa-card .dias-restantes.vencido { color:#b33c3c; font-weight:600; }
         .causa-card .dias-restantes.proximo { color:#b8860b; }
         .causa-card .acto-conclusivo-msg { font-size:11px; color:#0d47a1; margin-top:5px; border-top:1px dashed #bbdefb; padding-top:5px; font-weight:500; background:#e3f2fd; padding:4px 8px; border-radius:4px; }
+        .causa-card .prorroga-msg { font-size:10px; color:#666; margin-top:3px; background:#f0f0f0; padding:2px 6px; border-radius:3px; display:inline-block; }
         .empty-state { text-align:center; padding:30px 20px; color:#888; }
         .empty-state i { font-size:40px; color:#d0d4da; margin-bottom:12px; }
-        /* ===== FORMULARIO ===== */
         .form-container { display:none; background:#fafbfc; border-radius:8px; padding:20px 25px; margin-top:15px; border:1px solid #e0e4ea; opacity:0; transform:translateY(10px); transition:opacity 0.3s ease, transform 0.3s ease; }
         .form-container.active { display:block; opacity:1; transform:translateY(0); }
         .form-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #e0e4ea; }
@@ -143,7 +140,6 @@
         .footer-seccion { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:15px; padding-top:12px; border-top:1px solid #e0e4ea; }
         .footer-seccion .estado { font-size:12px; color:#888; }
         .footer-seccion .estado.guardado { color:#2a7d4f; }
-        /* ===== CUESTIONARIO RIESGO ===== */
         .cuestionario-section { margin-bottom:15px; padding:12px; background:#fff; border-radius:6px; border:1px solid #e0e4ea; }
         .cuestionario-section h4 { color:#1a2a4a; margin-bottom:8px; font-size:14px; border-bottom:1px solid #e8ecf1; padding-bottom:4px; }
         .cuestionario-pregunta { display:grid; grid-template-columns:1fr auto; gap:8px 15px; align-items:center; padding:4px 0; border-bottom:1px solid #f0f2f5; font-size:13px; }
@@ -169,7 +165,6 @@
         .mb-10 { margin-bottom:10px; }
         .text-center { text-align:center; }
         .flex-wrap { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
-        /* ===== ADMIN PANEL ===== */
         #admin-panel { display:none; background:#fff; border-radius:8px; padding:20px; margin-top:15px; border:1px solid #e0e4ea; }
         #admin-panel h3 { color:#1a2a4a; margin-bottom:15px; }
         .user-table { width:100%; border-collapse:collapse; font-size:13px; }
@@ -186,7 +181,6 @@
         .btn-reject:hover { background:#8f2e2e; }
         .btn-renew { background:#d4a843; color:#fff; }
         .btn-renew:hover { background:#b8922e; }
-        /* ===== ALERTAS ===== */
         .alert-card { background:#fff; border:1px solid #e0e4ea; border-radius:6px; margin-bottom:8px; overflow:hidden; }
         .alert-card-header { background:#f8f9fa; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-bottom:1px solid #e0e4ea; }
         .alert-card-header h4 { margin:0; font-size:14px; color:#1a2a4a; }
@@ -208,16 +202,13 @@
         .fundamento-articulo { margin:6px 0; padding:5px 10px; background:#f8f9fa; border-left:3px solid #1a2a4a; border-radius:4px; }
         .fundamento-articulo strong { color:#1a2a4a; }
         .fundamento-articulo .texto-ley { font-size:12px; color:#333; margin-top:3px; }
-        /* ===== MODAL DE RESUMEN ===== */
         #modal-resumen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; overflow:auto; padding:20px; }
-        #modal-resumen .modal-contenido { background:#fff; max-width:950px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
+        #modal-resumen .modal-contenido { background:#fff; max-width:1050px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
         #modal-resumen .modal-cerrar { position:absolute; top:12px; right:18px; background:transparent; border:none; font-size:28px; cursor:pointer; color:#888; }
         #modal-resumen .modal-cerrar:hover { color:#b33c3c; }
         #modal-resumen pre { font-family: 'Courier New', monospace; font-size:13px; white-space:pre-wrap; word-break:break-word; margin:0; line-height:1.6; background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #e0e4ea; max-height:70vh; overflow-y:auto; }
         #modal-resumen .modal-footer { margin-top:20px; text-align:center; }
-        /* ===== CAMPO ARCHIVO PROVISIONAL ===== */
         #campo-fecha-archivo { background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:12px; margin-top:10px; }
-        /* ===== ESTILOS IMPRESIÓN ===== */
         @media (max-width:600px) {
             .user-table, .user-table tbody, .user-table tr, .user-table td { display:block; width:100%; }
             .user-table tr { margin-bottom:10px; border:1px solid #ddd; padding:8px; border-radius:6px; }
@@ -295,6 +286,7 @@
             .liquidacion-link { display:none !important; }
             .diligencia-item { font-size:8pt; padding:1px 0; }
             #campo-fecha-archivo { display:none !important; }
+            .causa-card .prorroga-msg { display:none; }
         }
     </style>
 </head>
@@ -606,7 +598,7 @@
                         </div>
                     </div>
 
-                    <!-- Medidas, prórrogas, rebeldía y anticipos (sin cambios) -->
+                    <!-- Medidas, prórrogas, rebeldía y anticipos -->
                     <div class="sub-seccion">
                         <h4>Tipo de Medidas <span class="text-muted">(selección múltiple)</span></h4>
                         <div class="checkbox-group"><input type="checkbox" id="medida-notificacion"><label for="medida-notificacion">Notificación del acta de imputación</label></div>
@@ -753,7 +745,6 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Variables globales
         let currentUser = null;
         let currentUserData = null;
         let isAdmin = false;
@@ -765,7 +756,6 @@
         let seccionesGuardadas = { tab1:false, tab2:false, tab3:false, tab4:false };
         let authMode = 'login';
 
-        // Estados que indican que ya se presentó acto conclusivo (no son actividad de investigación ni archivo provisional)
         const ESTADOS_ACTO_CONCLUSIVO = [
             'criterio-oportunidad',
             'archivo-definitivo',
@@ -810,7 +800,7 @@
         function esGrupoA(hechoId) { return GRUPO_A.includes(hechoId); }
 
         // ================================================================
-        // 3. FUNCIONES AUXILIARES Y DE FECHA (CORREGIDAS)
+        // 3. FUNCIONES AUXILIARES Y DE FECHA
         // ================================================================
         function setValueSafe(id, valor) {
             const el = document.getElementById(id);
@@ -832,7 +822,6 @@
             return causas.find(c => c.id === causaActualId) || null;
         }
 
-        // Funciones de fecha local
         function parseLocalDate(dateStr) {
             if (!dateStr) return null;
             const partes = dateStr.split('-');
@@ -843,28 +832,21 @@
             return new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
         }
 
-        // Determina si un estado es de acto conclusivo presentado
         function esActoConclusivoPresentado(estado) {
             return ESTADOS_ACTO_CONCLUSIVO.includes(estado);
         }
 
-        // Cálculo de días restantes (considera estado y fechas)
         function calcularInfoPlazo(causa) {
             const estado = causa.estadoCausa || 'activa';
             let fechaStr = null;
             let tipo = 'ninguno';
             
-            // Si es archivo provisional y tiene fecha límite, usarla
             if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
                 fechaStr = causa.fechaLimiteArchivo;
                 tipo = 'archivo_provisional';
-            }
-            // Si es acto conclusivo presentado, no mostramos días, solo mensaje
-            else if (esActoConclusivoPresentado(estado)) {
+            } else if (esActoConclusivoPresentado(estado)) {
                 return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado' };
-            }
-            // Si es activa o cualquier otro estado, usar fecha de acto conclusivo
-            else if (causa.fechaActoConclusivo) {
+            } else if (causa.fechaActoConclusivo) {
                 fechaStr = causa.fechaActoConclusivo;
                 tipo = 'acto_conclusivo';
             }
@@ -880,9 +862,6 @@
             return { dias: diff, estado: estadoPlazo, tipo: tipo };
         }
 
-        // ================================================================
-        // 4. FUNCIONES DE INTERFAZ PARA FECHAS
-        // ================================================================
         function calcularDiasRestantesDesdeFecha() {
             const fechaManual = document.getElementById('fecha-vencimiento-input').value;
             const elDias = document.getElementById('dias-restantes');
@@ -972,7 +951,7 @@
         }
 
         // ================================================================
-        // 5. AUTENTICACIÓN (sin cambios)
+        // 4. AUTENTICACIÓN (sin cambios)
         // ================================================================
         function mostrarMensaje(texto, tipo) {
             const el = document.getElementById('auth-message');
@@ -1125,7 +1104,7 @@
         }
 
         // ================================================================
-        // 6. ADMIN (sin cambios)
+        // 5. ADMIN (sin cambios)
         // ================================================================
         function toggleAdminPanel() {
             const panel = document.getElementById('admin-panel');
@@ -1206,7 +1185,7 @@
         }
 
         // ================================================================
-        // 7. INICIALIZACIÓN DEL SISTEMA
+        // 6. INICIALIZACIÓN DEL SISTEMA
         // ================================================================
         function inicializarSistema() {
             cargarDatos();
@@ -1237,7 +1216,7 @@
         }
 
         // ================================================================
-        // 8. PESTAÑAS ESTABLES
+        // 7. PESTAÑAS ESTABLES
         // ================================================================
         function actualizarPestanas() {
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
@@ -1307,7 +1286,7 @@
         }
 
         // ================================================================
-        // 9. MODAL DE RESUMEN
+        // 8. MODAL DE RESUMEN (con columna prórroga)
         // ================================================================
         function generarResumenRequerimientos() {
             if (causas.length === 0) return '📭 No hay causas registradas.';
@@ -1318,6 +1297,16 @@
                 let tipoPlazo = '--';
                 let estadoPlazo = 'Sin fecha';
                 let mensajeExtra = '';
+                let prorrogaInfo = 'No';
+
+                // Determinar prórroga
+                if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
+                    prorrogaInfo = `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
+                }
+                if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c.prorrogaExtraordinaria.nuevaFecha) {
+                    if (prorrogaInfo !== 'No') prorrogaInfo += ' | ';
+                    prorrogaInfo += `Ext: ${new Date(c.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
+                }
 
                 if (info.tipo === 'acto_conclusivo') {
                     fechaStr = c.fechaActoConclusivo ? new Date(c.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida';
@@ -1344,7 +1333,6 @@
 
                 const esActiva = (c.estadoCausa === 'activa' || !c.estadoCausa);
                 const estadoInv = esActiva ? 'Activa' : 'Precluida';
-                const estadoLabel = getEstadoLabel(c.estadoCausa || 'activa');
 
                 return {
                     num: c.numCausa || 'Sin número',
@@ -1352,12 +1340,12 @@
                     fecha: fechaStr,
                     tipoPlazo: tipoPlazo,
                     estadoPlazo: estadoPlazo + mensajeExtra,
-                    estadoInv: estadoInv,
-                    estadoLabel: estadoLabel
+                    prorroga: prorrogaInfo,
+                    estadoInv: estadoInv
                 };
             });
 
-            // Ordenar por prioridad: vencido -> próximo -> en plazo -> acto conclusivo -> sin plazo
+            // Ordenar por prioridad
             const orden = { '🔴 VENCIDO': 0, '🟡 PRÓXIMO': 1, '🟢 EN PLAZO': 2, '📄 Presentado': 3, 'Sin plazo': 4, 'Sin fecha': 4 };
             lista.sort((a, b) => {
                 const prioridadA = orden[a.estadoPlazo] !== undefined ? orden[a.estadoPlazo] : 4;
@@ -1366,18 +1354,19 @@
             });
 
             let texto = '📋 **RESUMEN DE PLAZOS DE CAUSAS**\n\n';
-            texto += 'Nº Causa     | Imputado               | Fecha Límite    | Tipo Plazo     | Estado Plazo   | Investigación\n';
-            texto += '----------------------------------------------------------------------------------------\n';
+            texto += 'Nº Causa     | Imputado               | Fecha Límite    | Tipo Plazo     | Estado Plazo   | Prórroga           | Investigación\n';
+            texto += '------------------------------------------------------------------------------------------------------------------\n';
             lista.forEach(item => {
                 const num = item.num.padEnd(12);
                 const imp = item.imputado.padEnd(22).slice(0,22);
                 const fecha = item.fecha.padEnd(16);
                 const tipo = item.tipoPlazo.padEnd(15);
                 const estadoP = item.estadoPlazo.padEnd(14);
+                const prorroga = item.prorroga.padEnd(18);
                 const inv = item.estadoInv.padEnd(12);
-                texto += `${num} | ${imp} | ${fecha} | ${tipo} | ${estadoP} | ${inv}\n`;
+                texto += `${num} | ${imp} | ${fecha} | ${tipo} | ${estadoP} | ${prorroga} | ${inv}\n`;
             });
-            texto += '\n----------------------------------------------------------------------------------------\n';
+            texto += '\n------------------------------------------------------------------------------------------------------------------\n';
             texto += `Total: ${lista.length} causas.`;
             return texto;
         }
@@ -1404,7 +1393,7 @@
         });
 
         // ================================================================
-        // 10. CRUD DE CAUSAS
+        // 9. CRUD DE CAUSAS
         // ================================================================
         function guardarDatos() {
             try {
@@ -1453,7 +1442,7 @@
         }
 
         // ================================================================
-        // 11. GUARDADO POR PESTAÑA
+        // 10. GUARDADO POR PESTAÑA
         // ================================================================
         function guardarPestana1() {
             const num = document.getElementById('num-causa').value.trim();
@@ -1631,7 +1620,7 @@
         }
 
         // ================================================================
-        // 12. CARGAR CAUSA PARA EDITAR
+        // 11. CARGAR CAUSA PARA EDITAR
         // ================================================================
         function cargarCausaParaEditar(id) {
             const causa = causas.find(c => c.id === id);
@@ -1649,7 +1638,7 @@
                 alert(`📄 La causa ${causa.numCausa} ya tiene acto conclusivo presentado.`);
             }
 
-            // Cargar datos generales
+            // Cargar datos generales (igual que antes)
             setValueSafe('num-causa', causa.numCausa);
             setValueSafe('imputado', causa.imputado);
             setValueSafe('ci-imputado', causa.ciImputado || '');
@@ -1659,6 +1648,7 @@
             setValueSafe('num-reincidencias', causa.numReincidencias || 0);
             document.getElementById('num-reincidencias').disabled = !causa.reincidente;
 
+            // Víctimas, testigos, hechos (igual que antes)
             const victimasContainer = document.getElementById('victimas-container');
             victimasContainer.innerHTML = '';
             if (causa.victimas && causa.victimas.length > 0) {
@@ -1800,7 +1790,7 @@
         }
 
         // ================================================================
-        // 13. VÍCTIMAS, TESTIGOS, HECHOS
+        // 12. VÍCTIMAS, TESTIGOS, HECHOS (sin cambios)
         // ================================================================
         function agregarVictima() {
             const container = document.getElementById('victimas-container');
@@ -2008,7 +1998,7 @@
         }
 
         // ================================================================
-        // 14. INTERVENCIONES (Cuestionario y Liquidación)
+        // 13. INTERVENCIONES (Cuestionario y Liquidación)
         // ================================================================
         function actualizarIntervenciones() {
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
@@ -2354,7 +2344,7 @@
         }
 
         // ================================================================
-        // 15. RENDERIZAR LISTADO Y ALERTAS
+        // 14. RENDERIZAR LISTADO Y ALERTAS
         // ================================================================
         function renderizarCausas() {
             const grid = document.getElementById('causa-grid');
@@ -2376,6 +2366,19 @@
                 const info = calcularInfoPlazo(c);
                 let diasInfo = '';
                 let actoConclusivoMsg = '';
+                let prorrogaMsg = '';
+
+                // Prórroga
+                if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
+                    prorrogaMsg += `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')} `;
+                }
+                if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c.prorrogaExtraordinaria.nuevaFecha) {
+                    prorrogaMsg += `Ext: ${new Date(c.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
+                }
+                if (prorrogaMsg) {
+                    prorrogaMsg = `<div class="prorroga-msg">📅 Prórroga: ${prorrogaMsg}</div>`;
+                }
+
                 if (info.estado === 'acto_conclusivo') {
                     actoConclusivoMsg = `<div class="acto-conclusivo-msg"><i class="fas fa-check-circle"></i> Acto conclusivo presentado</div>`;
                 } else if (info.estado === 'vencido') {
@@ -2409,6 +2412,7 @@
                         ${tieneAlertas ? `<span class="badge badge-alerta" style="margin-left:5px;"><i class="fas fa-exclamation-circle"></i> Alertas</span>` : ''}
                         ${diasInfo}
                         ${actoConclusivoMsg}
+                        ${prorrogaMsg}
                         <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 `;
@@ -2562,7 +2566,7 @@
         }
 
         // ================================================================
-        // 16. INFORME COMPLETO (con todas las secciones)
+        // 15. INFORME COMPLETO (con prórrogas mejoradas)
         // ================================================================
         function actualizarInforme() {
             const container = document.getElementById('informe-contenido');
@@ -2718,15 +2722,31 @@
             html += (medidas.length > 0) ? medidas.join(', ') : 'No se registraron medidas específicas.';
             html += `</div>`;
 
-            if (causa.prorrogaOrdinaria) {
+            // ===== PRÓRROGAS (mejoradas) =====
+            html += `<div><strong>Prórrogas:</strong></div>`;
+            if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si') {
                 const po = causa.prorrogaOrdinaria;
-                html += `<div><strong>Prórroga Ordinaria (Art. 325):</strong> Presentación: ${po.fechaPresentacion || 'N/A'}, Otorgada: ${po.otorgada || 'N/A'}, Nueva fecha: ${po.nuevaFecha || 'N/A'}, Fundamento: ${po.fundamento || 'N/A'}</div>`;
-            }
-            if (causa.prorrogaExtraordinaria) {
-                const pe = causa.prorrogaExtraordinaria;
-                html += `<div><strong>Prórroga Extraordinaria (Art. 326):</strong> Presentación: ${pe.fechaPresentacion || 'N/A'}, Otorgada: ${pe.otorgada || 'N/A'}, Nueva fecha: ${pe.nuevaFecha || 'N/A'}, Fundamento: ${pe.fundamento || 'N/A'}</div>`;
+                html += `<div style="padding-left:15px;">• <strong>Ordinaria (Art. 325):</strong> Otorgada - Nueva fecha: ${po.nuevaFecha ? new Date(po.nuevaFecha).toLocaleDateString('es-ES') : 'No definida'}`;
+                if (po.fundamento) html += ` - Fundamento: ${po.fundamento}`;
+                html += `</div>`;
+            } else if (causa.prorrogaOrdinaria) {
+                html += `<div style="padding-left:15px;">• <strong>Ordinaria (Art. 325):</strong> No otorgada (Presentación: ${causa.prorrogaOrdinaria.fechaPresentacion || 'N/A'})</div>`;
+            } else {
+                html += `<div style="padding-left:15px;">• No se registró prórroga ordinaria.</div>`;
             }
 
+            if (causa.prorrogaExtraordinaria && causa.prorrogaExtraordinaria.otorgada === 'Si') {
+                const pe = causa.prorrogaExtraordinaria;
+                html += `<div style="padding-left:15px;">• <strong>Extraordinaria (Art. 326):</strong> Otorgada - Nueva fecha: ${pe.nuevaFecha ? new Date(pe.nuevaFecha).toLocaleDateString('es-ES') : 'No definida'}`;
+                if (pe.fundamento) html += ` - Fundamento: ${pe.fundamento}`;
+                html += `</div>`;
+            } else if (causa.prorrogaExtraordinaria) {
+                html += `<div style="padding-left:15px;">• <strong>Extraordinaria (Art. 326):</strong> No otorgada (Presentación: ${causa.prorrogaExtraordinaria.fechaPresentacion || 'N/A'})</div>`;
+            } else {
+                html += `<div style="padding-left:15px;">• No se registró prórroga extraordinaria.</div>`;
+            }
+
+            // Rebeldía
             if (causa.rebeldia) {
                 html += `<div><strong>Rebeldía:</strong> ${causa.rebeldia.activa ? 'ACTIVA' : 'No declarada'}`;
                 if (causa.rebeldia.activa) {
@@ -2802,13 +2822,9 @@
             html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">5. ALERTAS Y OBSERVACIONES FINALES</h3>`;
             let alertas = [];
             const infoAlert = calcularInfoPlazo(causa);
-            if (infoAlert.estado === 'vencido') {
-                alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(infoAlert.dias)} días)`);
-            } else if (infoAlert.estado === 'proximo') {
-                alertas.push(`⏳ Plazo próximo (faltan ${infoAlert.dias} días)`);
-            } else if (infoAlert.estado === 'acto_conclusivo') {
-                alertas.push('📄 Acto conclusivo presentado');
-            }
+            if (infoAlert.estado === 'vencido') alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(infoAlert.dias)} días)`);
+            else if (infoAlert.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${infoAlert.dias} días)`);
+            else if (infoAlert.estado === 'acto_conclusivo') alertas.push('📄 Acto conclusivo presentado');
             if (causa.rebeldia?.activa) {
                 alertas.push('🔴 Rebeldía activa');
                 if (!causa.rebeldia.levantamiento) alertas.push('⚠️ Rebeldía sin levantar');
@@ -2831,7 +2847,7 @@
         }
 
         // ================================================================
-        // 17. ALERTAS
+        // 16. ALERTAS (con prórrogas)
         // ================================================================
         function actualizarAlertas() {
             const container = document.getElementById('alertas-contenido');
@@ -2855,6 +2871,14 @@
                 alertas.push(`📌 Causa precluida (investigación finalizada) - Estado: ${getEstadoLabel(causa.estadoCausa)}`);
             }
 
+            // Prórrogas
+            if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si' && causa.prorrogaOrdinaria.nuevaFecha) {
+                alertas.push(`📅 Prórroga ordinaria (Art. 325) otorgada. Nueva fecha: ${new Date(causa.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`);
+            }
+            if (causa.prorrogaExtraordinaria && causa.prorrogaExtraordinaria.otorgada === 'Si' && causa.prorrogaExtraordinaria.nuevaFecha) {
+                alertas.push(`📅 Prórroga extraordinaria (Art. 326) otorgada. Nueva fecha: ${new Date(causa.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`);
+            }
+
             let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
             if (alertas.length === 0) {
                 html += '<div style="color:#2a7d4f;font-weight:500;">✅ No se detectaron alertas.</div>';
@@ -2865,7 +2889,6 @@
             }
             html += `<hr style="margin:10px 0;border-color:#e0e4ea;">`;
 
-            // Mostrar fechas según estado
             if (causa.estadoCausa === 'archivo-provisional' && causa.fechaLimiteArchivo) {
                 html += `<div><strong>📅 Fecha límite de archivo:</strong> ${new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES')}</div>`;
                 const diffArchivo = calcularInfoPlazo(causa);
@@ -2888,7 +2911,7 @@
         }
 
         // ================================================================
-        // 18. EXPORTAR/IMPORTAR
+        // 17. EXPORTAR/IMPORTAR
         // ================================================================
         function exportarDatos() {
             const blob = new Blob([JSON.stringify(causas, null, 2)], { type:'application/json' });
@@ -2934,10 +2957,10 @@
         }
 
         // ================================================================
-        // 19. CIERRE
+        // 18. CIERRE
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ Sistema cargado con informe completo y lógica de acto conclusivo.');
+            console.log('✅ Sistema cargado con informe completo, prórrogas y resumen con columna de prórrogas.');
         });
     </script>
 </body>
