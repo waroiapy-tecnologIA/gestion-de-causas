@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Causas Penales - MP</title>
-    <!-- Firebase (mantenido) -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- Estilos completos (sin cambios en lo visual) -->
     <style>
         /* ===== ESTILOS COMPLETOS ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -71,8 +70,8 @@
         .search-box button:hover { color:#1a2a4a; }
         .main-content { padding:15px 25px; }
         .section-title { font-size:17px; font-weight:600; color:#1a2a4a; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #e8ecf1; }
-        .causa-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px; margin-bottom:15px; }
-        .causa-card { background:#fff; border:1px solid #e0e4ea; border-radius:8px; padding:14px 16px; cursor:pointer; transition:all 0.2s; border-left:4px solid #1a2a4a; position:relative; overflow:hidden; word-break:break-word; max-height:300px; overflow-y:auto; }
+        .causa-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin-bottom:15px; }
+        .causa-card { background:#fff; border:1px solid #e0e4ea; border-radius:8px; padding:14px 16px; cursor:pointer; transition:all 0.2s; border-left:4px solid #1a2a4a; position:relative; overflow:hidden; word-break:break-word; max-height:320px; overflow-y:auto; }
         .causa-card:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,0,0,0.08); border-color:#b0b8c4; }
         .causa-card .numero { font-weight:700; font-size:15px; color:#1a2a4a; display:flex; align-items:center; gap:6px; }
         .causa-card .numero .alerta-icon { color:#b33c3c; font-size:13px; }
@@ -81,6 +80,8 @@
         .badge-activa { background:#d4edda; color:#155724; }
         .badge-alimentos { background:#fff3cd; color:#856404; }
         .badge-alerta { background:#f8d7da; color:#721c24; }
+        .badge-precluida { background:#e0e0e0; color:#616161; }
+        .badge-acto-conclusivo { background:#bbdefb; color:#0d47a1; }
         .badge-estado { display:inline-block; font-size:9px; padding:2px 6px; border-radius:12px; margin-top:3px; font-weight:500; }
         .badge-estado.activa { background:#d4edda; color:#155724; }
         .badge-estado.criterio { background:#fff3cd; color:#856404; }
@@ -101,6 +102,7 @@
         .causa-card .dias-restantes { font-size:11px; color:#888; margin-top:5px; border-top:1px dashed #e0e4ea; padding-top:5px; }
         .causa-card .dias-restantes.vencido { color:#b33c3c; font-weight:600; }
         .causa-card .dias-restantes.proximo { color:#b8860b; }
+        .causa-card .acto-conclusivo-msg { font-size:11px; color:#0d47a1; margin-top:5px; border-top:1px dashed #bbdefb; padding-top:5px; font-weight:500; background:#e3f2fd; padding:4px 8px; border-radius:4px; }
         .empty-state { text-align:center; padding:30px 20px; color:#888; }
         .empty-state i { font-size:40px; color:#d0d4da; margin-bottom:12px; }
         /* ===== FORMULARIO ===== */
@@ -208,11 +210,14 @@
         .fundamento-articulo .texto-ley { font-size:12px; color:#333; margin-top:3px; }
         /* ===== MODAL DE RESUMEN ===== */
         #modal-resumen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; overflow:auto; padding:20px; }
-        #modal-resumen .modal-contenido { background:#fff; max-width:900px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
+        #modal-resumen .modal-contenido { background:#fff; max-width:950px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
         #modal-resumen .modal-cerrar { position:absolute; top:12px; right:18px; background:transparent; border:none; font-size:28px; cursor:pointer; color:#888; }
         #modal-resumen .modal-cerrar:hover { color:#b33c3c; }
         #modal-resumen pre { font-family: 'Courier New', monospace; font-size:13px; white-space:pre-wrap; word-break:break-word; margin:0; line-height:1.6; background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #e0e4ea; max-height:70vh; overflow-y:auto; }
         #modal-resumen .modal-footer { margin-top:20px; text-align:center; }
+        /* ===== CAMPO ARCHIVO PROVISIONAL ===== */
+        #campo-fecha-archivo { background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:12px; margin-top:10px; }
+        /* ===== ESTILOS IMPRESIÓN ===== */
         @media (max-width:600px) {
             .user-table, .user-table tbody, .user-table tr, .user-table td { display:block; width:100%; }
             .user-table tr { margin-bottom:10px; border:1px solid #ddd; padding:8px; border-radius:6px; }
@@ -262,6 +267,8 @@
             .badge-activa { background:#d4edda !important; color:#155724 !important; }
             .badge-alimentos { background:#fff3cd !important; color:#856404 !important; }
             .badge-alerta { background:#f8d7da !important; color:#721c24 !important; }
+            .badge-precluida { background:#e0e0e0 !important; color:#616161 !important; }
+            .badge-acto-conclusivo { background:#bbdefb !important; color:#0d47a1 !important; }
             .badge-estado { font-size:8pt; }
             .text-muted { font-size:8pt; }
             .espacio-firma .firma-line { width:180px; }
@@ -287,6 +294,7 @@
             .liquidacion-resultado { font-size:10pt; }
             .liquidacion-link { display:none !important; }
             .diligencia-item { font-size:8pt; padding:1px 0; }
+            #campo-fecha-archivo { display:none !important; }
         }
     </style>
 </head>
@@ -343,7 +351,7 @@
             <div class="user-info">
                 <span id="user-info-display" style="font-size:13px; font-weight:500;"></span>
                 <button class="btn-admin" id="btn-admin-panel" onclick="toggleAdminPanel()" style="display:none;"><i class="fas fa-users-cog"></i> Admin</button>
-                <button class="btn btn-resumen" onclick="mostrarResumenRequerimientos()" title="Ver resumen de fechas de acto conclusivo"><i class="fas fa-list"></i> Resumen</button>
+                <button class="btn btn-resumen" onclick="mostrarResumenRequerimientos()" title="Ver resumen de plazos"><i class="fas fa-list"></i> Resumen</button>
                 <button class="btn-logout" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </header>
@@ -396,7 +404,6 @@
 
                 <!-- ===== TAB 1: DATOS GENERALES ===== -->
                 <div id="tab1" class="tab-pane active">
-                    <!-- (Contenido completo, sin cambios significativos) -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>Número de Causa <span class="required">*</span></label>
@@ -520,14 +527,15 @@
                     </div>
                 </div>
 
-                <!-- ===== TAB 2: JUZGADO Y FECHA DE ACTO CONCLUSIVO ===== -->
+                <!-- ===== TAB 2: JUZGADO Y PLAZOS ===== -->
                 <div id="tab2" class="tab-pane">
                     <div class="sub-seccion">
                         <h4>Datos de Imputación</h4>
                         <div class="form-row">
-                            <div class="form-group"><label>Fecha de Imputación</label>
-                                <input type="date" id="fecha-imputacion" readonly style="background:#f0f2f5;">
-                                <span class="text-muted">(Solo referencia – no se usa para cálculo)</span>
+                            <div class="form-group">
+                                <label>Fecha de Imputación</label>
+                                <input type="date" id="fecha-imputacion">
+                                <span class="text-muted">(Solo referencia)</span>
                             </div>
                             <div class="form-group"><label>Resuelto por AI N°</label>
                                 <input type="text" id="num-ai" placeholder="N° de AI"></div>
@@ -544,7 +552,7 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Seleccione el estado actual <span class="required">*</span></label>
-                                <select id="estado-causa-select">
+                                <select id="estado-causa-select" onchange="toggleFechaArchivoProvisional()">
                                     <option value="activa">Activa (investigación en curso)</option>
                                     <option value="criterio-oportunidad">Criterio de Oportunidad (Art. 18 CPP)</option>
                                     <option value="archivo-provisional">Archivo Provisional (Art. 334 CPP)</option>
@@ -566,9 +574,23 @@
                                 <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..."></textarea>
                             </div>
                         </div>
+                        <!-- Campo condicional para archivo provisional -->
+                        <div id="campo-fecha-archivo" style="display:none; margin-top:10px;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Fecha límite para nuevo requerimiento (Archivo Provisional) <span class="required">*</span></label>
+                                    <input type="date" id="fecha-limite-archivo" onchange="calcularDiasRestantesArchivo()">
+                                    <span class="text-muted">Fecha hasta la cual se puede solicitar la reapertura.</span>
+                                </div>
+                                <div class="form-group">
+                                    <label>Días restantes para archivo</label>
+                                    <div id="dias-restantes-archivo" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- ===== NUEVA SECCIÓN: FECHA DE ACTO CONCLUSIVO (MANUAL) ===== -->
+                    <!-- Fecha de Acto Conclusivo (manual) -->
                     <div class="sub-seccion">
                         <h4>Fecha de Acto Conclusivo <span class="text-muted">(ingreso manual)</span></h4>
                         <p class="text-muted">Ingrese la fecha en que vence el plazo para presentar el requerimiento conclusivo.</p>
@@ -584,7 +606,7 @@
                         </div>
                     </div>
 
-                    <!-- (Resto de campos: prórrogas, rebeldía, anticipos – se mantienen solo como referencia) -->
+                    <!-- Medidas, prórrogas, rebeldía y anticipos (sin cambios) -->
                     <div class="sub-seccion">
                         <h4>Tipo de Medidas <span class="text-muted">(selección múltiple)</span></h4>
                         <div class="checkbox-group"><input type="checkbox" id="medida-notificacion"><label for="medida-notificacion">Notificación del acta de imputación</label></div>
@@ -643,7 +665,7 @@
                     </div>
                     <div class="footer-seccion">
                         <span class="estado" id="estado-tab2">Sin guardar</span>
-                        <button class="btn btn-guardar-seccion" onclick="guardarPestana2()"><i class="fas fa-save"></i> Guardar Fecha de Acto Conclusivo</button>
+                        <button class="btn btn-guardar-seccion" onclick="guardarPestana2()"><i class="fas fa-save"></i> Guardar Datos del Juzgado</button>
                     </div>
                 </div>
 
@@ -703,7 +725,7 @@
     <div id="modal-resumen">
         <div class="modal-contenido">
             <button class="modal-cerrar" id="cerrar-modal-resumen">&times;</button>
-            <h3 style="color:#1a2a4a; margin-bottom:12px;"><i class="fas fa-list"></i> Resumen de Fechas de Acto Conclusivo</h3>
+            <h3 style="color:#1a2a4a; margin-bottom:12px;"><i class="fas fa-list"></i> Resumen de Plazos de Causas</h3>
             <pre id="contenido-modal"></pre>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="btn-cerrar-modal-resumen">Cerrar</button>
@@ -716,7 +738,7 @@
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        // 1. CONFIGURACIÓN Y CONSTANTES (sin cambios)
+        // 1. CONFIGURACIÓN Y CONSTANTES
         // ================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyBpxzHKYIh1zQAw5z8ezQL5pZRVkTHAlb8",
@@ -743,8 +765,24 @@
         let seccionesGuardadas = { tab1:false, tab2:false, tab3:false, tab4:false };
         let authMode = 'login';
 
+        // Estados que indican que ya se presentó acto conclusivo (no son actividad de investigación ni archivo provisional)
+        const ESTADOS_ACTO_CONCLUSIVO = [
+            'criterio-oportunidad',
+            'archivo-definitivo',
+            'sobreseimiento',
+            'elevacion-juicio',
+            'sentencia-condenatoria',
+            'sentencia-absolutoria',
+            'suspension-condicional',
+            'acuerdo-reparatorio',
+            'conciliacion',
+            'remision-justicia-menores',
+            'inhibitoria',
+            'otro'
+        ];
+
         // ================================================================
-        // 2. CONFIGURACIÓN DE HECHOS (CONFIG) – sin cambios
+        // 2. CONFIGURACIÓN DE HECHOS (CONFIG) - (se mantiene igual)
         // ================================================================
         const CONFIG = {
             hechos: {
@@ -769,11 +807,10 @@
             }
         };
         const GRUPO_A = ['128','135','135b','137','229','225'];
-        const GRUPO_B = ['166','166ag','167','168','111','105','106','173','175','212','126','127'];
         function esGrupoA(hechoId) { return GRUPO_A.includes(hechoId); }
 
         // ================================================================
-        // 3. FUNCIONES AUXILIARES (seguras)
+        // 3. FUNCIONES AUXILIARES Y DE FECHA (CORREGIDAS)
         // ================================================================
         function setValueSafe(id, valor) {
             const el = document.getElementById(id);
@@ -790,17 +827,152 @@
             if (el) { el.textContent = texto; return true; }
             return false;
         }
-        // Sanitización: asigna texto plano evitando XSS
-        function setTextContent(el, texto) {
-            if (el) el.textContent = texto;
-        }
         function getCausaActual() {
             if (!causaActualId) return null;
             return causas.find(c => c.id === causaActualId) || null;
         }
 
+        // Funciones de fecha local
+        function parseLocalDate(dateStr) {
+            if (!dateStr) return null;
+            const partes = dateStr.split('-');
+            return new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
+        }
+        function getTodayMidnight() {
+            const hoy = new Date();
+            return new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+        }
+
+        // Determina si un estado es de acto conclusivo presentado
+        function esActoConclusivoPresentado(estado) {
+            return ESTADOS_ACTO_CONCLUSIVO.includes(estado);
+        }
+
+        // Cálculo de días restantes (considera estado y fechas)
+        function calcularInfoPlazo(causa) {
+            const estado = causa.estadoCausa || 'activa';
+            let fechaStr = null;
+            let tipo = 'ninguno';
+            
+            // Si es archivo provisional y tiene fecha límite, usarla
+            if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
+                fechaStr = causa.fechaLimiteArchivo;
+                tipo = 'archivo_provisional';
+            }
+            // Si es acto conclusivo presentado, no mostramos días, solo mensaje
+            else if (esActoConclusivoPresentado(estado)) {
+                return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado' };
+            }
+            // Si es activa o cualquier otro estado, usar fecha de acto conclusivo
+            else if (causa.fechaActoConclusivo) {
+                fechaStr = causa.fechaActoConclusivo;
+                tipo = 'acto_conclusivo';
+            }
+
+            if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
+
+            const fecha = parseLocalDate(fechaStr);
+            const hoy = getTodayMidnight();
+            const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
+            let estadoPlazo = 'ok';
+            if (diff < 0) estadoPlazo = 'vencido';
+            else if (diff <= 15) estadoPlazo = 'proximo';
+            return { dias: diff, estado: estadoPlazo, tipo: tipo };
+        }
+
         // ================================================================
-        // 4. AUTENTICACIÓN (sin cambios)
+        // 4. FUNCIONES DE INTERFAZ PARA FECHAS
+        // ================================================================
+        function calcularDiasRestantesDesdeFecha() {
+            const fechaManual = document.getElementById('fecha-vencimiento-input').value;
+            const elDias = document.getElementById('dias-restantes');
+            if (!fechaManual) {
+                elDias.textContent = 'No definida';
+                elDias.style.color = '#888';
+                return;
+            }
+            const fecha = parseLocalDate(fechaManual);
+            const hoy = getTodayMidnight();
+            const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
+            if (diff < 0) {
+                elDias.textContent = `VENCIDA (hace ${Math.abs(diff)} días)`;
+                elDias.style.color = '#b33c3c';
+            } else if (diff <= 15) {
+                elDias.textContent = `Faltan ${diff} días (próximo)`;
+                elDias.style.color = '#b8860b';
+            } else {
+                elDias.textContent = `Faltan ${diff} días`;
+                elDias.style.color = '#2a7d4f';
+            }
+        }
+
+        function calcularDiasRestantesArchivo() {
+            const fecha = document.getElementById('fecha-limite-archivo').value;
+            const elDias = document.getElementById('dias-restantes-archivo');
+            if (!fecha) {
+                elDias.textContent = 'No definida';
+                elDias.style.color = '#888';
+                return;
+            }
+            const fechaObj = parseLocalDate(fecha);
+            const hoy = getTodayMidnight();
+            const diff = Math.ceil((fechaObj - hoy) / (1000*60*60*24));
+            if (diff < 0) {
+                elDias.textContent = `VENCIDA (hace ${Math.abs(diff)} días)`;
+                elDias.style.color = '#b33c3c';
+            } else if (diff <= 15) {
+                elDias.textContent = `Faltan ${diff} días (próximo)`;
+                elDias.style.color = '#b8860b';
+            } else {
+                elDias.textContent = `Faltan ${diff} días`;
+                elDias.style.color = '#2a7d4f';
+            }
+        }
+
+        function toggleFechaArchivoProvisional() {
+            const estado = document.getElementById('estado-causa-select').value;
+            const campo = document.getElementById('campo-fecha-archivo');
+            if (estado === 'archivo-provisional') {
+                campo.style.display = 'block';
+            } else {
+                campo.style.display = 'none';
+                document.getElementById('fecha-limite-archivo').value = '';
+                document.getElementById('dias-restantes-archivo').textContent = '--';
+            }
+        }
+
+        function toggleRebeldia() {
+            const activa = document.getElementById('rebeldia-activa').checked;
+            document.getElementById('rebeldia-campos').classList.toggle('hidden', !activa);
+            if (activa) calcularDiasSuspendidos();
+        }
+        function calcularDiasSuspendidos() {
+            const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
+            const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
+            const elDias = document.getElementById('dias-suspendidos');
+            if (!fechaDeclaracion || !fechaLevantamiento) {
+                elDias.textContent = '--';
+                return;
+            }
+            const ini = parseLocalDate(fechaDeclaracion);
+            const fin = parseLocalDate(fechaLevantamiento);
+            if (fin < ini) {
+                elDias.textContent = 'Fecha de levantamiento anterior';
+                elDias.style.color = '#b33c3c';
+                return;
+            }
+            const diff = Math.ceil((fin - ini) / (1000*60*60*24));
+            elDias.textContent = `${diff} días`;
+            elDias.style.color = '#1a2a4a';
+        }
+        function toggleReincidencia() {
+            const activa = document.getElementById('reincidente').checked;
+            document.getElementById('num-reincidencias').disabled = !activa;
+            if (!activa) document.getElementById('num-reincidencias').value = 0;
+        }
+
+        // ================================================================
+        // 5. AUTENTICACIÓN (sin cambios)
         // ================================================================
         function mostrarMensaje(texto, tipo) {
             const el = document.getElementById('auth-message');
@@ -875,7 +1047,6 @@
             });
         }
 
-        // Observador de autenticación (sin cambios)
         auth.onAuthStateChanged(async user => {
             if (user) {
                 currentUser = user;
@@ -954,7 +1125,7 @@
         }
 
         // ================================================================
-        // 5. ADMIN (sin cambios)
+        // 6. ADMIN (sin cambios)
         // ================================================================
         function toggleAdminPanel() {
             const panel = document.getElementById('admin-panel');
@@ -1035,13 +1206,12 @@
         }
 
         // ================================================================
-        // 6. INICIALIZACIÓN DEL SISTEMA (con eventos controlados)
+        // 7. INICIALIZACIÓN DEL SISTEMA
         // ================================================================
         function inicializarSistema() {
             cargarDatos();
             renderizarCausas();
 
-            // Eventos para hechos punibles
             document.getElementById('hecho-selector').addEventListener('change', function() {
                 actualizarIncisos();
                 actualizarPestanas();
@@ -1051,17 +1221,14 @@
             });
             document.getElementById('incisos-opciones').addEventListener('change', generarCaratula);
 
-            // EVENTO ÚNICO PARA FECHA MANUAL
             document.getElementById('fecha-vencimiento-input').addEventListener('change', function() {
                 calcularDiasRestantesDesdeFecha();
             });
-
-            // No hay eventos automáticos para fecha de imputación, plazo, rebeldía, etc.
+            document.getElementById('estado-causa-select').addEventListener('change', toggleFechaArchivoProvisional);
 
             actualizarPestanas();
             if (isAdmin) cargarUsuarios();
 
-            // Mostrar resumen al iniciar si hay causas
             setTimeout(() => {
                 if (causas.length > 0) {
                     mostrarResumenRequerimientos();
@@ -1070,7 +1237,7 @@
         }
 
         // ================================================================
-        // 7. PESTAÑAS ESTABLES (sin setTimeout)
+        // 8. PESTAÑAS ESTABLES
         // ================================================================
         function actualizarPestanas() {
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
@@ -1101,7 +1268,6 @@
                 container.appendChild(btn);
             });
 
-            // Ocultar todos los paneles y mostrar el primero
             document.querySelectorAll('.tab-pane').forEach(el => {
                 el.classList.remove('active');
                 el.style.display = 'none';
@@ -1119,7 +1285,6 @@
         }
 
         function activarTab(tabId) {
-            // Ocultar todos
             document.querySelectorAll('.tab-pane').forEach(el => {
                 el.classList.remove('active');
                 el.style.display = 'none';
@@ -1128,7 +1293,6 @@
                 el.classList.remove('active');
             });
 
-            // Mostrar el seleccionado
             const panel = document.getElementById(tabId);
             if (panel) {
                 panel.classList.add('active');
@@ -1137,129 +1301,83 @@
             const btn = document.querySelector(`[data-tab="${tabId}"]`);
             if (btn) btn.classList.add('active');
 
-            // Actualizar contenido según pestaña
             if (tabId === 'tab5') actualizarInforme();
             if (tabId === 'tab6') actualizarAlertas();
             if (tabId === 'tab3') actualizarIntervenciones();
         }
 
         // ================================================================
-        // 8. FUNCIONES DE FECHA MANUAL (cálculo de días restantes)
-        // ================================================================
-        function calcularDiasRestantesDesdeFecha() {
-            const fechaManual = document.getElementById('fecha-vencimiento-input').value;
-            const elDias = document.getElementById('dias-restantes');
-            if (!fechaManual) {
-                elDias.textContent = 'No definida';
-                elDias.style.color = '#888';
-                return;
-            }
-            const hoy = new Date(); hoy.setHours(0,0,0,0);
-            const fecha = new Date(fechaManual); fecha.setHours(0,0,0,0);
-            const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
-            if (diff < 0) {
-                elDias.textContent = `VENCIDA (hace ${Math.abs(diff)} días)`;
-                elDias.style.color = '#b33c3c';
-            } else if (diff <= 15) {
-                elDias.textContent = `Faltan ${diff} días (próximo)`;
-                elDias.style.color = '#b8860b';
-            } else {
-                elDias.textContent = `Faltan ${diff} días`;
-                elDias.style.color = '#2a7d4f';
-            }
-        }
-
-        function calcularDiasRestantesGlobal(causa) {
-            if (!causa.fechaActoConclusivo) {
-                return { dias: null, estado: 'sin_fecha' };
-            }
-            const hoy = new Date(); hoy.setHours(0,0,0,0);
-            const fecha = new Date(causa.fechaActoConclusivo); fecha.setHours(0,0,0,0);
-            const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
-            let estado = 'ok';
-            if (diff < 0) estado = 'vencido';
-            else if (diff <= 15) estado = 'proximo';
-            return { dias: diff, estado };
-        }
-
-        // Funciones de rebeldía (solo referencia, no afectan el cálculo)
-        function calcularDiasSuspendidos() {
-            const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
-            const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
-            const elDias = document.getElementById('dias-suspendidos');
-            if (!fechaDeclaracion || !fechaLevantamiento) {
-                elDias.textContent = '--';
-                return;
-            }
-            const ini = new Date(fechaDeclaracion);
-            const fin = new Date(fechaLevantamiento);
-            if (fin < ini) {
-                elDias.textContent = 'Fecha de levantamiento anterior';
-                elDias.style.color = '#b33c3c';
-                return;
-            }
-            const diff = Math.ceil((fin - ini) / (1000*60*60*24));
-            elDias.textContent = `${diff} días`;
-            elDias.style.color = '#1a2a4a';
-        }
-
-        function toggleRebeldia() {
-            const activa = document.getElementById('rebeldia-activa').checked;
-            document.getElementById('rebeldia-campos').classList.toggle('hidden', !activa);
-            if (activa) calcularDiasSuspendidos();
-        }
-
-        function toggleReincidencia() {
-            const activa = document.getElementById('reincidente').checked;
-            document.getElementById('num-reincidencias').disabled = !activa;
-            if (!activa) document.getElementById('num-reincidencias').value = 0;
-        }
-
-        // ================================================================
-        // 9. MODAL DE RESUMEN (reemplaza alert)
+        // 9. MODAL DE RESUMEN
         // ================================================================
         function generarResumenRequerimientos() {
-            if (causas.length === 0) {
-                return '📭 No hay causas registradas.';
-            }
+            if (causas.length === 0) return '📭 No hay causas registradas.';
 
             const lista = causas.map(c => {
-                const fechaStr = c.fechaActoConclusivo
-                    ? new Date(c.fechaActoConclusivo).toLocaleDateString('es-ES', { day:'2-digit', month:'2-digit', year:'numeric' })
-                    : 'No definida';
-                let diasRestantes = Infinity;
-                let estado = 'Sin fecha';
-                if (c.fechaActoConclusivo) {
-                    const hoy = new Date(); hoy.setHours(0,0,0,0);
-                    const fecha = new Date(c.fechaActoConclusivo); fecha.setHours(0,0,0,0);
-                    const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
-                    diasRestantes = diff;
-                    if (diff < 0) estado = '🔴 VENCIDO';
-                    else if (diff <= 15) estado = '🟡 PRÓXIMO';
-                    else estado = '🟢 EN PLAZO';
+                const info = calcularInfoPlazo(c);
+                let fechaStr = 'No definida';
+                let tipoPlazo = '--';
+                let estadoPlazo = 'Sin fecha';
+                let mensajeExtra = '';
+
+                if (info.tipo === 'acto_conclusivo') {
+                    fechaStr = c.fechaActoConclusivo ? new Date(c.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida';
+                    tipoPlazo = 'Acto Conclusivo';
+                    if (info.estado === 'acto_conclusivo') {
+                        estadoPlazo = '📄 Presentado';
+                        mensajeExtra = ' (acto conclusivo ya presentado)';
+                    } else if (info.dias !== null) {
+                        if (info.dias < 0) estadoPlazo = '🔴 VENCIDO';
+                        else if (info.dias <= 15) estadoPlazo = '🟡 PRÓXIMO';
+                        else estadoPlazo = '🟢 EN PLAZO';
+                    }
+                } else if (info.tipo === 'archivo_provisional') {
+                    fechaStr = c.fechaLimiteArchivo ? new Date(c.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida';
+                    tipoPlazo = 'Archivo Provisional';
+                    if (info.dias < 0) estadoPlazo = '🔴 VENCIDO';
+                    else if (info.dias <= 15) estadoPlazo = '🟡 PRÓXIMO';
+                    else estadoPlazo = '🟢 EN PLAZO';
+                } else {
+                    fechaStr = 'No definida';
+                    tipoPlazo = '--';
+                    estadoPlazo = 'Sin plazo';
                 }
+
+                const esActiva = (c.estadoCausa === 'activa' || !c.estadoCausa);
+                const estadoInv = esActiva ? 'Activa' : 'Precluida';
+                const estadoLabel = getEstadoLabel(c.estadoCausa || 'activa');
+
                 return {
                     num: c.numCausa || 'Sin número',
                     imputado: c.imputado || 'Sin imputado',
                     fecha: fechaStr,
-                    dias: diasRestantes,
-                    estado: estado
+                    tipoPlazo: tipoPlazo,
+                    estadoPlazo: estadoPlazo + mensajeExtra,
+                    estadoInv: estadoInv,
+                    estadoLabel: estadoLabel
                 };
             });
 
-            // Ordenar por días (menor a mayor)
-            lista.sort((a, b) => a.dias - b.dias);
+            // Ordenar por prioridad: vencido -> próximo -> en plazo -> acto conclusivo -> sin plazo
+            const orden = { '🔴 VENCIDO': 0, '🟡 PRÓXIMO': 1, '🟢 EN PLAZO': 2, '📄 Presentado': 3, 'Sin plazo': 4, 'Sin fecha': 4 };
+            lista.sort((a, b) => {
+                const prioridadA = orden[a.estadoPlazo] !== undefined ? orden[a.estadoPlazo] : 4;
+                const prioridadB = orden[b.estadoPlazo] !== undefined ? orden[b.estadoPlazo] : 4;
+                return prioridadA - prioridadB;
+            });
 
-            let texto = '📋 **RESUMEN DE FECHAS DE ACTO CONCLUSIVO**\n\n';
-            texto += 'Nº Causa     | Imputado               | Fecha Acto Conclusivo | Estado\n';
-            texto += '--------------------------------------------------------\n';
+            let texto = '📋 **RESUMEN DE PLAZOS DE CAUSAS**\n\n';
+            texto += 'Nº Causa     | Imputado               | Fecha Límite    | Tipo Plazo     | Estado Plazo   | Investigación\n';
+            texto += '----------------------------------------------------------------------------------------\n';
             lista.forEach(item => {
                 const num = item.num.padEnd(12);
                 const imp = item.imputado.padEnd(22).slice(0,22);
-                const fecha = item.fecha.padEnd(21);
-                texto += `${num} | ${imp} | ${fecha} | ${item.estado}\n`;
+                const fecha = item.fecha.padEnd(16);
+                const tipo = item.tipoPlazo.padEnd(15);
+                const estadoP = item.estadoPlazo.padEnd(14);
+                const inv = item.estadoInv.padEnd(12);
+                texto += `${num} | ${imp} | ${fecha} | ${tipo} | ${estadoP} | ${inv}\n`;
             });
-            texto += '\n--------------------------------------------------------\n';
+            texto += '\n----------------------------------------------------------------------------------------\n';
             texto += `Total: ${lista.length} causas.`;
             return texto;
         }
@@ -1271,7 +1389,6 @@
             modal.style.display = 'flex';
         }
 
-        // Eventos del modal
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('modal-resumen');
             const cerrarBtn = document.getElementById('cerrar-modal-resumen');
@@ -1287,7 +1404,7 @@
         });
 
         // ================================================================
-        // 10. CRUD DE CAUSAS (guardar, cargar, eliminar)
+        // 10. CRUD DE CAUSAS
         // ================================================================
         function guardarDatos() {
             try {
@@ -1405,6 +1522,7 @@
             }
             const datos = {
                 fechaActoConclusivo: fechaManual,
+                fechaLimiteArchivo: document.getElementById('fecha-limite-archivo').value,
                 numJuzgado: document.getElementById('num-juzgado').value.trim(),
                 estadoCausa: document.getElementById('estado-causa-select').value,
                 observacionesEstado: document.getElementById('observaciones-estado').value.trim(),
@@ -1413,7 +1531,6 @@
                     alternativas: document.getElementById('medida-alternativas').checked,
                     privativas: document.getElementById('medida-privativas').checked
                 },
-                // Campos de referencia (no afectan fechas)
                 fechaImputacion: document.getElementById('fecha-imputacion').value,
                 numAI: document.getElementById('num-ai').value.trim(),
                 fechaAI: document.getElementById('fecha-ai').value,
@@ -1448,7 +1565,7 @@
             const causa = actualizarCausa(datos);
             if (causa) {
                 actualizarEstadoSeccion('tab2', true);
-                alert('Fecha de acto conclusivo guardada correctamente.');
+                alert('Datos del Juzgado guardados correctamente.');
                 renderizarCausas();
                 mostrarResumenRequerimientos();
             }
@@ -1523,11 +1640,13 @@
             document.getElementById('form-title').textContent = `Editar Causa: ${causa.numCausa}`;
             document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
 
-            const info = calcularDiasRestantesGlobal(causa);
+            const info = calcularInfoPlazo(causa);
             if (info.estado === 'vencido') {
                 alert(`⚠️ La causa ${causa.numCausa} tiene el plazo VENCIDO (hace ${Math.abs(info.dias)} días). Requiere acción inmediata.`);
             } else if (info.estado === 'proximo') {
                 alert(`⏳ La causa ${causa.numCausa} tiene plazo próximo a vencer (faltan ${info.dias} días).`);
+            } else if (info.estado === 'acto_conclusivo') {
+                alert(`📄 La causa ${causa.numCausa} ya tiene acto conclusivo presentado.`);
             }
 
             // Cargar datos generales
@@ -1611,16 +1730,18 @@
             }
             renderizarHechosAgregados();
 
-            // Cargar fecha de acto conclusivo
+            // Cargar fechas y estado
             setValueSafe('fecha-vencimiento-input', causa.fechaActoConclusivo || '');
             calcularDiasRestantesDesdeFecha();
+            setValueSafe('estado-causa-select', causa.estadoCausa || 'activa');
+            toggleFechaArchivoProvisional();
+            setValueSafe('fecha-limite-archivo', causa.fechaLimiteArchivo || '');
+            calcularDiasRestantesArchivo();
 
-            // Cargar resto de campos de tab2
             setValueSafe('fecha-imputacion', causa.fechaImputacion || '');
             setValueSafe('num-ai', causa.numAI || '');
             setValueSafe('fecha-ai', causa.fechaAI || '');
             setValueSafe('num-juzgado', causa.numJuzgado || '');
-            setValueSafe('estado-causa-select', causa.estadoCausa || 'activa');
             setValueSafe('observaciones-estado', causa.observacionesEstado || '');
             setCheckedSafe('medida-notificacion', causa.medidas?.notificacion || false);
             setCheckedSafe('medida-alternativas', causa.medidas?.alternativas || false);
@@ -1655,11 +1776,9 @@
             setValueSafe('med-resultado', causa.medResultado || 'Pendiente');
             setValueSafe('med-observaciones', causa.medObservaciones || '');
 
-            // Restaurar intervenciones sin setTimeout (se activarán al hacer clic en la pestaña)
             if (causa.intervenciones) {
                 const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
                 if (hechoPrincipal === '229' && causa.intervenciones.tipo === 'cuestionario') {
-                    // Guardamos los datos para restaurar cuando se active la pestaña
                     window._cuestionarioPendiente = causa.intervenciones;
                 } else if (hechoPrincipal === '225' && causa.intervenciones.tipo === 'liquidacion') {
                     window._liquidacionPendiente = causa.intervenciones;
@@ -1681,7 +1800,7 @@
         }
 
         // ================================================================
-        // 13. VÍCTIMAS, TESTIGOS, HECHOS (sin cambios)
+        // 13. VÍCTIMAS, TESTIGOS, HECHOS
         // ================================================================
         function agregarVictima() {
             const container = document.getElementById('victimas-container');
@@ -1889,7 +2008,7 @@
         }
 
         // ================================================================
-        // 14. INTERVENCIONES (con restauración sin setTimeout)
+        // 14. INTERVENCIONES (Cuestionario y Liquidación)
         // ================================================================
         function actualizarIntervenciones() {
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
@@ -1898,7 +2017,6 @@
             if (hechoPrincipal === '229') {
                 container.innerHTML = generarCuestionarioRiesgo();
                 btnPdf.style.display = 'block';
-                // Restaurar si hay datos pendientes
                 if (window._cuestionarioPendiente) {
                     restaurarCuestionario(window._cuestionarioPendiente);
                     window._cuestionarioPendiente = null;
@@ -1926,7 +2044,6 @@
             }
         }
 
-        // Cuestionario de riesgo (preguntas, cálculo, etc.)
         const preguntasRiesgo = [
             { id:'r1.1', label:'1.1 – Grado de relación con el supuesto agresor', opciones:[{valor:3,texto:'Cónyuge/concubino/pareja'},{valor:3,texto:'Ex cónyuge/ex concubino/ex pareja'},{valor:2,texto:'Padres/padrastros, abuelos'},{valor:2,texto:'Hijos/nietos'},{valor:1,texto:'Hermanos/sobrinos'},{valor:1,texto:'Tíos/primos'},{valor:0,texto:'Otros'}] },
             { id:'r1.2', label:'1.2 – ¿La víctima tiene personas a su cargo?', opciones:[{valor:3,texto:'Sí, hijos menores/discapacitados'},{valor:2,texto:'Sí, padres adultos mayores/discapacitados'},{valor:1,texto:'Sí, otros familiares'},{valor:0,texto:'No'}] },
@@ -2037,7 +2154,6 @@
                 riesgoNivel = datos.nivel || '';
                 setTimeout(() => calcularRiesgo(), 100);
             }
-            // Expandir automáticamente si hay respuestas
             if (datos.respuestas && Object.keys(datos.respuestas).some(key => datos.respuestas[key] !== '')) {
                 const container = document.getElementById('cuestionario-riesgo-container');
                 const btn = document.getElementById('btn-toggle-cuestionario');
@@ -2130,7 +2246,6 @@
             html2pdf().from(clon).set(opt).save();
         }
 
-        // Liquidación y diligencias
         const DILIGENCIAS_ALIMENTOS = [
             { id: 'dil-testifical', label: 'Testifical' },
             { id: 'dil-cert-nacimiento', label: 'Certificado de Nacimiento' },
@@ -2257,28 +2372,43 @@
                 const caratula = c.caratula || 'Sin carátula';
                 const tieneAlertas = verificarAlertas(c);
                 const alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
+
+                const info = calcularInfoPlazo(c);
                 let diasInfo = '';
-                const info = calcularDiasRestantesGlobal(c);
-                if (info.estado === 'vencido') {
-                    diasInfo = `<div class="dias-restantes vencido">⚠️ VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
+                let actoConclusivoMsg = '';
+                if (info.estado === 'acto_conclusivo') {
+                    actoConclusivoMsg = `<div class="acto-conclusivo-msg"><i class="fas fa-check-circle"></i> Acto conclusivo presentado</div>`;
+                } else if (info.estado === 'vencido') {
+                    const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
+                    diasInfo = `<div class="dias-restantes vencido">⚠️ ${label} VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
                 } else if (info.estado === 'proximo') {
-                    diasInfo = `<div class="dias-restantes proximo">⏳ Vence en ${info.dias} días</div>`;
+                    const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
+                    diasInfo = `<div class="dias-restantes proximo">⏳ ${label} vence en ${info.dias} días</div>`;
                 } else if (info.dias !== null) {
-                    diasInfo = `<div class="dias-restantes">📅 Vence en ${info.dias} días</div>`;
+                    const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
+                    diasInfo = `<div class="dias-restantes">📅 ${label} vence en ${info.dias} días</div>`;
                 }
+
                 const estado = c.estadoCausa || 'activa';
+                const esActiva = (estado === 'activa');
+                const esActoConc = esActoConclusivoPresentado(estado);
                 const estadoLabel = getEstadoLabel(estado);
                 const estadoClass = getEstadoClass(estado);
                 const estadoBadge = `<span class="badge-estado ${estadoClass}">${estadoLabel}</span>`;
+                const badgePreclusion = esActiva ? 'badge-activa' : (esActoConc ? 'badge-acto-conclusivo' : 'badge-precluida');
+                const textPreclusion = esActiva ? 'Activa' : (esActoConc ? 'Acto Conclusivo' : 'Precluida');
+                const borderColor = esActiva ? '#1a2a4a' : (esActoConc ? '#0d47a1' : '#b33c3c');
 
                 html += `
-                    <div class="causa-card" onclick="cargarCausaParaEditar('${c.id}')">
+                    <div class="causa-card" onclick="cargarCausaParaEditar('${c.id}')" style="border-left-color:${borderColor};">
                         <div class="numero">${alertaIcon} ${c.numCausa}</div>
                         <div class="caratula">${caratula}</div>
                         <span class="badge ${badge}">${badgeText}</span>
+                        <span class="badge ${badgePreclusion}" style="margin-left:5px;">${textPreclusion}</span>
                         ${estadoBadge}
                         ${tieneAlertas ? `<span class="badge badge-alerta" style="margin-left:5px;"><i class="fas fa-exclamation-circle"></i> Alertas</span>` : ''}
                         ${diasInfo}
+                        ${actoConclusivoMsg}
                         <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 `;
@@ -2328,7 +2458,7 @@
 
         function verificarAlertas(causa) {
             let alertas = [];
-            const info = calcularDiasRestantesGlobal(causa);
+            const info = calcularInfoPlazo(causa);
             if (info.estado === 'vencido') alertas.push('plazo vencido');
             else if (info.estado === 'proximo') alertas.push('plazo próximo');
             if (causa.rebeldia && causa.rebeldia.activa) {
@@ -2407,6 +2537,9 @@
             document.getElementById('dias-suspendidos').textContent = '--';
             setValueSafe('observaciones-generales', '');
             setValueSafe('estado-causa-select', 'activa');
+            toggleFechaArchivoProvisional();
+            setValueSafe('fecha-limite-archivo', '');
+            document.getElementById('dias-restantes-archivo').textContent = '--';
             setValueSafe('observaciones-estado', '');
             document.getElementById('intervencion-contenido').innerHTML = '<p class="text-muted">Seleccione un hecho del Grupo A para ver las intervenciones.</p>';
             document.getElementById('btn-pdf-cuestionario').style.display = 'none';
@@ -2429,7 +2562,7 @@
         }
 
         // ================================================================
-        // 16. INFORME Y ALERTAS (actualizados para usar fecha manual)
+        // 16. INFORME COMPLETO (con todas las secciones)
         // ================================================================
         function actualizarInforme() {
             const container = document.getElementById('informe-contenido');
@@ -2438,39 +2571,258 @@
                 container.innerHTML = `<div class="text-center" style="padding:20px;"><i class="fas fa-file-pdf" style="font-size:40px;color:#1a2a4a;margin-bottom:10px;"></i><h3 style="color:#1a2a4a;">Informe de Causa</h3><p class="text-muted">Guarde los datos de la causa para generar el informe completo.</p></div>`;
                 return;
             }
-            const info = calcularDiasRestantesGlobal(causa);
+
+            const info = calcularInfoPlazo(causa);
             let estadoPlazo = '';
-            if (info.estado === 'vencido') estadoPlazo = `<span style="color:#b33c3c;font-weight:700;">VENCIDO (hace ${Math.abs(info.dias)} días)</span>`;
-            else if (info.estado === 'proximo') estadoPlazo = `<span style="color:#b8860b;font-weight:700;">Próximo a vencer (faltan ${info.dias} días)</span>`;
-            else if (info.dias !== null) estadoPlazo = `<span style="color:#2a7d4f;">En plazo (faltan ${info.dias} días)</span>`;
-            else estadoPlazo = '<span>No definido</span>';
+            let fechaMostrada = '';
+            if (info.estado === 'acto_conclusivo') {
+                estadoPlazo = '<span style="color:#0d47a1;font-weight:700;">Acto conclusivo presentado</span>';
+                fechaMostrada = causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida';
+            } else if (info.estado === 'vencido') {
+                estadoPlazo = `<span style="color:#b33c3c;font-weight:700;">VENCIDO (hace ${Math.abs(info.dias)} días)</span>`;
+                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida');
+            } else if (info.estado === 'proximo') {
+                estadoPlazo = `<span style="color:#b8860b;font-weight:700;">Próximo a vencer (faltan ${info.dias} días)</span>`;
+                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida');
+            } else if (info.dias !== null) {
+                estadoPlazo = `<span style="color:#2a7d4f;">En plazo (faltan ${info.dias} días)</span>`;
+                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida');
+            } else {
+                estadoPlazo = '<span>No definido</span>';
+                fechaMostrada = 'No definida';
+            }
+
+            const estado = causa.estadoCausa || 'activa';
+            const esActiva = (estado === 'activa');
+            const esActoConc = esActoConclusivoPresentado(estado);
+            const estadoPreclusion = esActiva ? 'Activa (en investigación)' : (esActoConc ? 'Precluida - Acto conclusivo presentado' : 'Precluida (investigación finalizada)');
 
             const hechosText = causa.hechos ? causa.hechos.map(h => {
                 const config = CONFIG.hechos[h.hecho];
                 return config ? config.label : h.hecho;
             }).join(', ') : 'No definidos';
 
-            const estadoLabel = getEstadoLabel(causa.estadoCausa || 'activa');
-            const estadoObs = causa.observacionesEstado || 'No especificadas';
+            const estadoLabel = getEstadoLabel(estado);
 
-            container.innerHTML = `
+            let html = `
                 <div class="informe-header" style="text-align:center;padding-bottom:12px;border-bottom:2px solid #1a2a4a;margin-bottom:12px;">
                     <h2 style="color:#1a2a4a;">MINISTERIO PÚBLICO</h2>
                     <div style="color:#666;font-size:13px;">INFORME DE CAUSA PENAL</div>
-                    <div style="font-size:11px;color:#888;margin-top:3px;">Fecha: ${new Date().toLocaleDateString('es-ES')}</div>
+                    <div style="font-size:11px;color:#888;margin-top:3px;">Fecha de emisión: ${new Date().toLocaleDateString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
                 </div>
-                <div><strong>Nº Causa:</strong> ${causa.numCausa}</div>
-                <div><strong>Imputado:</strong> ${causa.imputado}</div>
-                <div><strong>Carátula:</strong> ${causa.caratula || 'No definida'}</div>
-                <div><strong>Hechos:</strong> ${hechosText}</div>
-                <div><strong>Estado de la causa:</strong> ${estadoLabel}</div>
-                ${estadoObs ? `<div><strong>Observaciones del estado:</strong> ${estadoObs}</div>` : ''}
-                <hr style="margin:10px 0;border-color:#e0e4ea;">
-                <div><strong>Fecha de Acto Conclusivo:</strong> ${causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida'}</div>
-                <div><strong>Estado del plazo:</strong> ${estadoPlazo}</div>
-                ${causa.intervenciones ? `<div><strong>Intervenciones:</strong> ${causa.intervenciones.tipo === 'cuestionario' ? 'Cuestionario de Riesgo' : causa.intervenciones.tipo === 'liquidacion' ? 'Liquidación de Alimentos' : 'No específicas'}</div>` : ''}
-                <div style="margin-top:10px;padding-top:8px;border-top:1px solid #ccc;font-size:11px;color:#888;">Documento generado por el sistema.</div>
+                <div style="margin-bottom:15px;padding:8px 12px;background:${esActiva ? '#d4edda' : (esActoConc ? '#bbdefb' : '#f8d7da')};border-radius:5px;border-left:4px solid ${esActiva ? '#28a745' : (esActoConc ? '#0d47a1' : '#dc3545')};">
+                    <strong>Estado de la investigación:</strong> ${estadoPreclusion}
+                    ${!esActiva ? `<span style="margin-left:10px;font-size:12px;">(La causa ya no se encuentra en etapa de investigación activa)</span>` : ''}
+                </div>
             `;
+
+            // ===== SECCIÓN 1: DATOS GENERALES =====
+            html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">1. DATOS GENERALES</h3>`;
+            html += `<div><strong>Nº Causa:</strong> ${causa.numCausa || 'No definido'}</div>`;
+            html += `<div><strong>Imputado:</strong> ${causa.imputado || 'No definido'}</div>`;
+            html += `<div><strong>CI del Imputado:</strong> ${causa.ciImputado || 'No registrado'}</div>`;
+            html += `<div><strong>Domicilio:</strong> ${causa.domicilioImputado || 'No registrado'}</div>`;
+            html += `<div><strong>Teléfono:</strong> ${causa.telefonoImputado || 'No registrado'}</div>`;
+            html += `<div><strong>Reincidente:</strong> ${causa.reincidente ? 'Sí (' + (causa.numReincidencias || 0) + ' veces)' : 'No'}</div>`;
+
+            html += `<div><strong>Víctima(s):</strong></div>`;
+            if (causa.victimas && causa.victimas.length > 0) {
+                html += `<ul style="margin-top:4px;padding-left:20px;">`;
+                causa.victimas.forEach((v, i) => {
+                    html += `<li>${i+1}. ${v.nombre || 'Sin nombre'} (CI: ${v.ci || 'N/A'}, Tel: ${v.telefono || 'N/A'}, Domicilio: ${v.domicilio || 'N/A'}, Edad: ${v.edad || 'N/A'})</li>`;
+                });
+                html += `</ul>`;
+            } else {
+                html += `<div class="text-muted">No se registraron víctimas.</div>`;
+            }
+
+            html += `<div><strong>Lugar del hecho:</strong> ${causa.lugarHecho || 'No registrado'}</div>`;
+            html += `<div><strong>Fecha del hecho:</strong> ${causa.fechaHecho ? new Date(causa.fechaHecho).toLocaleDateString('es-ES') : 'No registrada'}</div>`;
+            html += `<div><strong>Hora del hecho:</strong> ${causa.horaHecho || 'No registrada'}</div>`;
+
+            html += `<div><strong>Testigo(s):</strong></div>`;
+            if (causa.testigos && causa.testigos.length > 0) {
+                html += `<ul style="margin-top:4px;padding-left:20px;">`;
+                causa.testigos.forEach((t, i) => {
+                    html += `<li>${i+1}. ${t.nombre || 'Sin nombre'} (CI: ${t.ci || 'N/A'}, Tel: ${t.telefono || 'N/A'})</li>`;
+                });
+                html += `</ul>`;
+            } else {
+                html += `<div class="text-muted">No se registraron testigos.</div>`;
+            }
+
+            html += `<div><strong>Descripción del hecho:</strong> ${causa.descripcionHecho || 'No registrada'}</div>`;
+
+            html += `<div><strong>Hechos punibles:</strong></div>`;
+            if (causa.hechos && causa.hechos.length > 0) {
+                html += `<ul style="margin-top:4px;padding-left:20px;">`;
+                causa.hechos.forEach((h, idx) => {
+                    const config = CONFIG.hechos[h.hecho];
+                    const label = config ? config.label : h.hecho;
+                    html += `<li><strong>${label}</strong>`;
+                    if (h.incisos && h.incisos.length > 0) {
+                        html += `<ul style="padding-left:15px;list-style-type:circle;">`;
+                        h.incisos.forEach(inc => {
+                            const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
+                            if (incData) {
+                                let incLabel = incData.label.substring(0, 80) + (incData.label.length > 80 ? '…' : '');
+                                html += `<li>${incLabel}`;
+                                if (inc.numerales && inc.numerales.length > 0) {
+                                    html += `<ul style="padding-left:15px;list-style-type:disc;">`;
+                                    inc.numerales.forEach(numId => {
+                                        const numData = incData.numerales ? incData.numerales.find(n => n.id === numId) : null;
+                                        if (numData) {
+                                            html += `<li>${numData.label}</li>`;
+                                        }
+                                    });
+                                    html += `</ul>`;
+                                }
+                                html += `</li>`;
+                            }
+                        });
+                        html += `</ul>`;
+                    }
+                    html += `</li>`;
+                });
+                html += `</ul>`;
+            } else {
+                html += `<div class="text-muted">No se registraron hechos punibles.</div>`;
+            }
+
+            html += `<div><strong>Carátula:</strong> ${causa.caratula || 'No generada'}</div>`;
+            html += `<div><strong>Observaciones Generales:</strong> ${causa.observacionesGenerales || 'No registradas'}</div>`;
+
+            // ===== SECCIÓN 2: JUZGADO Y PLAZOS =====
+            html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">2. DATOS DEL JUZGADO Y PLAZOS</h3>`;
+            html += `<div><strong>Fecha de Imputación:</strong> ${causa.fechaImputacion ? new Date(causa.fechaImputacion).toLocaleDateString('es-ES') : 'No registrada'}</div>`;
+            html += `<div><strong>Resuelto por AI N°:</strong> ${causa.numAI || 'No registrado'}</div>`;
+            html += `<div><strong>Fecha del AI:</strong> ${causa.fechaAI ? new Date(causa.fechaAI).toLocaleDateString('es-ES') : 'No registrada'}</div>`;
+            html += `<div><strong>Juzgado:</strong> ${causa.numJuzgado || 'No registrado'}</div>`;
+            html += `<div><strong>Estado actual de la causa:</strong> ${estadoLabel}</div>`;
+            html += `<div><strong>Observaciones del estado:</strong> ${causa.observacionesEstado || 'No especificadas'}</div>`;
+
+            if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
+                html += `<div><strong>Fecha límite para nuevo requerimiento (Archivo Provisional):</strong> ${new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES')}</div>`;
+                html += `<div><strong>Estado del plazo de archivo:</strong> ${estadoPlazo}</div>`;
+            } else {
+                html += `<div><strong>Fecha de Acto Conclusivo:</strong> ${fechaMostrada}</div>`;
+                html += `<div><strong>Estado del plazo:</strong> ${estadoPlazo}</div>`;
+            }
+
+            // Medidas
+            html += `<div><strong>Medidas:</strong> `;
+            const medidas = [];
+            if (causa.medidas?.notificacion) medidas.push('Notificación del acta de imputación');
+            if (causa.medidas?.alternativas) medidas.push('Medidas alternativas a la prisión');
+            if (causa.medidas?.privativas) medidas.push('Medidas privativas de la libertad');
+            html += (medidas.length > 0) ? medidas.join(', ') : 'No se registraron medidas específicas.';
+            html += `</div>`;
+
+            if (causa.prorrogaOrdinaria) {
+                const po = causa.prorrogaOrdinaria;
+                html += `<div><strong>Prórroga Ordinaria (Art. 325):</strong> Presentación: ${po.fechaPresentacion || 'N/A'}, Otorgada: ${po.otorgada || 'N/A'}, Nueva fecha: ${po.nuevaFecha || 'N/A'}, Fundamento: ${po.fundamento || 'N/A'}</div>`;
+            }
+            if (causa.prorrogaExtraordinaria) {
+                const pe = causa.prorrogaExtraordinaria;
+                html += `<div><strong>Prórroga Extraordinaria (Art. 326):</strong> Presentación: ${pe.fechaPresentacion || 'N/A'}, Otorgada: ${pe.otorgada || 'N/A'}, Nueva fecha: ${pe.nuevaFecha || 'N/A'}, Fundamento: ${pe.fundamento || 'N/A'}</div>`;
+            }
+
+            if (causa.rebeldia) {
+                html += `<div><strong>Rebeldía:</strong> ${causa.rebeldia.activa ? 'ACTIVA' : 'No declarada'}`;
+                if (causa.rebeldia.activa) {
+                    html += ` - Fecha declaración: ${causa.rebeldia.fecha || 'N/A'}, N° Resolución: ${causa.rebeldia.numResolucion || 'N/A'}, Levantamiento: ${causa.rebeldia.levantamiento || 'Pendiente'}, Días suspendidos: ${causa.rebeldia.diasSuspendidos || '0'}`;
+                }
+                html += `</div>`;
+            }
+
+            if (causa.anticipos) {
+                const anticipos = [];
+                if (causa.anticipos.camaraGessell) anticipos.push('Cámara Gessell');
+                if (causa.anticipos.pericia) anticipos.push('Pericia anticipada');
+                if (causa.anticipos.inspeccion) anticipos.push('Inspección judicial');
+                if (causa.anticipos.reconocimiento) anticipos.push('Reconocimiento de personas');
+                if (causa.anticipos.testigosVulnerables) anticipos.push('Testigos vulnerables');
+                if (causa.anticipos.otro) anticipos.push(`Otro: ${causa.anticipos.otro}`);
+                html += `<div><strong>Anticipos jurisdiccionales de pruebas:</strong> `;
+                html += (anticipos.length > 0) ? anticipos.join(', ') : 'No registrados';
+                html += `</div>`;
+            }
+
+            // ===== SECCIÓN 3: INTERVENCIONES =====
+            if (causa.intervenciones && causa.intervenciones.tipo !== 'ninguno') {
+                html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">3. INTERVENCIONES</h3>`;
+                if (causa.intervenciones.tipo === 'cuestionario') {
+                    const q = causa.intervenciones;
+                    html += `<div><strong>Cuestionario de Riesgo (Violencia Familiar)</strong></div>`;
+                    html += `<div><strong>Puntaje total:</strong> ${q.puntaje || 0}</div>`;
+                    html += `<div><strong>Nivel de riesgo:</strong> ${q.nivel || 'No calculado'}</div>`;
+                    html += `<div><strong>Respuestas:</strong></div><ul style="padding-left:20px;">`;
+                    if (q.respuestas) {
+                        Object.keys(q.respuestas).forEach(key => {
+                            const pregunta = preguntasRiesgo.find(p => p.id === key);
+                            const label = pregunta ? pregunta.label : key;
+                            const valor = q.respuestas[key] || 'No seleccionado';
+                            html += `<li>${label}: ${valor}</li>`;
+                        });
+                    }
+                    html += `</ul>`;
+                    if (q.otros) html += `<div><strong>Otros factores:</strong> ${q.otros}</div>`;
+                    if (q.nivel) {
+                        const medidasRiesgo = obtenerMedidasProteccion(q.nivel);
+                        html += `<div><strong>Medidas de protección sugeridas:</strong><ul style="padding-left:20px;">`;
+                        medidasRiesgo.forEach(m => html += `<li>${m}</li>`);
+                        html += `</ul></div>`;
+                    }
+                } else if (causa.intervenciones.tipo === 'liquidacion') {
+                    const l = causa.intervenciones;
+                    html += `<div><strong>Liquidación de Alimentos</strong></div>`;
+                    html += `<div><strong>Monto que debía abonar:</strong> ${l.montoDebido ? l.montoDebido.toLocaleString() : 0} Gs.</div>`;
+                    html += `<div><strong>Monto abonado:</strong> ${l.montoAbonado ? l.montoAbonado.toLocaleString() : 0} Gs.</div>`;
+                    const saldo = (l.montoDebido || 0) - (l.montoAbonado || 0);
+                    html += `<div><strong>Saldo:</strong> ${saldo.toLocaleString()} Gs.</div>`;
+                    if (l.diligencias && l.diligencias.length > 0) {
+                        html += `<div><strong>Diligencias realizadas:</strong><ul style="padding-left:20px;">`;
+                        l.diligencias.forEach(d => {
+                            const dil = DILIGENCIAS_ALIMENTOS.find(item => item.id === d);
+                            html += `<li>${dil ? dil.label : d}</li>`;
+                        });
+                        html += `</ul></div>`;
+                    }
+                }
+            }
+
+            // ===== SECCIÓN 4: EVALUACIONES =====
+            if (causa.psiFecha || causa.medFecha || causa.psiResultado || causa.medResultado) {
+                html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">4. EVALUACIONES</h3>`;
+                html += `<div><strong>Evaluación Psicológica:</strong> Fecha: ${causa.psiFecha ? new Date(causa.psiFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.psiProfesional || 'N/A'}, Resultado: ${causa.psiResultado || 'Pendiente'}, Observaciones: ${causa.psiObservaciones || 'N/A'}</div>`;
+                html += `<div><strong>Evaluación Médica:</strong> Fecha: ${causa.medFecha ? new Date(causa.medFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.medProfesional || 'N/A'}, Resultado: ${causa.medResultado || 'Pendiente'}, Observaciones: ${causa.medObservaciones || 'N/A'}</div>`;
+            }
+
+            // ===== SECCIÓN 5: ALERTAS =====
+            html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">5. ALERTAS Y OBSERVACIONES FINALES</h3>`;
+            let alertas = [];
+            const infoAlert = calcularInfoPlazo(causa);
+            if (infoAlert.estado === 'vencido') {
+                alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(infoAlert.dias)} días)`);
+            } else if (infoAlert.estado === 'proximo') {
+                alertas.push(`⏳ Plazo próximo (faltan ${infoAlert.dias} días)`);
+            } else if (infoAlert.estado === 'acto_conclusivo') {
+                alertas.push('📄 Acto conclusivo presentado');
+            }
+            if (causa.rebeldia?.activa) {
+                alertas.push('🔴 Rebeldía activa');
+                if (!causa.rebeldia.levantamiento) alertas.push('⚠️ Rebeldía sin levantar');
+            }
+            if (!causa.victimas || causa.victimas.length === 0) alertas.push('⚠️ Sin víctimas');
+            if (!esActiva && !esActoConc) alertas.push('📌 Causa precluida');
+            if (alertas.length === 0) alertas.push('✅ No se detectaron alertas.');
+            html += `<ul style="padding-left:20px;">`;
+            alertas.forEach(a => html += `<li>${a}</li>`);
+            html += `</ul>`;
+
+            html += `<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:11px;color:#888;text-align:center;">Documento generado automáticamente por el Sistema de Gestión de Causas Penales - MP</div>`;
+
+            container.innerHTML = html;
         }
 
         function imprimirInforme() {
@@ -2478,6 +2830,9 @@
             setTimeout(() => { window.print(); }, 300);
         }
 
+        // ================================================================
+        // 17. ALERTAS
+        // ================================================================
         function actualizarAlertas() {
             const container = document.getElementById('alertas-contenido');
             const causa = getCausaActual();
@@ -2486,9 +2841,10 @@
                 return;
             }
             let alertas = [];
-            const info = calcularDiasRestantesGlobal(causa);
+            const info = calcularInfoPlazo(causa);
             if (info.estado === 'vencido') alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(info.dias)} días)`);
             else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias} días)`);
+            else if (info.estado === 'acto_conclusivo') alertas.push('📄 Acto conclusivo presentado');
             if (causa.rebeldia?.activa) {
                 alertas.push('🔴 Rebeldía activa');
                 if (!causa.rebeldia.levantamiento) alertas.push('⚠️ Rebeldía sin levantar');
@@ -2496,7 +2852,7 @@
             }
             if (!causa.victimas || causa.victimas.length === 0) alertas.push('⚠️ Sin víctimas');
             if (causa.estadoCausa && causa.estadoCausa !== 'activa') {
-                alertas.push(`📌 Estado actual: ${getEstadoLabel(causa.estadoCausa)}`);
+                alertas.push(`📌 Causa precluida (investigación finalizada) - Estado: ${getEstadoLabel(causa.estadoCausa)}`);
             }
 
             let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
@@ -2508,24 +2864,31 @@
                 html += '</ul>';
             }
             html += `<hr style="margin:10px 0;border-color:#e0e4ea;">`;
-            html += `<div><strong>📅 Fecha de Acto Conclusivo:</strong> ${causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida'}</div>`;
+
+            // Mostrar fechas según estado
+            if (causa.estadoCausa === 'archivo-provisional' && causa.fechaLimiteArchivo) {
+                html += `<div><strong>📅 Fecha límite de archivo:</strong> ${new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES')}</div>`;
+                const diffArchivo = calcularInfoPlazo(causa);
+                if (diffArchivo.dias !== null) {
+                    html += `<div><strong>⏳ Días restantes para archivo:</strong> ${diffArchivo.dias >= 0 ? diffArchivo.dias : 'Vencido hace ' + Math.abs(diffArchivo.dias) + ' días'}</div>`;
+                }
+            } else {
+                html += `<div><strong>📅 Fecha de Acto Conclusivo:</strong> ${causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida'}</div>`;
+                const infoPlazo = calcularInfoPlazo(causa);
+                if (infoPlazo.dias !== null && infoPlazo.estado !== 'acto_conclusivo') {
+                    html += `<div><strong>⏳ Días restantes:</strong> ${infoPlazo.dias >= 0 ? infoPlazo.dias : 'Vencido hace ' + Math.abs(infoPlazo.dias) + ' días'}</div>`;
+                }
+            }
+
             html += `<div><strong>🧠 Evaluación psicológica:</strong> ${causa.psiResultado || 'No registrada'}</div>`;
             html += `<div><strong>🩺 Evaluación médica:</strong> ${causa.medResultado || 'No registrada'}</div>`;
             html += `<div><strong>🔁 Reincidencia:</strong> ${causa.reincidente ? 'Sí (' + (causa.numReincidencias || 0) + ' veces)' : 'No'}</div>`;
-            if (causa.fechaActoConclusivo) {
-                const hoy = new Date(); hoy.setHours(0,0,0,0);
-                const fecha = new Date(causa.fechaActoConclusivo); fecha.setHours(0,0,0,0);
-                const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
-                html += `<div><strong>⏳ Días restantes:</strong> ${diff >= 0 ? diff : 'Vencido hace ' + Math.abs(diff) + ' días'}</div>`;
-            } else {
-                html += `<div><strong>⏳ Días restantes:</strong> No definido</div>`;
-            }
             html += '</div>';
             container.innerHTML = html;
         }
 
         // ================================================================
-        // 17. EXPORTAR/IMPORTAR (con validación básica)
+        // 18. EXPORTAR/IMPORTAR
         // ================================================================
         function exportarDatos() {
             const blob = new Blob([JSON.stringify(causas, null, 2)], { type:'application/json' });
@@ -2549,7 +2912,6 @@
                     try {
                         const data = JSON.parse(ev.target.result);
                         if (Array.isArray(data)) {
-                            // Validación básica (puedes hacerla más rigurosa con Joi si lo deseas)
                             const valid = data.every(item => item.numCausa && item.imputado);
                             if (!valid) {
                                 alert('El archivo contiene elementos sin número de causa o imputado. Se importarán solo los que cumplan.');
@@ -2572,22 +2934,11 @@
         }
 
         // ================================================================
-        // 18. CIERRE: asegurar que las pestañas funcionen al cargar
+        // 19. CIERRE
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Ya se inicializa con inicializarSistema() después del login
-            console.log('Sistema cargado. Pestañas estables.');
+            console.log('✅ Sistema cargado con informe completo y lógica de acto conclusivo.');
         });
-
-        // ================================================================
-        // 19. NOTA SOBRE VALIDACIONES Y SANITIZACIÓN
-        // ================================================================
-        // - Se ha reemplazado innerHTML por textContent donde se mostraba datos del usuario.
-        // - Se han eliminado los setTimeout para restauración de cuestionarios, usando eventos de pestañas.
-        // - La validación de importación es básica; se recomienda implementar Joi para más robustez.
-        // - La fecha de acto conclusivo es 100% manual.
-
-        console.log('✅ Sistema actualizado con fecha manual y modal de resumen.');
     </script>
 </body>
 </html>
