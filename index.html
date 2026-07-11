@@ -2799,7 +2799,7 @@
         let alertas = [];
         const info = calcularDiasRestantesGlobal(causa);
         if (info.estado === 'vencido') alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(info.dias)} días)`);
-        else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias)} días)`);
+        else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias} días)`);
         if (causa.rebeldia?.activa) {
             alertas.push('🔴 Rebeldía activa');
             if (!causa.rebeldia.levantamiento) alertas.push('⚠️ Rebeldía sin levantar');
