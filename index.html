@@ -328,7 +328,7 @@
                 </div>
             </div>
             <div class="user-info">
-                <span id="user-email-display" style="font-size:13px;"></span>
+                <span id="user-info-display" style="font-size:13px; font-weight:500;"></span>
                 <button class="btn-admin" id="btn-admin-panel" onclick="toggleAdminPanel()" style="display:none;"><i class="fas fa-users-cog"></i> Admin</button>
                 <button class="btn-logout" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
@@ -692,6 +692,8 @@
         </div>
     </div>
 
+    <!-- ===== INICIO DE LA PARTE 2 (SCRIPT) ===== -->
+    <!-- COPIA EL SCRIPT DESDE LA PARTE 2 A CONTINUACIÓN -->
     <script>
     // ================================================================
     // FIREBASE CONFIGURACIÓN
@@ -863,7 +865,22 @@
     function mostrarApp() {
         document.getElementById('auth-container').style.display = 'none';
         document.getElementById('app').style.display = 'block';
-        document.getElementById('user-email-display').textContent = currentUser.email;
+
+        // Mostrar información del usuario en el header
+        const userInfo = document.getElementById('user-info-display');
+        if (currentUserData) {
+            const nombre = currentUserData.nombre || 'Sin nombre';
+            const cargo = currentUserData.cargo || '';
+            const telefono = currentUserData.telefono || '';
+            let displayText = nombre;
+            if (cargo) displayText += ` · ${cargo}`;
+            if (telefono) displayText += ` · ${telefono}`;
+            userInfo.textContent = displayText;
+            userInfo.title = currentUser.email; // mostrar correo al pasar el mouse
+        } else {
+            userInfo.textContent = currentUser.email;
+        }
+
         if (isAdmin) {
             document.getElementById('btn-admin-panel').style.display = 'inline-block';
             cargarUsuarios();
@@ -2782,7 +2799,7 @@
         let alertas = [];
         const info = calcularDiasRestantesGlobal(causa);
         if (info.estado === 'vencido') alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(info.dias)} días)`);
-        else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias} días)`);
+        else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias)} días)`);
         if (causa.rebeldia?.activa) {
             alertas.push('🔴 Rebeldía activa');
             if (!causa.rebeldia.levantamiento) alertas.push('⚠️ Rebeldía sin levantar');
