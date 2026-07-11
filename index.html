@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gestión de Causas Penales - MP</title>
+    <!-- Firebase y librerías -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* ===== ESTILOS COMPLETOS (sin cambios) ===== */
+        /* ===== ESTILOS COMPLETOS ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f0f2f5; color:#2d2d2d; padding:20px; }
+        /* ===== LOGIN ===== */
         #auth-container { max-width:400px; margin:60px auto; background:#fff; padding:30px 35px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
         #auth-container h2 { color:#1a2a4a; text-align:center; margin-bottom:8px; }
         #auth-container .sub { color:#888; font-size:14px; text-align:center; margin-bottom:25px; }
@@ -28,6 +30,7 @@
         #auth-message { padding:10px; border-radius:6px; margin-bottom:15px; display:none; }
         #auth-message.error { background:#f8d7da; color:#721c24; display:block; }
         #auth-message.success { background:#d4edda; color:#155724; display:block; }
+        /* ===== APP ===== */
         #app { display:none; max-width:1400px; margin:0 auto; background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.1); overflow:hidden; }
         .header { background:#1a2a4a; color:#fff; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
         .header h1 { font-size:20px; font-weight:600; }
@@ -202,6 +205,7 @@
         .fundamento-articulo { margin:6px 0; padding:5px 10px; background:#f8f9fa; border-left:3px solid #1a2a4a; border-radius:4px; }
         .fundamento-articulo strong { color:#1a2a4a; }
         .fundamento-articulo .texto-ley { font-size:12px; color:#333; margin-top:3px; }
+        /* ===== MODALES ===== */
         #modal-resumen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; overflow:auto; padding:20px; }
         #modal-resumen .modal-contenido { background:#fff; max-width:1050px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
         #modal-resumen .modal-cerrar { position:absolute; top:12px; right:18px; background:transparent; border:none; font-size:28px; cursor:pointer; color:#888; }
@@ -209,6 +213,13 @@
         #modal-resumen pre { font-family: 'Courier New', monospace; font-size:13px; white-space:pre-wrap; word-break:break-word; margin:0; line-height:1.6; background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #e0e4ea; max-height:70vh; overflow-y:auto; }
         #modal-resumen .modal-footer { margin-top:20px; text-align:center; }
         #campo-fecha-archivo { background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:12px; margin-top:10px; }
+        #modal-reauth { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9998; align-items:center; justify-content:center; padding:20px; }
+        #modal-reauth .reauth-contenido { background:#fff; max-width:420px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+        #modal-reauth .reauth-contenido h3 { color:#1a2a4a; margin-bottom:12px; }
+        #modal-reauth .reauth-contenido p { font-size:14px; color:#555; margin-bottom:15px; }
+        #modal-reauth .reauth-contenido input { width:100%; padding:10px; border:1px solid #d0d4da; border-radius:6px; }
+        #modal-reauth .reauth-contenido .reauth-message { color:#b33c3c; font-size:13px; margin-top:8px; }
+        #modal-reauth .reauth-contenido .reauth-actions { margin-top:15px; display:flex; gap:10px; justify-content:flex-end; }
         @media (max-width:600px) {
             .user-table, .user-table tbody, .user-table tr, .user-table td { display:block; width:100%; }
             .user-table tr { margin-bottom:10px; border:1px solid #ddd; padding:8px; border-radius:6px; }
@@ -225,6 +236,7 @@
             .form-row { grid-template-columns:1fr; }
             #modal-resumen .modal-contenido { padding:15px; }
             #modal-resumen pre { font-size:11px; padding:10px; }
+            #modal-reauth .reauth-contenido { padding:15px; }
         }
         @media print {
             @page { size: legal; margin: 1.5cm; }
@@ -287,13 +299,12 @@
             .diligencia-item { font-size:8pt; padding:1px 0; }
             #campo-fecha-archivo { display:none !important; }
             .causa-card .prorroga-msg { display:none; }
+            #modal-reauth { display:none !important; }
         }
     </style>
 </head>
 <body>
-    <!-- ============================================================ -->
     <!-- ===== AUTENTICACIÓN ===== -->
-    <!-- ============================================================ -->
     <div id="auth-container">
         <img src="logo.png" alt="Ministerio Público" style="display:block;margin:0 auto 15px;max-width:200px;height:auto;" onerror="this.style.display='none'">
         <h2><i class="fas fa-gavel" style="color:#d4a843;"></i> MP</h2>
@@ -327,9 +338,7 @@
         </div>
     </div>
 
-    <!-- ============================================================ -->
     <!-- ===== SISTEMA PRINCIPAL ===== -->
-    <!-- ============================================================ -->
     <div id="app">
         <!-- HEADER -->
         <header class="header">
@@ -354,6 +363,7 @@
                 <button class="btn btn-primary" onclick="nuevaCausa()"><i class="fas fa-plus"></i> Nueva Causa</button>
                 <button class="btn btn-outline" onclick="exportarDatos()"><i class="fas fa-file-export"></i> Exportar</button>
                 <button class="btn btn-outline" onclick="importarDatos()"><i class="fas fa-file-import"></i> Importar</button>
+                <button class="btn btn-outline" onclick="enviarCorreoConRespaldo()"><i class="fas fa-envelope"></i> Enviar respaldo</button>
                 <button class="btn btn-danger" onclick="eliminarTodasLasCausas()"><i class="fas fa-trash-alt"></i> Eliminar todas</button>
             </div>
             <div class="toolbar-right">
@@ -390,11 +400,9 @@
                         <button class="btn-cerrar" onclick="cerrarFormulario()">&times;</button>
                     </div>
                 </div>
-                <div class="tabs no-print" id="tabs-container">
-                    <!-- Generado por JavaScript -->
-                </div>
+                <div class="tabs no-print" id="tabs-container"></div>
 
-                <!-- ===== TAB 1: DATOS GENERALES ===== -->
+                <!-- TAB 1: DATOS GENERALES -->
                 <div id="tab1" class="tab-pane active">
                     <div class="form-row">
                         <div class="form-group">
@@ -519,7 +527,7 @@
                     </div>
                 </div>
 
-                <!-- ===== TAB 2: JUZGADO Y PLAZOS ===== -->
+                <!-- TAB 2: JUZGADO Y PLAZOS -->
                 <div id="tab2" class="tab-pane">
                     <div class="sub-seccion">
                         <h4>Datos de Imputación</h4>
@@ -566,7 +574,6 @@
                                 <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..."></textarea>
                             </div>
                         </div>
-                        <!-- Campo condicional para archivo provisional -->
                         <div id="campo-fecha-archivo" style="display:none; margin-top:10px;">
                             <div class="form-row">
                                 <div class="form-group">
@@ -582,7 +589,6 @@
                         </div>
                     </div>
 
-                    <!-- Fecha de Acto Conclusivo (manual) -->
                     <div class="sub-seccion">
                         <h4>Fecha de Acto Conclusivo <span class="text-muted">(ingreso manual)</span></h4>
                         <p class="text-muted">Ingrese la fecha en que vence el plazo para presentar el requerimiento conclusivo.</p>
@@ -598,7 +604,6 @@
                         </div>
                     </div>
 
-                    <!-- Medidas, prórrogas, rebeldía y anticipos -->
                     <div class="sub-seccion">
                         <h4>Tipo de Medidas <span class="text-muted">(selección múltiple)</span></h4>
                         <div class="checkbox-group"><input type="checkbox" id="medida-notificacion"><label for="medida-notificacion">Notificación del acta de imputación</label></div>
@@ -661,7 +666,7 @@
                     </div>
                 </div>
 
-                <!-- ===== TAB 3: INTERVENCIONES (solo Grupo A) ===== -->
+                <!-- TAB 3: INTERVENCIONES (solo Grupo A) -->
                 <div id="tab3" class="tab-pane">
                     <div id="intervencion-contenido"><p class="text-muted">Seleccione un hecho del Grupo A para ver las intervenciones.</p></div>
                     <div id="btn-pdf-cuestionario" style="display:none; margin-top:10px;">
@@ -673,7 +678,7 @@
                     </div>
                 </div>
 
-                <!-- ===== TAB 4: EVALUACIONES (solo Grupo A) ===== -->
+                <!-- TAB 4: EVALUACIONES (solo Grupo A) -->
                 <div id="tab4" class="tab-pane">
                     <div class="sub-seccion">
                         <h4>Evaluaciones</h4>
@@ -697,7 +702,7 @@
                     </div>
                 </div>
 
-                <!-- ===== TAB 5: INFORME ===== -->
+                <!-- TAB 5: INFORME -->
                 <div id="tab5" class="tab-pane">
                     <div id="informe-contenido" style="background:#fff;padding:15px;border-radius:6px;border:1px solid #e0e4ea;"><p class="text-muted">Complete los datos para generar el informe.</p></div>
                     <div class="text-center mt-20 no-print">
@@ -705,7 +710,7 @@
                     </div>
                 </div>
 
-                <!-- ===== TAB 6: ALERTAS ===== -->
+                <!-- TAB 6: ALERTAS -->
                 <div id="tab6" class="tab-pane">
                     <div id="alertas-contenido"><p class="text-muted">Seleccione una causa para ver las alertas.</p></div>
                 </div>
@@ -721,6 +726,23 @@
             <pre id="contenido-modal"></pre>
             <div class="modal-footer">
                 <button class="btn btn-primary" id="btn-cerrar-modal-resumen">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL DE REAUTENTICACIÓN ===== -->
+    <div id="modal-reauth">
+        <div class="reauth-contenido">
+            <h3><i class="fas fa-lock"></i> Verificación de seguridad</h3>
+            <p>Para eliminar esta causa, ingrese su contraseña actual.</p>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="reauth-password" placeholder="••••••••">
+            </div>
+            <div id="reauth-message" class="reauth-message"></div>
+            <div class="reauth-actions">
+                <button class="btn btn-outline" onclick="cerrarReauth()">Cancelar</button>
+                <button class="btn btn-danger" onclick="confirmarReauth()"><i class="fas fa-trash-alt"></i> Eliminar</button>
             </div>
         </div>
     </div>
@@ -755,6 +777,7 @@
         let causaActualId = null;
         let seccionesGuardadas = { tab1:false, tab2:false, tab3:false, tab4:false };
         let authMode = 'login';
+        let reauthCallback = null;
 
         const ESTADOS_ACTO_CONCLUSIVO = [
             'criterio-oportunidad',
@@ -772,7 +795,7 @@
         ];
 
         // ================================================================
-        // 2. CONFIGURACIÓN DE HECHOS (CONFIG) - (se mantiene igual)
+        // 2. CONFIGURACIÓN DE HECHOS (CONFIG) - COMPLETA
         // ================================================================
         const CONFIG = {
             hechos: {
@@ -840,7 +863,6 @@
             const estado = causa.estadoCausa || 'activa';
             let fechaStr = null;
             let tipo = 'ninguno';
-            
             if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
                 fechaStr = causa.fechaLimiteArchivo;
                 tipo = 'archivo_provisional';
@@ -850,9 +872,7 @@
                 fechaStr = causa.fechaActoConclusivo;
                 tipo = 'acto_conclusivo';
             }
-
             if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-
             const fecha = parseLocalDate(fechaStr);
             const hoy = getTodayMidnight();
             const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
@@ -951,7 +971,7 @@
         }
 
         // ================================================================
-        // 4. AUTENTICACIÓN (sin cambios)
+        // 4. AUTENTICACIÓN
         // ================================================================
         function mostrarMensaje(texto, tipo) {
             const el = document.getElementById('auth-message');
@@ -985,13 +1005,9 @@
         function handleAuth() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
-            if (!email || !password) {
-                mostrarMensaje('Complete todos los campos.', 'error');
-                return;
-            }
+            if (!email || !password) { mostrarMensaje('Complete todos los campos.', 'error'); return; }
             if (authMode === 'login') {
-                auth.signInWithEmailAndPassword(email, password)
-                    .catch(err => { mostrarMensaje(err.message, 'error'); });
+                auth.signInWithEmailAndPassword(email, password).catch(err => { mostrarMensaje(err.message, 'error'); });
             } else {
                 const nombre = document.getElementById('auth-nombre').value.trim();
                 const cargo = document.getElementById('auth-cargo').value.trim();
@@ -1018,12 +1034,21 @@
                     .catch(err => { mostrarMensaje(err.message, 'error'); });
             }
         }
+
         function cerrarSesion() {
-            auth.signOut().then(() => {
-                document.getElementById('app').style.display = 'none';
-                document.getElementById('auth-container').style.display = 'block';
-                document.getElementById('admin-panel').style.display = 'none';
-            });
+            if (causas.length === 0) {
+                auth.signOut();
+                return;
+            }
+            if (confirm('¿Desea exportar un archivo de respaldo antes de salir? (Se descargará un archivo JSON)')) {
+                exportarDatos();
+                setTimeout(() => {
+                    alert('✅ Archivo exportado. Recuerde enviarlo a su correo electrónico para resguardar sus datos.');
+                    auth.signOut();
+                }, 500);
+            } else {
+                auth.signOut();
+            }
         }
 
         auth.onAuthStateChanged(async user => {
@@ -1104,7 +1129,7 @@
         }
 
         // ================================================================
-        // 5. ADMIN (sin cambios)
+        // 5. ADMIN
         // ================================================================
         function toggleAdminPanel() {
             const panel = document.getElementById('admin-panel');
@@ -1299,7 +1324,6 @@
                 let mensajeExtra = '';
                 let prorrogaInfo = 'No';
 
-                // Determinar prórroga
                 if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
                     prorrogaInfo = `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
                 }
@@ -1345,7 +1369,6 @@
                 };
             });
 
-            // Ordenar por prioridad
             const orden = { '🔴 VENCIDO': 0, '🟡 PRÓXIMO': 1, '🟢 EN PLAZO': 2, '📄 Presentado': 3, 'Sin plazo': 4, 'Sin fecha': 4 };
             lista.sort((a, b) => {
                 const prioridadA = orden[a.estadoPlazo] !== undefined ? orden[a.estadoPlazo] : 4;
@@ -1638,7 +1661,6 @@
                 alert(`📄 La causa ${causa.numCausa} ya tiene acto conclusivo presentado.`);
             }
 
-            // Cargar datos generales (igual que antes)
             setValueSafe('num-causa', causa.numCausa);
             setValueSafe('imputado', causa.imputado);
             setValueSafe('ci-imputado', causa.ciImputado || '');
@@ -1648,7 +1670,6 @@
             setValueSafe('num-reincidencias', causa.numReincidencias || 0);
             document.getElementById('num-reincidencias').disabled = !causa.reincidente;
 
-            // Víctimas, testigos, hechos (igual que antes)
             const victimasContainer = document.getElementById('victimas-container');
             victimasContainer.innerHTML = '';
             if (causa.victimas && causa.victimas.length > 0) {
@@ -1720,7 +1741,6 @@
             }
             renderizarHechosAgregados();
 
-            // Cargar fechas y estado
             setValueSafe('fecha-vencimiento-input', causa.fechaActoConclusivo || '');
             calcularDiasRestantesDesdeFecha();
             setValueSafe('estado-causa-select', causa.estadoCausa || 'activa');
@@ -1790,7 +1810,7 @@
         }
 
         // ================================================================
-        // 12. VÍCTIMAS, TESTIGOS, HECHOS (sin cambios)
+        // 12. VÍCTIMAS, TESTIGOS, HECHOS
         // ================================================================
         function agregarVictima() {
             const container = document.getElementById('victimas-container');
@@ -2368,7 +2388,6 @@
                 let actoConclusivoMsg = '';
                 let prorrogaMsg = '';
 
-                // Prórroga
                 if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
                     prorrogaMsg += `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')} `;
                 }
@@ -2489,25 +2508,74 @@
             });
         }
 
+        // ================================================================
+        // 15. ELIMINAR CON REAUTENTICACIÓN
+        // ================================================================
+        function mostrarReauth(callback) {
+            reauthCallback = callback;
+            document.getElementById('reauth-password').value = '';
+            document.getElementById('reauth-message').textContent = '';
+            document.getElementById('modal-reauth').style.display = 'flex';
+        }
+
+        function cerrarReauth() {
+            document.getElementById('modal-reauth').style.display = 'none';
+            reauthCallback = null;
+        }
+
+        function confirmarReauth() {
+            const password = document.getElementById('reauth-password').value.trim();
+            if (!password) {
+                document.getElementById('reauth-message').textContent = 'Ingrese su contraseña.';
+                return;
+            }
+            const user = firebase.auth().currentUser;
+            if (!user) {
+                document.getElementById('reauth-message').textContent = 'No hay sesión activa.';
+                return;
+            }
+            const credential = firebase.auth.EmailAuthProvider.credential(user.email, password);
+            user.reauthenticateWithCredential(credential)
+                .then(() => {
+                    document.getElementById('reauth-message').textContent = '';
+                    cerrarReauth();
+                    if (typeof reauthCallback === 'function') {
+                        reauthCallback();
+                        reauthCallback = null;
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('reauth-message').textContent = 'Contraseña incorrecta. Intente de nuevo.';
+                    console.error(err);
+                });
+        }
+
         function eliminarCausa(id) {
-            if (!confirm('¿Está seguro de eliminar esta causa?')) return;
-            causas = causas.filter(c => c.id !== id);
-            guardarDatos();
-            renderizarCausas();
-            if (document.getElementById('form-container').classList.contains('active')) cerrarFormulario();
+            mostrarReauth(function() {
+                if (!confirm('¿Está seguro de eliminar esta causa?')) return;
+                causas = causas.filter(c => c.id !== id);
+                guardarDatos();
+                renderizarCausas();
+                if (document.getElementById('form-container').classList.contains('active')) cerrarFormulario();
+            });
         }
 
         function eliminarTodasLasCausas() {
             if (causas.length === 0) { alert('No hay causas para eliminar.'); return; }
-            if (!confirm('⚠️ ¿Está seguro de eliminar TODAS las causas? Esta acción es irreversible.')) return;
-            if (!confirm('Confirmación final: ¿Eliminar todas las causas?')) return;
-            causas = [];
-            guardarDatos();
-            renderizarCausas();
-            if (document.getElementById('form-container').classList.contains('active')) cerrarFormulario();
-            alert('Todas las causas han sido eliminadas.');
+            mostrarReauth(function() {
+                if (!confirm('⚠️ ¿Está seguro de eliminar TODAS las causas? Esta acción es irreversible.')) return;
+                if (!confirm('Confirmación final: ¿Eliminar todas las causas?')) return;
+                causas = [];
+                guardarDatos();
+                renderizarCausas();
+                if (document.getElementById('form-container').classList.contains('active')) cerrarFormulario();
+                alert('Todas las causas han sido eliminadas.');
+            });
         }
 
+        // ================================================================
+        // 16. NUEVA CAUSA Y CERRAR FORMULARIO
+        // ================================================================
         function nuevaCausa() {
             causaActualId = null;
             document.getElementById('form-title').textContent = 'Nueva Causa';
@@ -2566,7 +2634,7 @@
         }
 
         // ================================================================
-        // 15. INFORME COMPLETO (con prórrogas mejoradas)
+        // 17. INFORME COMPLETO
         // ================================================================
         function actualizarInforme() {
             const container = document.getElementById('informe-contenido');
@@ -2620,7 +2688,7 @@
                 </div>
             `;
 
-            // ===== SECCIÓN 1: DATOS GENERALES =====
+            // SECCIÓN 1: DATOS GENERALES
             html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">1. DATOS GENERALES</h3>`;
             html += `<div><strong>Nº Causa:</strong> ${causa.numCausa || 'No definido'}</div>`;
             html += `<div><strong>Imputado:</strong> ${causa.imputado || 'No definido'}</div>`;
@@ -2696,7 +2764,7 @@
             html += `<div><strong>Carátula:</strong> ${causa.caratula || 'No generada'}</div>`;
             html += `<div><strong>Observaciones Generales:</strong> ${causa.observacionesGenerales || 'No registradas'}</div>`;
 
-            // ===== SECCIÓN 2: JUZGADO Y PLAZOS =====
+            // SECCIÓN 2: JUZGADO Y PLAZOS
             html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">2. DATOS DEL JUZGADO Y PLAZOS</h3>`;
             html += `<div><strong>Fecha de Imputación:</strong> ${causa.fechaImputacion ? new Date(causa.fechaImputacion).toLocaleDateString('es-ES') : 'No registrada'}</div>`;
             html += `<div><strong>Resuelto por AI N°:</strong> ${causa.numAI || 'No registrado'}</div>`;
@@ -2713,7 +2781,6 @@
                 html += `<div><strong>Estado del plazo:</strong> ${estadoPlazo}</div>`;
             }
 
-            // Medidas
             html += `<div><strong>Medidas:</strong> `;
             const medidas = [];
             if (causa.medidas?.notificacion) medidas.push('Notificación del acta de imputación');
@@ -2722,7 +2789,7 @@
             html += (medidas.length > 0) ? medidas.join(', ') : 'No se registraron medidas específicas.';
             html += `</div>`;
 
-            // ===== PRÓRROGAS (mejoradas) =====
+            // PRÓRROGAS
             html += `<div><strong>Prórrogas:</strong></div>`;
             if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si') {
                 const po = causa.prorrogaOrdinaria;
@@ -2768,7 +2835,7 @@
                 html += `</div>`;
             }
 
-            // ===== SECCIÓN 3: INTERVENCIONES =====
+            // SECCIÓN 3: INTERVENCIONES
             if (causa.intervenciones && causa.intervenciones.tipo !== 'ninguno') {
                 html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">3. INTERVENCIONES</h3>`;
                 if (causa.intervenciones.tipo === 'cuestionario') {
@@ -2811,14 +2878,14 @@
                 }
             }
 
-            // ===== SECCIÓN 4: EVALUACIONES =====
+            // SECCIÓN 4: EVALUACIONES
             if (causa.psiFecha || causa.medFecha || causa.psiResultado || causa.medResultado) {
                 html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">4. EVALUACIONES</h3>`;
                 html += `<div><strong>Evaluación Psicológica:</strong> Fecha: ${causa.psiFecha ? new Date(causa.psiFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.psiProfesional || 'N/A'}, Resultado: ${causa.psiResultado || 'Pendiente'}, Observaciones: ${causa.psiObservaciones || 'N/A'}</div>`;
                 html += `<div><strong>Evaluación Médica:</strong> Fecha: ${causa.medFecha ? new Date(causa.medFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.medProfesional || 'N/A'}, Resultado: ${causa.medResultado || 'Pendiente'}, Observaciones: ${causa.medObservaciones || 'N/A'}</div>`;
             }
 
-            // ===== SECCIÓN 5: ALERTAS =====
+            // SECCIÓN 5: ALERTAS
             html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">5. ALERTAS Y OBSERVACIONES FINALES</h3>`;
             let alertas = [];
             const infoAlert = calcularInfoPlazo(causa);
@@ -2847,7 +2914,7 @@
         }
 
         // ================================================================
-        // 16. ALERTAS (con prórrogas)
+        // 18. ALERTAS (con prórrogas)
         // ================================================================
         function actualizarAlertas() {
             const container = document.getElementById('alertas-contenido');
@@ -2871,7 +2938,6 @@
                 alertas.push(`📌 Causa precluida (investigación finalizada) - Estado: ${getEstadoLabel(causa.estadoCausa)}`);
             }
 
-            // Prórrogas
             if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si' && causa.prorrogaOrdinaria.nuevaFecha) {
                 alertas.push(`📅 Prórroga ordinaria (Art. 325) otorgada. Nueva fecha: ${new Date(causa.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`);
             }
@@ -2911,7 +2977,7 @@
         }
 
         // ================================================================
-        // 17. EXPORTAR/IMPORTAR
+        // 19. EXPORTAR E IMPORTAR
         // ================================================================
         function exportarDatos() {
             const blob = new Blob([JSON.stringify(causas, null, 2)], { type:'application/json' });
@@ -2921,6 +2987,15 @@
             a.download = `causas_${new Date().toISOString().slice(0,10)}.json`;
             a.click();
             URL.revokeObjectURL(url);
+        }
+
+        function enviarCorreoConRespaldo() {
+            if (causas.length === 0) {
+                alert('No hay datos para exportar.');
+                return;
+            }
+            exportarDatos();
+            alert('✅ Archivo descargado. Por favor, reenvíelo a su correo electrónico para mantener un respaldo externo.');
         }
 
         function importarDatos() {
@@ -2957,10 +3032,11 @@
         }
 
         // ================================================================
-        // 18. CIERRE
+        // 20. CIERRE
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('✅ Sistema cargado con informe completo, prórrogas y resumen con columna de prórrogas.');
+            console.log('✅ Sistema de Gestión de Causas Penales - MP cargado completamente.');
+            console.log('✅ Incluye informe completo, prórrogas, reautenticación, exportación al salir y resumen con prórrogas.');
         });
     </script>
 </body>
