@@ -3984,7 +3984,7 @@
 
         function cerrarReauth() {
             document.getElementById('modal-reauth').style.display = 'none';
-            reauthAccion = null;
+            // No limpiamos reauthAccion aquí, lo hacemos después de ejecutar
         }
 
         function confirmarReauth() {
@@ -4002,11 +4002,13 @@
             user.reauthenticateWithCredential(credential)
                 .then(() => {
                     document.getElementById('reauth-message').textContent = '';
+                    // Guardamos la acción antes de cerrar
+                    const accion = reauthAccion;
                     cerrarReauth();
-                    if (reauthAccion) {
-                        if (reauthAccion.tipo === 'single' && reauthAccion.id) {
-                            eliminarCausaConfirmada(reauthAccion.id);
-                        } else if (reauthAccion.tipo === 'all') {
+                    if (accion) {
+                        if (accion.tipo === 'single' && accion.id) {
+                            eliminarCausaConfirmada(accion.id);
+                        } else if (accion.tipo === 'all') {
                             eliminarTodasConfirmada();
                         }
                         reauthAccion = null;
@@ -4020,23 +4022,36 @@
         }
 
         function eliminarCausa(id) {
+            // Verificamos que el id existe en la lista actual
+            const existe = causas.some(c => String(c.id) === String(id));
+            if (!existe) {
+                alert('La causa no existe o ya fue eliminada.');
+                return;
+            }
             mostrarReauth({ tipo: 'single', id: id });
         }
 
         function eliminarCausaConfirmada(id) {
             if (!confirm('¿Está seguro de eliminar esta causa?')) return;
             const antes = causas.length;
-            causas = causas.filter(c => c.id !== id);
+            causas = causas.filter(c => String(c.id) !== String(id));
             if (causas.length === antes) {
                 alert('No se encontró la causa para eliminar.');
                 return;
             }
-            guardarDatos();
+            try {
+                guardarDatos();
+            } catch (e) {
+                console.error('Error al guardar en localStorage:', e);
+                alert('No se pudo guardar el cambio. Verifique la consola.');
+                return;
+            }
             renderizarCausas();
             if (document.getElementById('form-container').classList.contains('active')) {
                 cerrarFormulario();
             }
             console.log('✅ Causa eliminada:', id);
+            console.log('Causas restantes:', causas.length);
         }
 
         function eliminarTodasLasCausas() {
@@ -4051,7 +4066,13 @@
             if (!confirm('⚠️ ¿Está seguro de eliminar TODAS las causas? Esta acción es irreversible.')) return;
             if (!confirm('Confirmación final: ¿Eliminar todas las causas?')) return;
             causas = [];
-            guardarDatos();
+            try {
+                guardarDatos();
+            } catch (e) {
+                console.error('Error al guardar en localStorage:', e);
+                alert('No se pudo guardar el cambio. Verifique la consola.');
+                return;
+            }
             renderizarCausas();
             if (document.getElementById('form-container').classList.contains('active')) {
                 cerrarFormulario();
