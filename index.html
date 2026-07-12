@@ -1,310 +1,1523 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistema de Gestión de Causas Penales - MP</title>
-    <!-- Firebase y librerías -->
+
+    <!-- Firebase y librerías externas -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         /* ===== ESTILOS COMPLETOS ===== */
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; background:#f0f2f5; color:#2d2d2d; padding:20px; }
-        /* ===== LOGIN ===== */
-        #auth-container { max-width:400px; margin:60px auto; background:#fff; padding:30px 35px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2); }
-        #auth-container h2 { color:#1a2a4a; text-align:center; margin-bottom:8px; }
-        #auth-container .sub { color:#888; font-size:14px; text-align:center; margin-bottom:25px; }
-        #auth-container .form-group { margin-bottom:18px; }
-        #auth-container label { font-weight:500; color:#444; display:block; margin-bottom:4px; }
-        #auth-container input { width:100%; padding:10px 14px; border:1px solid #d0d4da; border-radius:6px; font-size:15px; }
-        #auth-container .btn-auth { width:100%; padding:12px; background:#1a2a4a; color:#fff; border:none; border-radius:6px; font-size:16px; font-weight:600; cursor:pointer; transition:0.2s; margin-top:6px; }
-        #auth-container .btn-auth:hover { background:#0f1d33; }
-        #auth-container .btn-secondary { background:#2a7d4f; }
-        #auth-container .btn-secondary:hover { background:#1e6340; }
-        #auth-container .auth-switch { text-align:center; margin-top:15px; font-size:14px; color:#666; }
-        #auth-container .auth-switch a { color:#1a2a4a; cursor:pointer; font-weight:500; text-decoration:underline; }
-        #auth-message { padding:10px; border-radius:6px; margin-bottom:15px; display:none; }
-        #auth-message.error { background:#f8d7da; color:#721c24; display:block; }
-        #auth-message.success { background:#d4edda; color:#155724; display:block; }
-        /* ===== APP ===== */
-        #app { display:none; max-width:1400px; margin:0 auto; background:#fff; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.1); overflow:hidden; }
-        .header { background:#1a2a4a; color:#fff; padding:15px 30px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
-        .header h1 { font-size:20px; font-weight:600; }
-        .header h1 i { color:#d4a843; margin-right:10px; }
-        .header .subtitle { font-size:13px; opacity:0.8; font-weight:300; }
-        .header .user-info { font-size:13px; display:flex; align-items:center; gap:12px; }
-        .btn-logout { background:#b33c3c; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:13px; }
-        .btn-logout:hover { background:#8f2e2e; }
-        .btn-admin { background:#d4a843; color:#fff; border:none; padding:6px 14px; border-radius:6px; cursor:pointer; font-size:13px; }
-        .btn-admin:hover { background:#b8922e; }
-        .toolbar { background:#f8f9fa; padding:12px 30px; border-bottom:1px solid #e0e0e0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
-        .toolbar-left { display:flex; gap:8px; flex-wrap:wrap; }
-        .toolbar-right { display:flex; gap:8px; }
-        .btn { padding:7px 16px; border:none; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px; }
-        .btn-primary { background:#1a2a4a; color:#fff; }
-        .btn-primary:hover { background:#0f1d33; transform:translateY(-1px); box-shadow:0 4px 12px rgba(26,42,74,0.3); }
-        .btn-success { background:#2a7d4f; color:#fff; }
-        .btn-success:hover { background:#1e6340; }
-        .btn-danger { background:#b33c3c; color:#fff; }
-        .btn-danger:hover { background:#8f2e2e; }
-        .btn-outline { background:transparent; color:#1a2a4a; border:1px solid #1a2a4a; }
-        .btn-outline:hover { background:#1a2a4a; color:#fff; }
-        .btn-sm { padding:4px 10px; font-size:12px; }
-        .btn-remover { background:#b33c3c; color:#fff; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:11px; }
-        .btn-remover:hover { background:#8f2e2e; }
-        .btn-agregar { background:#1a2a4a; color:#fff; border:none; padding:5px 12px; border-radius:4px; cursor:pointer; font-size:12px; display:inline-flex; align-items:center; gap:4px; }
-        .btn-agregar:hover { background:#0f1d33; }
-        .btn-imprimir { background:#1a2a4a; color:#fff; }
-        .btn-imprimir:hover { background:#0f1d33; }
-        .btn-guardar-seccion { background:#2a7d4f; color:#fff; }
-        .btn-guardar-seccion:hover { background:#1e6340; }
-        .btn-resumen { background:#d4a843; color:#fff; }
-        .btn-resumen:hover { background:#b8922e; }
-        .search-box { display:flex; align-items:center; background:#fff; border:1px solid #d0d0d0; border-radius:6px; overflow:hidden; }
-        .search-box input { padding:6px 12px; border:none; outline:none; font-size:13px; width:180px; }
-        .search-box button { background:transparent; border:none; padding:6px 12px; color:#666; cursor:pointer; }
-        .search-box button:hover { color:#1a2a4a; }
-        .main-content { padding:15px 25px; }
-        .section-title { font-size:17px; font-weight:600; color:#1a2a4a; margin-bottom:12px; padding-bottom:8px; border-bottom:2px solid #e8ecf1; }
-        .causa-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:12px; margin-bottom:15px; }
-        .causa-card { background:#fff; border:1px solid #e0e4ea; border-radius:8px; padding:14px 16px; cursor:pointer; transition:all 0.2s; border-left:4px solid #1a2a4a; position:relative; overflow:hidden; word-break:break-word; max-height:320px; overflow-y:auto; }
-        .causa-card:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,0,0,0.08); border-color:#b0b8c4; }
-        .causa-card .numero { font-weight:700; font-size:15px; color:#1a2a4a; display:flex; align-items:center; gap:6px; }
-        .causa-card .numero .alerta-icon { color:#b33c3c; font-size:13px; }
-        .causa-card .caratula { font-size:13px; color:#444; margin-top:3px; line-height:1.3; }
-        .causa-card .badge { display:inline-block; font-size:10px; padding:2px 8px; border-radius:12px; margin-top:6px; font-weight:500; }
-        .badge-activa { background:#d4edda; color:#155724; }
-        .badge-alimentos { background:#fff3cd; color:#856404; }
-        .badge-alerta { background:#f8d7da; color:#721c24; }
-        .badge-precluida { background:#e0e0e0; color:#616161; }
-        .badge-acto-conclusivo { background:#bbdefb; color:#0d47a1; }
-        .badge-estado { display:inline-block; font-size:9px; padding:2px 6px; border-radius:12px; margin-top:3px; font-weight:500; }
-        .badge-estado.activa { background:#d4edda; color:#155724; }
-        .badge-estado.criterio { background:#fff3cd; color:#856404; }
-        .badge-estado.archivo-provisional { background:#ffe0b2; color:#e65100; }
-        .badge-estado.archivo-definitivo { background:#e0e0e0; color:#616161; }
-        .badge-estado.sobreseimiento { background:#e0e0e0; color:#616161; }
-        .badge-estado.elevacion { background:#bbdefb; color:#0d47a1; }
-        .badge-estado.condenatoria { background:#f8bbd0; color:#880e4f; }
-        .badge-estado.absolutoria { background:#c8e6c9; color:#1b5e20; }
-        .badge-estado.suspension { background:#fff9c4; color:#f57f17; }
-        .badge-estado.acuerdo { background:#d1c4e9; color:#4a148c; }
-        .badge-estado.conciliacion { background:#b2dfdb; color:#004d40; }
-        .badge-estado.remision { background:#b3e5fc; color:#01579b; }
-        .badge-estado.inhibitoria { background:#ffccbc; color:#bf360c; }
-        .badge-estado.otro { background:#cfd8dc; color:#37474f; }
-        .causa-card .eliminar-btn { position:absolute; top:6px; right:8px; background:transparent; border:none; color:#b0b8c4; cursor:pointer; font-size:14px; }
-        .causa-card .eliminar-btn:hover { color:#b33c3c; }
-        .causa-card .dias-restantes { font-size:11px; color:#888; margin-top:5px; border-top:1px dashed #e0e4ea; padding-top:5px; }
-        .causa-card .dias-restantes.vencido { color:#b33c3c; font-weight:600; }
-        .causa-card .dias-restantes.proximo { color:#b8860b; }
-        .causa-card .acto-conclusivo-msg { font-size:11px; color:#0d47a1; margin-top:5px; border-top:1px dashed #bbdefb; padding-top:5px; font-weight:500; background:#e3f2fd; padding:4px 8px; border-radius:4px; }
-        .causa-card .prorroga-msg { font-size:10px; color:#666; margin-top:3px; background:#f0f0f0; padding:2px 6px; border-radius:3px; display:inline-block; }
-        .empty-state { text-align:center; padding:30px 20px; color:#888; }
-        .empty-state i { font-size:40px; color:#d0d4da; margin-bottom:12px; }
-        .form-container { display:none; background:#fafbfc; border-radius:8px; padding:20px 25px; margin-top:15px; border:1px solid #e0e4ea; opacity:0; transform:translateY(10px); transition:opacity 0.3s ease, transform 0.3s ease; }
-        .form-container.active { display:block; opacity:1; transform:translateY(0); }
-        .form-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; padding-bottom:10px; border-bottom:2px solid #e0e4ea; }
-        .form-header h2 { font-size:18px; color:#1a2a4a; }
-        .form-header .btn-cerrar { background:transparent; border:none; font-size:22px; color:#888; cursor:pointer; }
-        .form-header .btn-cerrar:hover { color:#b33c3c; }
-        .form-header .estado-guardado { font-size:12px; color:#2a7d4f; font-weight:500; }
-        .tabs { display:flex; gap:3px; margin-bottom:15px; border-bottom:2px solid #e0e4ea; flex-wrap:wrap; }
-        .tab-btn { padding:8px 16px; background:transparent; border:none; font-size:13px; font-weight:500; color:#666; cursor:pointer; border-bottom:3px solid transparent; transition:all 0.2s; border-radius:3px 3px 0 0; }
-        .tab-btn:hover { color:#1a2a4a; background:#f0f2f5; }
-        .tab-btn.active { color:#1a2a4a; border-bottom-color:#1a2a4a; background:#f0f2f5; }
-        .tab-btn .badge-guardado { display:inline-block; background:#2a7d4f; color:#fff; border-radius:10px; padding:0 6px; font-size:9px; margin-left:4px; }
-        .tab-pane { display:none; padding:10px 0; animation:fadeIn 0.3s; }
-        .tab-pane.active { display:block; }
-        @keyframes fadeIn { from{ opacity:0; transform:translateY(5px); } to{ opacity:1; transform:translateY(0); } }
-        .form-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px 15px; margin-bottom:12px; }
-        .form-group { display:flex; flex-direction:column; gap:3px; }
-        .form-group label { font-size:12px; font-weight:500; color:#444; }
-        .form-group label .required { color:#b33c3c; }
-        .form-group input, .form-group select, .form-group textarea { padding:6px 10px; border:1px solid #d0d4da; border-radius:5px; font-size:13px; font-family:inherit; transition:border 0.2s; background:#fff; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color:#1a2a4a; outline:none; box-shadow:0 0 0 3px rgba(26,42,74,0.1); }
-        .form-group textarea { resize:vertical; min-height:50px; }
-        .form-group input[readonly] { background:#f0f2f5; color:#333; }
-        .checkbox-group { display:flex; align-items:center; gap:8px; padding-top:4px; flex-wrap:wrap; }
-        .checkbox-group input[type="checkbox"] { width:16px; height:16px; cursor:pointer; }
-        .checkbox-group label { cursor:pointer; font-weight:400; font-size:13px; }
-        .caratula-preview { background:#e8ecf1; padding:10px 15px; border-radius:5px; font-weight:500; color:#1a2a4a; border-left:4px solid #d4a843; margin-top:4px; font-size:13px; }
-        .list-item { display:flex; justify-content:space-between; align-items:center; background:#f0f2f5; padding:4px 12px; border-radius:4px; margin-top:4px; font-size:12px; }
-        .list-item .label { color:#333; }
-        .sub-seccion { background:#f8f9fa; padding:12px; border-radius:6px; border:1px solid #e0e4ea; margin-bottom:15px; }
-        .sub-seccion h4 { color:#1a2a4a; margin-bottom:8px; font-size:14px; border-bottom:1px solid #e0e4ea; padding-bottom:5px; }
-        .sub-seccion.destacada { background:#eef2f7; border-left:4px solid #d4a843; }
-        .victima-block, .testigo-block { background:#fff; padding:10px 12px; border-radius:5px; border:1px solid #e0e4ea; margin-bottom:8px; }
-        .victima-block .btn-remover, .testigo-block .btn-remover { float:right; }
-        .footer-seccion { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-top:15px; padding-top:12px; border-top:1px solid #e0e4ea; }
-        .footer-seccion .estado { font-size:12px; color:#888; }
-        .footer-seccion .estado.guardado { color:#2a7d4f; }
-        .cuestionario-section { margin-bottom:15px; padding:12px; background:#fff; border-radius:6px; border:1px solid #e0e4ea; }
-        .cuestionario-section h4 { color:#1a2a4a; margin-bottom:8px; font-size:14px; border-bottom:1px solid #e8ecf1; padding-bottom:4px; }
-        .cuestionario-pregunta { display:grid; grid-template-columns:1fr auto; gap:8px 15px; align-items:center; padding:4px 0; border-bottom:1px solid #f0f2f5; font-size:13px; }
-        .cuestionario-pregunta:last-child { border-bottom:none; }
-        .cuestionario-pregunta select { padding:3px 8px; border:1px solid #d0d4da; border-radius:4px; font-size:12px; background:#fff; min-width:140px; }
-        .resultado-riesgo { padding:12px 16px; border-radius:5px; margin-top:12px; font-weight:500; font-size:14px; }
-        .resultado-riesgo.bajo { background:#d4edda; color:#155724; border-left:4px solid #28a745; }
-        .resultado-riesgo.medio { background:#fff3cd; color:#856404; border-left:4px solid #ffc107; }
-        .resultado-riesgo.alto { background:#f8d7da; color:#721c24; border-left:4px solid #dc3545; }
-        .medidas-proteccion { margin-top:12px; padding:12px; background:#fff; border-radius:5px; border:1px solid #d0d4da; }
-        .medidas-proteccion h5 { color:#1a2a4a; margin-bottom:6px; font-size:14px; }
-        .medidas-proteccion ul { list-style:none; padding:0; }
-        .medidas-proteccion ul li { padding:3px 0; font-size:12px; padding-left:18px; position:relative; }
-        .medidas-proteccion ul li::before { content:"•"; position:absolute; left:0; color:#1a2a4a; font-weight:bold; }
-        .liquidacion-resultado { font-size:16px; font-weight:600; padding:10px 15px; background:#e8ecf1; border-radius:5px; margin-top:8px; }
-        .liquidacion-link { margin-top:12px; padding:10px 15px; background:#f0f2f5; border-radius:5px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:13px; }
-        .liquidacion-link a { color:#1a2a4a; text-decoration:none; word-break:break-all; }
-        .liquidacion-link a:hover { text-decoration:underline; }
-        .hidden { display:none !important; }
-        .text-muted { color:#888; font-size:12px; }
-        .mt-10 { margin-top:10px; }
-        .mt-20 { margin-top:20px; }
-        .mb-10 { margin-bottom:10px; }
-        .text-center { text-align:center; }
-        .flex-wrap { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
-        #admin-panel { display:none; background:#fff; border-radius:8px; padding:20px; margin-top:15px; border:1px solid #e0e4ea; }
-        #admin-panel h3 { color:#1a2a4a; margin-bottom:15px; }
-        .user-table { width:100%; border-collapse:collapse; font-size:13px; }
-        .user-table th { background:#1a2a4a; color:#fff; padding:8px 12px; text-align:left; }
-        .user-table td { padding:8px 12px; border-bottom:1px solid #e0e4ea; vertical-align:middle; }
-        .user-table .estado-badge { display:inline-block; padding:2px 10px; border-radius:12px; font-size:11px; font-weight:500; }
-        .estado-badge.pendiente { background:#fff3cd; color:#856404; }
-        .estado-badge.aprobado { background:#d4edda; color:#155724; }
-        .estado-badge.rechazado { background:#f8d7da; color:#721c24; }
-        .user-table .btn-sm { padding:3px 10px; font-size:11px; margin:1px; }
-        .btn-approve { background:#2a7d4f; color:#fff; }
-        .btn-approve:hover { background:#1e6340; }
-        .btn-reject { background:#b33c3c; color:#fff; }
-        .btn-reject:hover { background:#8f2e2e; }
-        .btn-renew { background:#d4a843; color:#fff; }
-        .btn-renew:hover { background:#b8922e; }
-        .alert-card { background:#fff; border:1px solid #e0e4ea; border-radius:6px; margin-bottom:8px; overflow:hidden; }
-        .alert-card-header { background:#f8f9fa; padding:8px 14px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; border-bottom:1px solid #e0e4ea; }
-        .alert-card-header h4 { margin:0; font-size:14px; color:#1a2a4a; }
-        .alert-card-body { padding:10px 14px; display:block; font-size:13px; }
-        .alert-card-body.collapsed { display:none; }
-        .alert-item { display:flex; padding:4px 0; border-bottom:1px solid #f4f6f9; font-size:13px; }
-        .alert-item:last-child { border-bottom:none; }
-        .alert-item .label { font-weight:600; color:#555; min-width:130px; }
-        .alert-item .value { color:#333; }
-        .espacio-firma { margin-top:15px; padding-top:12px; border-top:1px solid #ccc; }
-        .espacio-firma .firma-line { width:250px; border-bottom:2px solid #000; margin-top:8px; }
-        .espacio-firma .firma-texto { font-size:12px; color:#555; margin-top:4px; }
-        .diligencias-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:4px 12px; margin-top:4px; }
-        .diligencia-item { display:flex; align-items:flex-start; gap:6px; padding:2px 0; font-size:12px; }
-        .diligencia-item input[type="checkbox"] { margin-top:2px; }
-        .inciso-group { margin:3px 0 3px 8px; border-left:2px solid #d4a843; padding-left:8px; }
-        .inciso-check-label { font-size:12px; line-height:1.3; }
-        .numeral-check-label { font-size:11px; line-height:1.2; padding-left:15px; color:#444; }
-        .fundamento-articulo { margin:6px 0; padding:5px 10px; background:#f8f9fa; border-left:3px solid #1a2a4a; border-radius:4px; }
-        .fundamento-articulo strong { color:#1a2a4a; }
-        .fundamento-articulo .texto-ley { font-size:12px; color:#333; margin-top:3px; }
-        /* ===== MODALES ===== */
-        #modal-resumen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; overflow:auto; padding:20px; }
-        #modal-resumen .modal-contenido { background:#fff; max-width:1050px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); position:relative; max-height:90vh; overflow-y:auto; }
-        #modal-resumen .modal-cerrar { position:absolute; top:12px; right:18px; background:transparent; border:none; font-size:28px; cursor:pointer; color:#888; }
-        #modal-resumen .modal-cerrar:hover { color:#b33c3c; }
-        #modal-resumen pre { font-family: 'Courier New', monospace; font-size:13px; white-space:pre-wrap; word-break:break-word; margin:0; line-height:1.6; background:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #e0e4ea; max-height:70vh; overflow-y:auto; }
-        #modal-resumen .modal-footer { margin-top:20px; text-align:center; }
-        #campo-fecha-archivo { background:#fff3cd; border:1px solid #ffc107; border-radius:6px; padding:12px; margin-top:10px; }
-        #modal-reauth { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9998; align-items:center; justify-content:center; padding:20px; }
-        #modal-reauth .reauth-contenido { background:#fff; max-width:420px; width:100%; border-radius:12px; padding:25px; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
-        #modal-reauth .reauth-contenido h3 { color:#1a2a4a; margin-bottom:12px; }
-        #modal-reauth .reauth-contenido p { font-size:14px; color:#555; margin-bottom:15px; }
-        #modal-reauth .reauth-contenido input { width:100%; padding:10px; border:1px solid #d0d4da; border-radius:6px; }
-        #modal-reauth .reauth-contenido .reauth-message { color:#b33c3c; font-size:13px; margin-top:8px; }
-        #modal-reauth .reauth-contenido .reauth-actions { margin-top:15px; display:flex; gap:10px; justify-content:flex-end; }
-        @media (max-width:600px) {
-            .user-table, .user-table tbody, .user-table tr, .user-table td { display:block; width:100%; }
-            .user-table tr { margin-bottom:10px; border:1px solid #ddd; padding:8px; border-radius:6px; }
-            .user-table th { display:none; }
-            .user-table td { border:none; padding:4px 0; }
-            .user-table td:before { content:attr(data-label); font-weight:600; display:inline-block; width:120px; }
-            .user-table .acciones { margin-top:6px; }
-            .cuestionario-pregunta { grid-template-columns:1fr; }
-            .header h1 { font-size:17px; }
-            .header .subtitle { display:none; }
-            .toolbar { flex-direction:column; align-items:stretch; }
-            .toolbar-left, .toolbar-right { justify-content:center; }
-            .causa-grid { grid-template-columns:1fr; }
-            .form-row { grid-template-columns:1fr; }
-            #modal-resumen .modal-contenido { padding:15px; }
-            #modal-resumen pre { font-size:11px; padding:10px; }
-            #modal-reauth .reauth-contenido { padding:15px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #2d2d2d;
+            padding: 20px;
+        }
+
+        /* ===== LOGIN ===== */
+        #auth-container {
+            max-width: 400px;
+            margin: 60px auto;
+            background: #fff;
+            padding: 30px 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        #auth-container h2 {
+            color: #1a2a4a;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        #auth-container .sub {
+            color: #888;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        #auth-container .form-group {
+            margin-bottom: 18px;
+        }
+        #auth-container label {
+            font-weight: 500;
+            color: #444;
+            display: block;
+            margin-bottom: 4px;
+        }
+        #auth-container input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d0d4da;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+        #auth-container .btn-auth {
+            width: 100%;
+            padding: 12px;
+            background: #1a2a4a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 6px;
+        }
+        #auth-container .btn-auth:hover {
+            background: #0f1d33;
+        }
+        #auth-container .btn-secondary {
+            background: #2a7d4f;
+        }
+        #auth-container .btn-secondary:hover {
+            background: #1e6340;
+        }
+        #auth-container .auth-switch {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        #auth-container .auth-switch a {
+            color: #1a2a4a;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: underline;
+        }
+        #auth-message {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        #auth-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+        #auth-message.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        /* ===== APP ===== */
+        #app {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: #1a2a4a;
+            color: #fff;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .header h1 i {
+            color: #d4a843;
+            margin-right: 10px;
+        }
+        .header .subtitle {
+            font-size: 13px;
+            opacity: 0.8;
+            font-weight: 300;
+        }
+        .header .user-info {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .btn-logout {
+            background: #b33c3c;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-logout:hover {
+            background: #8f2e2e;
+        }
+        .btn-admin {
+            background: #d4a843;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-admin:hover {
+            background: #b8922e;
+        }
+        .toolbar {
+            background: #f8f9fa;
+            padding: 12px 30px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .toolbar-left {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .toolbar-right {
+            display: flex;
+            gap: 8px;
+        }
+        .btn {
+            padding: 7px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1a2a4a;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #0f1d33;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 42, 74, 0.3);
+        }
+        .btn-success {
+            background: #2a7d4f;
+            color: #fff;
+        }
+        .btn-success:hover {
+            background: #1e6340;
+        }
+        .btn-danger {
+            background: #b33c3c;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #8f2e2e;
+        }
+        .btn-outline {
+            background: transparent;
+            color: #1a2a4a;
+            border: 1px solid #1a2a4a;
+        }
+        .btn-outline:hover {
+            background: #1a2a4a;
+            color: #fff;
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+        .btn-remover {
+            background: #b33c3c;
+            color: #fff;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        .btn-remover:hover {
+            background: #8f2e2e;
+        }
+        .btn-agregar {
+            background: #1a2a4a;
+            color: #fff;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-agregar:hover {
+            background: #0f1d33;
+        }
+        .btn-imprimir {
+            background: #1a2a4a;
+            color: #fff;
+        }
+        .btn-imprimir:hover {
+            background: #0f1d33;
+        }
+        .btn-guardar-seccion {
+            background: #2a7d4f;
+            color: #fff;
+        }
+        .btn-guardar-seccion:hover {
+            background: #1e6340;
+        }
+        .btn-resumen {
+            background: #d4a843;
+            color: #fff;
+        }
+        .btn-resumen:hover {
+            background: #b8922e;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #d0d0d0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .search-box input {
+            padding: 6px 12px;
+            border: none;
+            outline: none;
+            font-size: 13px;
+            width: 180px;
+        }
+        .search-box button {
+            background: transparent;
+            border: none;
+            padding: 6px 12px;
+            color: #666;
+            cursor: pointer;
+        }
+        .search-box button:hover {
+            color: #1a2a4a;
+        }
+        .main-content {
+            padding: 15px 25px;
+        }
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1a2a4a;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e8ecf1;
+        }
+        .causa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .causa-card {
+            background: #fff;
+            border: 1px solid #e0e4ea;
+            border-radius: 8px;
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid #1a2a4a;
+            position: relative;
+            overflow: hidden;
+            word-break: break-word;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+        .causa-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-color: #b0b8c4;
+        }
+        .causa-card .numero {
+            font-weight: 700;
+            font-size: 15px;
+            color: #1a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .causa-card .numero .alerta-icon {
+            color: #b33c3c;
+            font-size: 13px;
+        }
+        .causa-card .caratula {
+            font-size: 13px;
+            color: #444;
+            margin-top: 3px;
+            line-height: 1.3;
+        }
+        .causa-card .badge {
+            display: inline-block;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        .badge-activa {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-alimentos {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-alerta {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .badge-precluida {
+            background: #e0e0e0;
+            color: #616161;
+        }
+        .badge-acto-conclusivo {
+            background: #bbdefb;
+            color: #0d47a1;
+        }
+        .badge-estado {
+            display: inline-block;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 12px;
+            margin-top: 3px;
+            font-weight: 500;
+        }
+        .badge-estado.activa {
+            background: #d4edda;
+            color: #155724;
+        }
+        .badge-estado.criterio {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .badge-estado.archivo-provisional {
+            background: #ffe0b2;
+            color: #e65100;
+        }
+        .badge-estado.archivo-definitivo {
+            background: #e0e0e0;
+            color: #616161;
+        }
+        .badge-estado.sobreseimiento {
+            background: #e0e0e0;
+            color: #616161;
+        }
+        .badge-estado.elevacion {
+            background: #bbdefb;
+            color: #0d47a1;
+        }
+        .badge-estado.condenatoria {
+            background: #f8bbd0;
+            color: #880e4f;
+        }
+        .badge-estado.absolutoria {
+            background: #c8e6c9;
+            color: #1b5e20;
+        }
+        .badge-estado.suspension {
+            background: #fff9c4;
+            color: #f57f17;
+        }
+        .badge-estado.acuerdo {
+            background: #d1c4e9;
+            color: #4a148c;
+        }
+        .badge-estado.conciliacion {
+            background: #b2dfdb;
+            color: #004d40;
+        }
+        .badge-estado.remision {
+            background: #b3e5fc;
+            color: #01579b;
+        }
+        .badge-estado.inhibitoria {
+            background: #ffccbc;
+            color: #bf360c;
+        }
+        .badge-estado.otro {
+            background: #cfd8dc;
+            color: #37474f;
+        }
+        .causa-card .eliminar-btn {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: #b0b8c4;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .causa-card .eliminar-btn:hover {
+            color: #b33c3c;
+        }
+        .causa-card .dias-restantes {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+            border-top: 1px dashed #e0e4ea;
+            padding-top: 5px;
+        }
+        .causa-card .dias-restantes.vencido {
+            color: #b33c3c;
+            font-weight: 600;
+        }
+        .causa-card .dias-restantes.proximo {
+            color: #b8860b;
+        }
+        .causa-card .acto-conclusivo-msg {
+            font-size: 11px;
+            color: #0d47a1;
+            margin-top: 5px;
+            border-top: 1px dashed #bbdefb;
+            padding-top: 5px;
+            font-weight: 500;
+            background: #e3f2fd;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .causa-card .prorroga-msg {
+            font-size: 10px;
+            color: #666;
+            margin-top: 3px;
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: #888;
+        }
+        .empty-state i {
+            font-size: 40px;
+            color: #d0d4da;
+            margin-bottom: 12px;
+        }
+        .form-container {
+            display: none;
+            background: #fafbfc;
+            border-radius: 8px;
+            padding: 20px 25px;
+            margin-top: 15px;
+            border: 1px solid #e0e4ea;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .form-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e4ea;
+        }
+        .form-header h2 {
+            font-size: 18px;
+            color: #1a2a4a;
+        }
+        .form-header .btn-cerrar {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            color: #888;
+            cursor: pointer;
+        }
+        .form-header .btn-cerrar:hover {
+            color: #b33c3c;
+        }
+        .form-header .estado-guardado {
+            font-size: 12px;
+            color: #2a7d4f;
+            font-weight: 500;
+        }
+        .tabs {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e0e4ea;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+            border-radius: 3px 3px 0 0;
+        }
+        .tab-btn:hover {
+            color: #1a2a4a;
+            background: #f0f2f5;
+        }
+        .tab-btn.active {
+            color: #1a2a4a;
+            border-bottom-color: #1a2a4a;
+            background: #f0f2f5;
+        }
+        .tab-btn .badge-guardado {
+            display: inline-block;
+            background: #2a7d4f;
+            color: #fff;
+            border-radius: 10px;
+            padding: 0 6px;
+            font-size: 9px;
+            margin-left: 4px;
+        }
+        .tab-pane {
+            display: none;
+            padding: 10px 0;
+            animation: fadeIn 0.3s;
+        }
+        .tab-pane.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px 15px;
+            margin-bottom: 12px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .form-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #444;
+        }
+        .form-group label .required {
+            color: #b33c3c;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 6px 10px;
+            border: 1px solid #d0d4da;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: border 0.2s;
+            background: #fff;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #1a2a4a;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 42, 74, 0.1);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 50px;
+        }
+        .form-group input[readonly] {
+            background: #f0f2f5;
+            color: #333;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-top: 4px;
+            flex-wrap: wrap;
+        }
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .checkbox-group label {
+            cursor: pointer;
+            font-weight: 400;
+            font-size: 13px;
+        }
+        .caratula-preview {
+            background: #e8ecf1;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-weight: 500;
+            color: #1a2a4a;
+            border-left: 4px solid #d4a843;
+            margin-top: 4px;
+            font-size: 13px;
+        }
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f0f2f5;
+            padding: 4px 12px;
+            border-radius: 4px;
+            margin-top: 4px;
+            font-size: 12px;
+        }
+        .list-item .label {
+            color: #333;
+        }
+        .sub-seccion {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e0e4ea;
+            margin-bottom: 15px;
+        }
+        .sub-seccion h4 {
+            color: #1a2a4a;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-bottom: 1px solid #e0e4ea;
+            padding-bottom: 5px;
+        }
+        .sub-seccion.destacada {
+            background: #eef2f7;
+            border-left: 4px solid #d4a843;
+        }
+        .victima-block,
+        .testigo-block {
+            background: #fff;
+            padding: 10px 12px;
+            border-radius: 5px;
+            border: 1px solid #e0e4ea;
+            margin-bottom: 8px;
+        }
+        .victima-block .btn-remover,
+        .testigo-block .btn-remover {
+            float: right;
+        }
+        .footer-seccion {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #e0e4ea;
+        }
+        .footer-seccion .estado {
+            font-size: 12px;
+            color: #888;
+        }
+        .footer-seccion .estado.guardado {
+            color: #2a7d4f;
+        }
+        .cuestionario-section {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #fff;
+            border-radius: 6px;
+            border: 1px solid #e0e4ea;
+        }
+        .cuestionario-section h4 {
+            color: #1a2a4a;
+            margin-bottom: 8px;
+            font-size: 14px;
+            border-bottom: 1px solid #e8ecf1;
+            padding-bottom: 4px;
+        }
+        .cuestionario-pregunta {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px 15px;
+            align-items: center;
+            padding: 4px 0;
+            border-bottom: 1px solid #f0f2f5;
+            font-size: 13px;
+        }
+        .cuestionario-pregunta:last-child {
+            border-bottom: none;
+        }
+        .cuestionario-pregunta select {
+            padding: 3px 8px;
+            border: 1px solid #d0d4da;
+            border-radius: 4px;
+            font-size: 12px;
+            background: #fff;
+            min-width: 140px;
+        }
+        .resultado-riesgo {
+            padding: 12px 16px;
+            border-radius: 5px;
+            margin-top: 12px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .resultado-riesgo.bajo {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+        .resultado-riesgo.medio {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+        .resultado-riesgo.alto {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+        .medidas-proteccion {
+            margin-top: 12px;
+            padding: 12px;
+            background: #fff;
+            border-radius: 5px;
+            border: 1px solid #d0d4da;
+        }
+        .medidas-proteccion h5 {
+            color: #1a2a4a;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+        .medidas-proteccion ul {
+            list-style: none;
+            padding: 0;
+        }
+        .medidas-proteccion ul li {
+            padding: 3px 0;
+            font-size: 12px;
+            padding-left: 18px;
+            position: relative;
+        }
+        .medidas-proteccion ul li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #1a2a4a;
+            font-weight: bold;
+        }
+        .liquidacion-resultado {
+            font-size: 16px;
+            font-weight: 600;
+            padding: 10px 15px;
+            background: #e8ecf1;
+            border-radius: 5px;
+            margin-top: 8px;
+        }
+        .liquidacion-link {
+            margin-top: 12px;
+            padding: 10px 15px;
+            background: #f0f2f5;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+        .liquidacion-link a {
+            color: #1a2a4a;
+            text-decoration: none;
+            word-break: break-all;
+        }
+        .liquidacion-link a:hover {
+            text-decoration: underline;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .text-muted {
+            color: #888;
+            font-size: 12px;
+        }
+        .mt-10 {
+            margin-top: 10px;
+        }
+        .mt-20 {
+            margin-top: 20px;
+        }
+        .mb-10 {
+            margin-bottom: 10px;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .flex-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        #admin-panel {
+            display: none;
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+            border: 1px solid #e0e4ea;
+        }
+        #admin-panel h3 {
+            color: #1a2a4a;
+            margin-bottom: 15px;
+        }
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .user-table th {
+            background: #1a2a4a;
+            color: #fff;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        .user-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e0e4ea;
+            vertical-align: middle;
+        }
+        .user-table .estado-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .estado-badge.pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .estado-badge.aprobado {
+            background: #d4edda;
+            color: #155724;
+        }
+        .estado-badge.rechazado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .user-table .btn-sm {
+            padding: 3px 10px;
+            font-size: 11px;
+            margin: 1px;
+        }
+        .btn-approve {
+            background: #2a7d4f;
+            color: #fff;
+        }
+        .btn-approve:hover {
+            background: #1e6340;
+        }
+        .btn-reject {
+            background: #b33c3c;
+            color: #fff;
+        }
+        .btn-reject:hover {
+            background: #8f2e2e;
+        }
+        .btn-renew {
+            background: #d4a843;
+            color: #fff;
+        }
+        .btn-renew:hover {
+            background: #b8922e;
+        }
+        .alert-card {
+            background: #fff;
+            border: 1px solid #e0e4ea;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        .alert-card-header {
+            background: #f8f9fa;
+            padding: 8px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid #e0e4ea;
+        }
+        .alert-card-header h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #1a2a4a;
+        }
+        .alert-card-body {
+            padding: 10px 14px;
+            display: block;
+            font-size: 13px;
+        }
+        .alert-card-body.collapsed {
+            display: none;
+        }
+        .alert-item {
+            display: flex;
+            padding: 4px 0;
+            border-bottom: 1px solid #f4f6f9;
+            font-size: 13px;
+        }
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+        .alert-item .label {
+            font-weight: 600;
+            color: #555;
+            min-width: 130px;
+        }
+        .alert-item .value {
+            color: #333;
+        }
+        .espacio-firma {
+            margin-top: 15px;
+            padding-top: 12px;
+            border-top: 1px solid #ccc;
+        }
+        .espacio-firma .firma-line {
+            width: 250px;
+            border-bottom: 2px solid #000;
+            margin-top: 8px;
+        }
+        .espacio-firma .firma-texto {
+            font-size: 12px;
+            color: #555;
+            margin-top: 4px;
+        }
+        .diligencias-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 4px 12px;
+            margin-top: 4px;
+        }
+        .diligencia-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+            padding: 2px 0;
+            font-size: 12px;
+        }
+        .diligencia-item input[type="checkbox"] {
+            margin-top: 2px;
+        }
+        .inciso-group {
+            margin: 3px 0 3px 8px;
+            border-left: 2px solid #d4a843;
+            padding-left: 8px;
+        }
+        .inciso-check-label {
+            font-size: 12px;
+            line-height: 1.3;
+        }
+        .numeral-check-label {
+            font-size: 11px;
+            line-height: 1.2;
+            padding-left: 15px;
+            color: #444;
+        }
+        .fundamento-articulo {
+            margin: 6px 0;
+            padding: 5px 10px;
+            background: #f8f9fa;
+            border-left: 3px solid #1a2a4a;
+            border-radius: 4px;
+        }
+        .fundamento-articulo strong {
+            color: #1a2a4a;
+        }
+        .fundamento-articulo .texto-ley {
+            font-size: 12px;
+            color: #333;
+            margin-top: 3px;
+        }
+
+        /* ===== MODALES ===== */
+        #modal-resumen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            padding: 20px;
+        }
+        #modal-resumen .modal-contenido {
+            background: #fff;
+            max-width: 1050px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        #modal-resumen .modal-cerrar {
+            position: absolute;
+            top: 12px;
+            right: 18px;
+            background: transparent;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #888;
+        }
+        #modal-resumen .modal-cerrar:hover {
+            color: #b33c3c;
+        }
+        #modal-resumen pre {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0;
+            line-height: 1.6;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e0e4ea;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        #modal-resumen .modal-footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        #campo-fecha-archivo {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 10px;
+        }
+
+        #modal-reauth {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #modal-reauth .reauth-contenido {
+            background: #fff;
+            max-width: 420px;
+            width: 100%;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        #modal-reauth .reauth-contenido h3 {
+            color: #1a2a4a;
+            margin-bottom: 12px;
+        }
+        #modal-reauth .reauth-contenido p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        #modal-reauth .reauth-contenido input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d0d4da;
+            border-radius: 6px;
+        }
+        #modal-reauth .reauth-contenido .reauth-message {
+            color: #b33c3c;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        #modal-reauth .reauth-contenido .reauth-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .user-table,
+            .user-table tbody,
+            .user-table tr,
+            .user-table td {
+                display: block;
+                width: 100%;
+            }
+            .user-table tr {
+                margin-bottom: 10px;
+                border: 1px solid #ddd;
+                padding: 8px;
+                border-radius: 6px;
+            }
+            .user-table th {
+                display: none;
+            }
+            .user-table td {
+                border: none;
+                padding: 4px 0;
+            }
+            .user-table td:before {
+                content: attr(data-label);
+                font-weight: 600;
+                display: inline-block;
+                width: 120px;
+            }
+            .user-table .acciones {
+                margin-top: 6px;
+            }
+            .cuestionario-pregunta {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 17px;
+            }
+            .header .subtitle {
+                display: none;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar-left,
+            .toolbar-right {
+                justify-content: center;
+            }
+            .causa-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            #modal-resumen .modal-contenido {
+                padding: 15px;
+            }
+            #modal-resumen pre {
+                font-size: 11px;
+                padding: 10px;
+            }
+            #modal-reauth .reauth-contenido {
+                padding: 15px;
+            }
+        }
+
+        /* ===== IMPRESIÓN ===== */
         @media print {
-            @page { size: legal; margin: 1.5cm; }
-            body { background:#fff; padding:0; margin:0; font-size:10pt; }
-            .app-container { box-shadow:none; border-radius:0; max-width:100%; }
-            .header { background:#1a2a4a !important; color:#fff !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; padding:8px 15px; }
-            .header h1 { font-size:14pt; }
-            .header .subtitle { font-size:9pt; }
-            .toolbar, .causa-grid, .tab-btn, .no-print, .btn, .footer-seccion, .search-box, #admin-panel { display:none !important; }
-            .form-container { display:block !important; border:none !important; padding:0 !important; margin:0 !important; background:#fff !important; opacity:1 !important; transform:none !important; }
-            .tab-pane { display:block !important; padding:3px 0 !important; }
-            .tab-pane:not(.active) { display:none !important; }
-            .tab-pane.active { display:block !important; }
-            .form-row { grid-template-columns:1fr 1fr; gap:4px 8px; margin-bottom:4px; }
-            .form-group { margin-bottom:2px; }
-            .form-group label { font-size:9pt; }
-            .form-group input, .form-group select, .form-group textarea { font-size:9pt; padding:3px 6px; border:1px solid #ccc; background:#fff !important; color:#000 !important; }
-            .sub-seccion { background:#f9f9f9 !important; padding:8px; margin-bottom:6px; border:1px solid #ddd; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-            .sub-seccion h4 { font-size:10pt; margin-bottom:4px; border-bottom:1px solid #ccc; }
-            .caratula-preview { background:#f0f0f0 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; padding:6px 10px; }
-            .resultado-riesgo { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-            .list-item { background:#f5f5f5 !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-            .victima-block, .testigo-block { background:#fafafa !important; border:1px solid #ddd; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-            .checkbox-group input[type="checkbox"] { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-            .checkbox-group input[type="checkbox"]:checked { -webkit-appearance:checkbox; appearance:checkbox; }
-            .alert-card { border:1px solid #ddd; margin-bottom:4px; page-break-inside:avoid; }
-            .alert-card-header { background:#f5f5f5 !important; padding:4px 10px; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-            .alert-card-body { padding:4px 10px; }
-            .alert-item { padding:2px 0; font-size:9pt; }
-            .badge { font-size:8pt; padding:1px 5px; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
-            .badge-activa { background:#d4edda !important; color:#155724 !important; }
-            .badge-alimentos { background:#fff3cd !important; color:#856404 !important; }
-            .badge-alerta { background:#f8d7da !important; color:#721c24 !important; }
-            .badge-precluida { background:#e0e0e0 !important; color:#616161 !important; }
-            .badge-acto-conclusivo { background:#bbdefb !important; color:#0d47a1 !important; }
-            .badge-estado { font-size:8pt; }
-            .text-muted { font-size:8pt; }
-            .espacio-firma .firma-line { width:180px; }
-            .informe-header { margin-bottom:10px !important; padding-bottom:8px !important; border-bottom:2px solid #1a2a4a !important; }
-            .informe-header h2 { font-size:14pt; }
-            .main-content { padding:0 !important; margin:0 !important; }
-            .form-container { padding:0 !important; margin:0 !important; }
-            .tab-pane { padding:0 !important; margin:0 !important; }
-            #tab5 { display:block !important; }
-            #tab5 .text-center { display:none !important; }
-            .causa-grid, .empty-state, .toolbar, .no-print { display:none !important; }
-            .form-container .tabs { display:none !important; }
-            .form-container .form-header { margin-bottom:6px !important; padding-bottom:5px !important; }
-            .form-container .form-header .btn-cerrar { display:none !important; }
-            .form-container .form-header .estado-guardado { display:none !important; }
-            .tab-pane { page-break-before:avoid; page-break-after:avoid; }
-            #tab1, #tab2, #tab6 { display:none !important; }
-            #tab5 { display:block !important; }
-            .fundamento-articulo { font-size:8pt; }
-            .fundamento-articulo .texto-ley { font-size:7.5pt; }
-            .resultado-riesgo { font-size:9pt; }
-            .resultado-riesgo span { font-size:10pt; }
-            .liquidacion-resultado { font-size:10pt; }
-            .liquidacion-link { display:none !important; }
-            .diligencia-item { font-size:8pt; padding:1px 0; }
-            #campo-fecha-archivo { display:none !important; }
-            .causa-card .prorroga-msg { display:none; }
-            #modal-reauth { display:none !important; }
+            @page {
+                size: legal;
+                margin: 1.5cm;
+            }
+            body {
+                background: #fff;
+                padding: 0;
+                margin: 0;
+                font-size: 10pt;
+            }
+            .app-container {
+                box-shadow: none;
+                border-radius: 0;
+                max-width: 100%;
+            }
+            .header {
+                background: #1a2a4a !important;
+                color: #fff !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 8px 15px;
+            }
+            .header h1 {
+                font-size: 14pt;
+            }
+            .header .subtitle {
+                font-size: 9pt;
+            }
+            .toolbar,
+            .causa-grid,
+            .tab-btn,
+            .no-print,
+            .btn,
+            .footer-seccion,
+            .search-box,
+            #admin-panel {
+                display: none !important;
+            }
+            .form-container {
+                display: block !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                background: #fff !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            .tab-pane {
+                display: block !important;
+                padding: 3px 0 !important;
+            }
+            .tab-pane:not(.active) {
+                display: none !important;
+            }
+            .tab-pane.active {
+                display: block !important;
+            }
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 4px 8px;
+                margin-bottom: 4px;
+            }
+            .form-group {
+                margin-bottom: 2px;
+            }
+            .form-group label {
+                font-size: 9pt;
+            }
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                font-size: 9pt;
+                padding: 3px 6px;
+                border: 1px solid #ccc;
+                background: #fff !important;
+                color: #000 !important;
+            }
+            .sub-seccion {
+                background: #f9f9f9 !important;
+                padding: 8px;
+                margin-bottom: 6px;
+                border: 1px solid #ddd;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .sub-seccion h4 {
+                font-size: 10pt;
+                margin-bottom: 4px;
+                border-bottom: 1px solid #ccc;
+            }
+            .caratula-preview {
+                background: #f0f0f0 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                padding: 6px 10px;
+            }
+            .resultado-riesgo {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .list-item {
+                background: #f5f5f5 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .victima-block,
+            .testigo-block {
+                background: #fafafa !important;
+                border: 1px solid #ddd;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .checkbox-group input[type="checkbox"] {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .checkbox-group input[type="checkbox"]:checked {
+                -webkit-appearance: checkbox;
+                appearance: checkbox;
+            }
+            .alert-card {
+                border: 1px solid #ddd;
+                margin-bottom: 4px;
+                page-break-inside: avoid;
+            }
+            .alert-card-header {
+                background: #f5f5f5 !important;
+                padding: 4px 10px;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .alert-card-body {
+                padding: 4px 10px;
+            }
+            .alert-item {
+                padding: 2px 0;
+                font-size: 9pt;
+            }
+            .badge {
+                font-size: 8pt;
+                padding: 1px 5px;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .badge-activa {
+                background: #d4edda !important;
+                color: #155724 !important;
+            }
+            .badge-alimentos {
+                background: #fff3cd !important;
+                color: #856404 !important;
+            }
+            .badge-alerta {
+                background: #f8d7da !important;
+                color: #721c24 !important;
+            }
+            .badge-precluida {
+                background: #e0e0e0 !important;
+                color: #616161 !important;
+            }
+            .badge-acto-conclusivo {
+                background: #bbdefb !important;
+                color: #0d47a1 !important;
+            }
+            .badge-estado {
+                font-size: 8pt;
+            }
+            .text-muted {
+                font-size: 8pt;
+            }
+            .espacio-firma .firma-line {
+                width: 180px;
+            }
+            .informe-header {
+                margin-bottom: 10px !important;
+                padding-bottom: 8px !important;
+                border-bottom: 2px solid #1a2a4a !important;
+            }
+            .informe-header h2 {
+                font-size: 14pt;
+            }
+            .main-content {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .form-container {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .tab-pane {
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            #tab5 {
+                display: block !important;
+            }
+            #tab5 .text-center {
+                display: none !important;
+            }
+            .causa-grid,
+            .empty-state,
+            .toolbar,
+            .no-print {
+                display: none !important;
+            }
+            .form-container .tabs {
+                display: none !important;
+            }
+            .form-container .form-header {
+                margin-bottom: 6px !important;
+                padding-bottom: 5px !important;
+            }
+            .form-container .form-header .btn-cerrar {
+                display: none !important;
+            }
+            .form-container .form-header .estado-guardado {
+                display: none !important;
+            }
+            .tab-pane {
+                page-break-before: avoid;
+                page-break-after: avoid;
+            }
+            #tab1,
+            #tab2,
+            #tab6 {
+                display: none !important;
+            }
+            #tab5 {
+                display: block !important;
+            }
+            .fundamento-articulo {
+                font-size: 8pt;
+            }
+            .fundamento-articulo .texto-ley {
+                font-size: 7.5pt;
+            }
+            .resultado-riesgo {
+                font-size: 9pt;
+            }
+            .resultado-riesgo span {
+                font-size: 10pt;
+            }
+            .liquidacion-resultado {
+                font-size: 10pt;
+            }
+            .liquidacion-link {
+                display: none !important;
+            }
+            .diligencia-item {
+                font-size: 8pt;
+                padding: 1px 0;
+            }
+            #campo-fecha-archivo {
+                display: none !important;
+            }
+            .causa-card .prorroga-msg {
+                display: none;
+            }
+            #modal-reauth {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
+
+    <!-- ============================================================ -->
     <!-- ===== AUTENTICACIÓN ===== -->
+    <!-- ============================================================ -->
     <div id="auth-container">
         <img src="logo.png" alt="Ministerio Público" style="display:block;margin:0 auto 15px;max-width:200px;height:auto;" onerror="this.style.display='none'">
         <h2><i class="fas fa-gavel" style="color:#d4a843;"></i> MP</h2>
@@ -338,7 +1551,9 @@
         </div>
     </div>
 
+    <!-- ============================================================ -->
     <!-- ===== SISTEMA PRINCIPAL ===== -->
+    <!-- ============================================================ -->
     <div id="app">
         <!-- HEADER -->
         <header class="header">
@@ -775,9 +1990,9 @@
         let riesgoPuntaje = 0;
         let riesgoNivel = '';
         let causaActualId = null;
-        let seccionesGuardadas = { tab1:false, tab2:false, tab3:false, tab4:false };
+        let seccionesGuardadas = { tab1: false, tab2: false, tab3: false, tab4: false };
         let authMode = 'login';
-        let reauthCallback = null;
+        let reauthAccion = null; // { tipo: 'single', id: '...' } o { tipo: 'all' }
 
         const ESTADOS_ACTO_CONCLUSIVO = [
             'criterio-oportunidad',
@@ -799,57 +2014,165 @@
         // ================================================================
         const CONFIG = {
             hechos: {
-                '128': { label:'Art. 128 – Coacción sexual y violación', modificaciones: [{ ley:'Ley Nº 7394/2024', fecha:'2024', descripcion:'Modificación integral del artículo 128.' }], incisos: [ { id:'128-1', label:'1° El que, mediante fuerza o amenaza con peligro presente para la vida o la integridad física, coaccionara a otro a padecer en su persona actos sexuales, o a realizar tales actos en sí mismo o con terceros, será castigado con pena privativa de libertad de hasta diez años.' }, { id:'128-2', label:'2° Cuando la víctima haya sido violada, coaccionándosela al coito con el autor o con terceros, la pena privativa de libertad será de tres a doce años.' }, { id:'128-3', label:'3° Cuando la victima del coito haya sido una persona no menor de catorce años ni mayor de edad, la pena privativa de libertad será de tres a quince años.' }, { id:'128-4', label:'4° La pena podrá ser atenuada con arreglo al artículo 67 de la Ley N° 1160/1997 “CODIGO PENAL”, cuando de la relación de la víctima con el autor, surgieren considerables circunstancias que lo ameriten.' }, { id:'128-5', label:'5° A los efectos de la presente ley se entenderán como:', numerales: [ { id:'128-5-1', label:'1. actos sexuales, aquellos que sean manifiestamente relevantes contra la autonomía sexual, o tratándose de niños, la indemnidad sexual;' }, { id:'128-5-2', label:'2. actos sexuales realizados ante otro, aquellos en el sentido del numeral anterior que el otro percibiera a través de sus sentidos:' }, { id:'128-5-3', label:'3. coito, el acceso carnal por vía vaginal, anal o bucal, o la introducción de miembros corporales u objetos por alguna de las dos primeras vías.' } ] } ], tipo:'multiple', texto: 'Artículo 128.- Coacción sexual y violación. (Texto según Ley Nº 7394/2024)' },
-                '135': { label:'Art. 135 – Abuso sexual en niños', modificaciones: [{ ley:'Ley Nº 7394/2024', fecha:'2024', descripcion:'Modificación integral del artículo 135.' }], incisos: [ { id:'135-1', label:'1° El que realizara actos sexuales con un niño, o lo indujera a realizarlos en sí mismo o a terceros, será castigado con pena privativa de libertad de cinco a dieciocho años. Con la misma pena será castigado el que realizara actos sexuales manifiestamente relevantes ante un niño y dirigidos a él, o lo indujera a realizarlos ante sí o ante terceros.' }, { id:'135-2', label:'2° En los casos señalados en el inciso anterior, la pena privativa de libertad será de diez a veinte años cuando el autor:', numerales: [ { id:'135-2-1', label:'1. al realizar el hecho haya maltratado físicamente o psicológicamente a la víctima;' }, { id:'135-2-2', label:'2. haya abusado de la víctima en más de una ocasión;' }, { id:'135-2-3', label:'3. haya cometido el hecho con un niño que sea su hijo biológico, adoptivo o hijastro, o con un niño de su entorno cercano o cuya educación, cuidado, protección, tutela o guarda esté a su cargo;' }, { id:'135-2-4', label:'4. haya cometido el hecho aprovechándose de una relación de superioridad o de la afinidad en la familia o del estado de vulnerabilidad de la víctima;' }, { id:'135-2-5', label:'5. haya realizado el hecho con una o más personas;' }, { id:'135-2-6', label:'6. haya filmado, fotografiado o registrado el hecho por cualquier medio;' }, { id:'135-2-7', label:'7. haya suministrado a la víctima sustancias tóxicas, estupefacientes o alcohol;' }, { id:'135-2-8', label:'8. haya empleado armas o medios que pongan en riesgo la vida de la víctima.' } ] }, { id:'135-3', label:'3° Cuando concurra más de una circunstancia de las señaladas en el inciso 2°, el autor será castigado con pena privativa de libertad de quince a veinticinco años.' }, { id:'135-4', label:'4° En los casos señalados en el inciso 1°, la pena privativa de libertad no será menor de quince años cuando el autor haya realizado el coito con la víctima. En caso de que la víctima sea menor de diez años, la pena no será menor de veinte años.' }, { id:'135-5', label:'5° A los efectos de este artículo:', numerales: [ { id:'135-5-1', label:'1. se entenderá por niño, a los efectos de este capítulo, la persona que no haya cumplido catorce años de edad;' }, { id:'135-5-2', label:'2. se entenderá por “entorno cercano”, a los efectos de este artículo, a los padres, padrastros, abuelos, abuelastros, hermanos, hermanastros, tíos, primos; así como a cualquier persona cuya educación, cuidado, protección, tutela o guarda del niño este a su cargo;' }, { id:'135-5-3', label:'3. se entenderá por “afinidad en la familia”, el vínculo estrecho y continuo que se manifiesta en la convivencia, cuidado, protección, relación afectiva que incluye a cualquier persona que frecuente el ámbito del niño, sea pariente o no.' } ] }, { id:'135-6', label:'6° A los autores del hecho se les aplicará penas complementarias y adicionales establecidas en los artículos 57 y 59 de la Ley N° 1160/1997 “CODIGO PENAL”.' } ], tipo:'multiple', texto: 'Artículo 135.- Abuso sexual en niños. (Texto según Ley Nº 7394/2024)' },
-                '135b': { label:'Art. 135 b) – Abuso sexual por medios tecnológicos', modificaciones: [{ ley:'Ley Nº 7394/2024', fecha:'2024', descripcion:'Creación del artículo 135 b) sobre abuso sexual por medios tecnológicos.' }], incisos: [ { id:'135b-1', label:'1° El que por cualquier medio electrónico de telecomunicaciones u otra tecnología de transmisión de datos, contacte con un niño y le proponga mantener o mantenga una comunicación de índole sexual o le solicite o exija de cualquier modo, que realice actos sexuales en sí mismo o con un tercero o que le envíe imagen o material audiovisual de sí mismo o de un tercero con contenido sexual, o facilite o muestre al niño material pornográfico, será castigado con pena privativa de libertad de tres a cinco años. La pena privativa de libertad será de tres a ocho años, cuando mediare coacción, intimidación o engaño.' }, { id:'135b-2', label:'2° Cuando el autor proponga al niño concertar un encuentro o acercamiento físico a fin de realizar actos sexuales, sea con el autor, el niño en sí mismo o a un tercero, siempre que la propuesta se acompañe de actos materiales encaminados al acercamiento; la pena privativa de libertad será de tres a ocho años. La pena privativa de libertad será de cinco a diez años, cuando el acercamiento se obtenga mediante coacción, intimidación o engaño.' }, { id:'135b-3', label:'3° Sera castigada también la tentativa.' } ], tipo:'multiple', texto: 'Artículo 135 b).- Abuso sexual por medios tecnológicos. (Texto según Ley Nº 7394/2024)' },
-                '137': { label:'Art. 137 – Estupro', modificaciones: [], incisos: [], tipo:'ninguno', texto: 'Artículo 137.- Estupro. El que, abusando de la inexperiencia o de la ignorancia de una persona mayor de catorce años y menor de dieciocho, la indujere a actos de significación sexual, será castigado con pena privativa de libertad de uno a cuatro años.' },
-                '229': { label:'Art. 229 – Violencia familiar', modificaciones: [{ ley:'Ley Nº 6934/2022', fecha:'2022', descripcion:'Modificación del artículo 229. Ampliación del ámbito familiar y agravantes.' }], incisos: [ { id:'229-1', label:'1° El que, aprovechándose del ámbito familiar, ejerciera actos de violencia física o psicológica sobre: 1. Quien sea o hubiese sido su cónyuge, concubino, pareja sentimental, o contra quien se hubiese negado a restablecer una relación de pareja. 2. Sus parientes hasta el cuarto grado de consanguinidad, segundo de afinidad o por adopción, será castigado con pena privativa de libertad de uno a seis años. Se entenderá por “Ámbito Familiar” a los efectos de este artículo, a los parientes sean por consanguinidad o por afinidad, al cónyuge o conviviente y a la pareja sentimental. Este vínculo incluye a las relaciones vigentes o finalizadas, no siendo requisito la convivencia.' }, { id:'229-2', label:'2° Igual pena se impondrá al que ejerciera los mismos actos sobre: 1. El niño, niña o adolescente con quien conviva y esté bajo su guarda o tutela sin vínculo de parentesco o en abrigo. 2. La persona bajo su curatela con quien conviva. 3. La persona adulta mayor o con discapacidad, con quien conviva en un ámbito familiar, sin que exista vínculo de parentesco.' }, { id:'229-3', label:'3° La pena podrá ser aumentada hasta ocho años: 1. Cuando el autor fuese reincidente o hubiese tenido una salida alternativa que implique reconocimiento del mismo hecho punible. 2. Cuando el acto de violencia se realizare en contra de niños, niñas y adolescentes o en su presencia. 3. Cuando el autor utilizara un arma u otro instrumento para ejercer violencia física o psicológica contra la víctima. 4. Cuando los actos tengan lugar en el domicilio común o en el domicilio de la víctima.' }, { id:'229-4', label:'4° Cuando los actos de violencia física pudieran configurarse como lesiones graves, se aplicará la pena correspondiente al Art. 112.' } ], tipo:'multiple', texto: 'Artículo 229.- Violencia familiar. (Texto según Ley Nº 6934/2022)' },
-                '225': { label:'Art. 225 – Incumplimiento del deber legal alimentario', modificaciones: [], incisos: [ { id:'225-1', label:'Inciso 1 – Incumplimiento de deber legal (hasta 2 años)' }, { id:'225-2', label:'Inciso 2 – Incumplimiento de convenio judicial (hasta 5 años)' } ], tipo:'multiple', texto: 'Artículo 225.- Incumplimiento del deber legal alimentario. El que, pudiendo cumplir, no proveyere a la subsistencia de su cónyuge, concubino, ascendiente, descendiente o hermano, será castigado con pena privativa de libertad de uno a dos años. Si el incumplimiento afectare a un convenio judicial, la pena será de dos a cinco años.' },
-                '166': { label:'Art. 166 – Hurto', modificaciones: [], incisos: [ { id:'166-1', label:'1° El que se apoderare de una cosa mueble ajena, sin la voluntad de su dueño, será castigado con pena privativa de libertad de uno a cinco años.' }, { id:'166-2', label:'2° Si el valor de la cosa sustraída excediere de cuarenta jornales mínimos para actividades diversas no especificadas, la pena será de dos a seis años.' }, { id:'166-3', label:'3° Si la cosa sustraída tuviere valor científico, histórico o artístico, la pena será de dos a cinco años.' } ], tipo:'multiple', texto: 'Artículo 166.- Hurto. El que se apoderare de una cosa mueble ajena, sin la voluntad de su dueño, será castigado con pena privativa de libertad de uno a cinco años.' },
-                '166ag': { label:'Art. 166 – Hurto agravado', modificaciones: [], incisos: [ { id:'166ag-1', label:'1° Con escalamiento (pena de 2 a 8 años).' }, { id:'166ag-2', label:'2° Mediante fractura de paredes, techos o cerraduras (pena de 2 a 8 años).' }, { id:'166ag-3', label:'3° Empleando llaves falsas o instrumentos para forzar cerraduras (pena de 2 a 8 años).' }, { id:'166ag-4', label:'4° Utilizando a menores de edad para cometer el hecho (pena de 3 a 10 años).' } ], tipo:'multiple', texto: 'Artículo 166 (agravado).- Hurto agravado. Será castigado con pena privativa de libertad de dos a ocho años, el que cometiere hurto con escalamiento, fractura, empleo de llaves falsas o utilizando a menores de edad.' },
-                '167': { label:'Art. 167 – Robo', modificaciones: [], incisos: [ { id:'167-1', label:'1° El que, mediante violencia o intimidación, se apoderare de una cosa mueble ajena, será castigado con pena privativa de libertad de dos a diez años.' }, { id:'167-2', label:'2° Si como consecuencia de la violencia resultaren lesiones graves, la pena será de tres a doce años.' } ], tipo:'multiple', texto: 'Artículo 167.- Robo. El que, mediante violencia o intimidación, se apoderare de una cosa mueble ajena, será castigado con pena privativa de libertad de dos a diez años.' },
-                '168': { label:'Art. 168 – Robo agravado', modificaciones: [], incisos: [ { id:'168-1', label:'1° Con armas (pena de 5 a 15 años).' }, { id:'168-2', label:'2° En banda (pena de 5 a 15 años).' }, { id:'168-3', label:'3° Si resultare la muerte de la víctima (pena de 10 a 25 años).' } ], tipo:'multiple', texto: 'Artículo 168.- Robo agravado. Será castigado con pena privativa de libertad de cinco a quince años, el que cometiere robo con armas, en banda, o si resultare la muerte de la víctima.' },
-                '111': { label:'Art. 111 – Lesión grave', modificaciones: [], incisos: [ { id:'111-1', label:'1° Deformidad (pena de 2 a 8 años).' }, { id:'111-2', label:'2° Enfermedad incurable (pena de 2 a 8 años).' }, { id:'111-3', label:'3° Pérdida de algún sentido, órgano o miembro (pena de 3 a 10 años).' }, { id:'111-4', label:'4° Peligro para la vida (pena de 3 a 10 años).' } ], tipo:'multiple', texto: 'Artículo 111.- Lesión grave. Será castigado con pena privativa de libertad de dos a diez años, el que causare a otro una lesión que le produzca deformidad, enfermedad incurable, pérdida de algún sentido, órgano o miembro, o peligro para la vida.' },
-                '105': { label:'Art. 105 – Homicidio doloso', modificaciones: [], incisos: [ { id:'105-1', label:'1° El que matare a otro será castigado con pena privativa de libertad de cinco a quince años.' }, { id:'105-2', label:'2° Con alevosía o ensañamiento (pena de 10 a 25 años).' } ], tipo:'multiple', texto: 'Artículo 105.- Homicidio doloso. El que matare a otro será castigado con pena privativa de libertad de cinco a quince años.' },
-                '106': { label:'Art. 106 – Homicidio culposo', modificaciones: [], incisos: [ { id:'106-1', label:'1° El que por imprudencia, negligencia, impericia en su arte o profesión, o inobservancia de los reglamentos, causare la muerte de otro, será castigado con pena privativa de libertad de uno a cinco años.' }, { id:'106-2', label:'2° El plazo de inhabilitación será de uno a tres años.' } ], tipo:'multiple', texto: 'Artículo 106.- Homicidio culposo. El que por imprudencia, negligencia, impericia en su arte o profesión, o inobservancia de los reglamentos, causare la muerte de otro, será castigado con pena privativa de libertad de uno a cinco años.' },
-                '173': { label:'Art. 173 – Estafa', modificaciones: [], incisos: [ { id:'173-1', label:'1° El que, mediante engaño, se hiciere dar, recibiere o percibiere dinero, cosas o valores, o hiciere suscribir un documento que produzca algún efecto jurídico, será castigado con pena privativa de libertad de uno a cinco años.' }, { id:'173-2', label:'2° Si la estafa se cometiere por medios informáticos o telemáticos, la pena será de dos a seis años.' } ], tipo:'multiple', texto: 'Artículo 173.- Estafa. El que, mediante engaño, se hiciere dar, recibiere o percibiere dinero, cosas o valores, o hiciere suscribir un documento que produzca algún efecto jurídico, será castigado con pena privativa de libertad de uno a cinco años.' },
-                '175': { label:'Art. 175 – Apropiación', modificaciones: [], incisos: [ { id:'175-1', label:'1° El que se apoderare de una cosa mueble ajena que le hubiere sido confiada en custodia, depósito o administración, será castigado con pena privativa de libertad de uno a cuatro años.' }, { id:'175-2', label:'2° Si el valor de la cosa excediere de cuarenta jornales, la pena será de dos a seis años.' } ], tipo:'multiple', texto: 'Artículo 175.- Apropiación. El que se apoderare de una cosa mueble ajena que le hubiere sido confiada en custodia, depósito o administración, será castigado con pena privativa de libertad de uno a cuatro años.' },
-                '212': { label:'Art. 212 – Producción de documentos públicos de contenido falso', modificaciones: [], incisos: [ { id:'212-1', label:'1° El que, con el fin de hacerlos valer como auténticos, hiciere, en todo o en parte, un documento público falso, será castigado con pena privativa de libertad de dos a ocho años.' }, { id:'212-2', label:'2° El que hiciere uso de un documento público falso será castigado con la misma pena.' } ], tipo:'multiple', texto: 'Artículo 212.- Falsificación de documentos públicos. El que, con el fin de hacerlos valer como auténticos, hiciere, en todo o en parte, un documento público falso, será castigado con pena privativa de libertad de dos a ocho años.' },
-                '126': { label:'Art. 126 – Coacción', modificaciones: [], incisos: [ { id:'126-1', label:'1° El que, mediante amenaza, forzare a otro a hacer, no hacer o tolerar algo, será castigado con pena privativa de libertad de uno a tres años.' }, { id:'126-2', label:'2° Si la coacción se ejerciere mediante privación de libertad, la pena será de dos a cuatro años.' } ], tipo:'multiple', texto: 'Artículo 126.- Coacción. El que, mediante amenaza, forzare a otro a hacer, no hacer o tolerar algo, será castigado con pena privativa de libertad de uno a tres años.' },
-                '127': { label:'Art. 127 – Coacción grave', modificaciones: [], incisos: [ { id:'127-1', label:'1° Si la coacción se ejerciere mediante violencia física, la pena será de dos a cinco años.' } ], tipo:'multiple', texto: 'Artículo 127.- Coacción grave. Si la coacción se ejerciere mediante violencia física, la pena será de dos a cinco años.' }
+                '128': {
+                    label: 'Art. 128 – Coacción sexual y violación',
+                    modificaciones: [{ ley: 'Ley Nº 7394/2024', fecha: '2024', descripcion: 'Modificación integral del artículo 128.' }],
+                    incisos: [{ id: '128-1', label: '1° El que, mediante fuerza o amenaza con peligro presente para la vida o la integridad física, coaccionara a otro a padecer en su persona actos sexuales, o a realizar tales actos en sí mismo o con terceros, será castigado con pena privativa de libertad de hasta diez años.' }, { id: '128-2', label: '2° Cuando la víctima haya sido violada, coaccionándosela al coito con el autor o con terceros, la pena privativa de libertad será de tres a doce años.' }, { id: '128-3', label: '3° Cuando la victima del coito haya sido una persona no menor de catorce años ni mayor de edad, la pena privativa de libertad será de tres a quince años.' }, { id: '128-4', label: '4° La pena podrá ser atenuada con arreglo al artículo 67 de la Ley N° 1160/1997 “CODIGO PENAL”, cuando de la relación de la víctima con el autor, surgieren considerables circunstancias que lo ameriten.' }, { id: '128-5', label: '5° A los efectos de la presente ley se entenderán como:', numerales: [{ id: '128-5-1', label: '1. actos sexuales, aquellos que sean manifiestamente relevantes contra la autonomía sexual, o tratándose de niños, la indemnidad sexual;' }, { id: '128-5-2', label: '2. actos sexuales realizados ante otro, aquellos en el sentido del numeral anterior que el otro percibiera a través de sus sentidos:' }, { id: '128-5-3', label: '3. coito, el acceso carnal por vía vaginal, anal o bucal, o la introducción de miembros corporales u objetos por alguna de las dos primeras vías.' }] }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 128.- Coacción sexual y violación. (Texto según Ley Nº 7394/2024)'
+                },
+                '135': {
+                    label: 'Art. 135 – Abuso sexual en niños',
+                    modificaciones: [{ ley: 'Ley Nº 7394/2024', fecha: '2024', descripcion: 'Modificación integral del artículo 135.' }],
+                    incisos: [{ id: '135-1', label: '1° El que realizara actos sexuales con un niño, o lo indujera a realizarlos en sí mismo o a terceros, será castigado con pena privativa de libertad de cinco a dieciocho años. Con la misma pena será castigado el que realizara actos sexuales manifiestamente relevantes ante un niño y dirigidos a él, o lo indujera a realizarlos ante sí o ante terceros.' }, { id: '135-2', label: '2° En los casos señalados en el inciso anterior, la pena privativa de libertad será de diez a veinte años cuando el autor:', numerales: [{ id: '135-2-1', label: '1. al realizar el hecho haya maltratado físicamente o psicológicamente a la víctima;' }, { id: '135-2-2', label: '2. haya abusado de la víctima en más de una ocasión;' }, { id: '135-2-3', label: '3. haya cometido el hecho con un niño que sea su hijo biológico, adoptivo o hijastro, o con un niño de su entorno cercano o cuya educación, cuidado, protección, tutela o guarda esté a su cargo;' }, { id: '135-2-4', label: '4. haya cometido el hecho aprovechándose de una relación de superioridad o de la afinidad en la familia o del estado de vulnerabilidad de la víctima;' }, { id: '135-2-5', label: '5. haya realizado el hecho con una o más personas;' }, { id: '135-2-6', label: '6. haya filmado, fotografiado o registrado el hecho por cualquier medio;' }, { id: '135-2-7', label: '7. haya suministrado a la víctima sustancias tóxicas, estupefacientes o alcohol;' }, { id: '135-2-8', label: '8. haya empleado armas o medios que pongan en riesgo la vida de la víctima.' }] }, { id: '135-3', label: '3° Cuando concurra más de una circunstancia de las señaladas en el inciso 2°, el autor será castigado con pena privativa de libertad de quince a veinticinco años.' }, { id: '135-4', label: '4° En los casos señalados en el inciso 1°, la pena privativa de libertad no será menor de quince años cuando el autor haya realizado el coito con la víctima. En caso de que la víctima sea menor de diez años, la pena no será menor de veinte años.' }, { id: '135-5', label: '5° A los efectos de este artículo:', numerales: [{ id: '135-5-1', label: '1. se entenderá por niño, a los efectos de este capítulo, la persona que no haya cumplido catorce años de edad;' }, { id: '135-5-2', label: '2. se entenderá por “entorno cercano”, a los efectos de este artículo, a los padres, padrastros, abuelos, abuelastros, hermanos, hermanastros, tíos, primos; así como a cualquier persona cuya educación, cuidado, protección, tutela o guarda del niño este a su cargo;' }, { id: '135-5-3', label: '3. se entenderá por “afinidad en la familia”, el vínculo estrecho y continuo que se manifiesta en la convivencia, cuidado, protección, relación afectiva que incluye a cualquier persona que frecuente el ámbito del niño, sea pariente o no.' }] }, { id: '135-6', label: '6° A los autores del hecho se les aplicará penas complementarias y adicionales establecidas en los artículos 57 y 59 de la Ley N° 1160/1997 “CODIGO PENAL”.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 135.- Abuso sexual en niños. (Texto según Ley Nº 7394/2024)'
+                },
+                '135b': {
+                    label: 'Art. 135 b) – Abuso sexual por medios tecnológicos',
+                    modificaciones: [{ ley: 'Ley Nº 7394/2024', fecha: '2024', descripcion: 'Creación del artículo 135 b) sobre abuso sexual por medios tecnológicos.' }],
+                    incisos: [{ id: '135b-1', label: '1° El que por cualquier medio electrónico de telecomunicaciones u otra tecnología de transmisión de datos, contacte con un niño y le proponga mantener o mantenga una comunicación de índole sexual o le solicite o exija de cualquier modo, que realice actos sexuales en sí mismo o con un tercero o que le envíe imagen o material audiovisual de sí mismo o de un tercero con contenido sexual, o facilite o muestre al niño material pornográfico, será castigado con pena privativa de libertad de tres a cinco años. La pena privativa de libertad será de tres a ocho años, cuando mediare coacción, intimidación o engaño.' }, { id: '135b-2', label: '2° Cuando el autor proponga al niño concertar un encuentro o acercamiento físico a fin de realizar actos sexuales, sea con el autor, el niño en sí mismo o a un tercero, siempre que la propuesta se acompañe de actos materiales encaminados al acercamiento; la pena privativa de libertad será de tres a ocho años. La pena privativa de libertad será de cinco a diez años, cuando el acercamiento se obtenga mediante coacción, intimidación o engaño.' }, { id: '135b-3', label: '3° Sera castigada también la tentativa.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 135 b).- Abuso sexual por medios tecnológicos. (Texto según Ley Nº 7394/2024)'
+                },
+                '137': { label: 'Art. 137 – Estupro', modificaciones: [], incisos: [], tipo: 'ninguno', texto: 'Artículo 137.- Estupro. El que, abusando de la inexperiencia o de la ignorancia de una persona mayor de catorce años y menor de dieciocho, la indujere a actos de significación sexual, será castigado con pena privativa de libertad de uno a cuatro años.' },
+                '229': {
+                    label: 'Art. 229 – Violencia familiar',
+                    modificaciones: [{ ley: 'Ley Nº 6934/2022', fecha: '2022', descripcion: 'Modificación del artículo 229. Ampliación del ámbito familiar y agravantes.' }],
+                    incisos: [{ id: '229-1', label: '1° El que, aprovechándose del ámbito familiar, ejerciera actos de violencia física o psicológica sobre: 1. Quien sea o hubiese sido su cónyuge, concubino, pareja sentimental, o contra quien se hubiese negado a restablecer una relación de pareja. 2. Sus parientes hasta el cuarto grado de consanguinidad, segundo de afinidad o por adopción, será castigado con pena privativa de libertad de uno a seis años. Se entenderá por “Ámbito Familiar” a los efectos de este artículo, a los parientes sean por consanguinidad o por afinidad, al cónyuge o conviviente y a la pareja sentimental. Este vínculo incluye a las relaciones vigentes o finalizadas, no siendo requisito la convivencia.' }, { id: '229-2', label: '2° Igual pena se impondrá al que ejerciera los mismos actos sobre: 1. El niño, niña o adolescente con quien conviva y esté bajo su guarda o tutela sin vínculo de parentesco o en abrigo. 2. La persona bajo su curatela con quien conviva. 3. La persona adulta mayor o con discapacidad, con quien conviva en un ámbito familiar, sin que exista vínculo de parentesco.' }, { id: '229-3', label: '3° La pena podrá ser aumentada hasta ocho años: 1. Cuando el autor fuese reincidente o hubiese tenido una salida alternativa que implique reconocimiento del mismo hecho punible. 2. Cuando el acto de violencia se realizare en contra de niños, niñas y adolescentes o en su presencia. 3. Cuando el autor utilizara un arma u otro instrumento para ejercer violencia física o psicológica contra la víctima. 4. Cuando los actos tengan lugar en el domicilio común o en el domicilio de la víctima.' }, { id: '229-4', label: '4° Cuando los actos de violencia física pudieran configurarse como lesiones graves, se aplicará la pena correspondiente al Art. 112.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 229.- Violencia familiar. (Texto según Ley Nº 6934/2022)'
+                },
+                '225': {
+                    label: 'Art. 225 – Incumplimiento del deber legal alimentario',
+                    modificaciones: [],
+                    incisos: [{ id: '225-1', label: 'Inciso 1 – Incumplimiento de deber legal (hasta 2 años)' }, { id: '225-2', label: 'Inciso 2 – Incumplimiento de convenio judicial (hasta 5 años)' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 225.- Incumplimiento del deber legal alimentario. El que, pudiendo cumplir, no proveyere a la subsistencia de su cónyuge, concubino, ascendiente, descendiente o hermano, será castigado con pena privativa de libertad de uno a dos años. Si el incumplimiento afectare a un convenio judicial, la pena será de dos a cinco años.'
+                },
+                '166': {
+                    label: 'Art. 166 – Hurto',
+                    modificaciones: [],
+                    incisos: [{ id: '166-1', label: '1° El que se apoderare de una cosa mueble ajena, sin la voluntad de su dueño, será castigado con pena privativa de libertad de uno a cinco años.' }, { id: '166-2', label: '2° Si el valor de la cosa sustraída excediere de cuarenta jornales mínimos para actividades diversas no especificadas, la pena será de dos a seis años.' }, { id: '166-3', label: '3° Si la cosa sustraída tuviere valor científico, histórico o artístico, la pena será de dos a cinco años.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 166.- Hurto. El que se apoderare de una cosa mueble ajena, sin la voluntad de su dueño, será castigado con pena privativa de libertad de uno a cinco años.'
+                },
+                '166ag': {
+                    label: 'Art. 166 – Hurto agravado',
+                    modificaciones: [],
+                    incisos: [{ id: '166ag-1', label: '1° Con escalamiento (pena de 2 a 8 años).' }, { id: '166ag-2', label: '2° Mediante fractura de paredes, techos o cerraduras (pena de 2 a 8 años).' }, { id: '166ag-3', label: '3° Empleando llaves falsas o instrumentos para forzar cerraduras (pena de 2 a 8 años).' }, { id: '166ag-4', label: '4° Utilizando a menores de edad para cometer el hecho (pena de 3 a 10 años).' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 166 (agravado).- Hurto agravado. Será castigado con pena privativa de libertad de dos a ocho años, el que cometiere hurto con escalamiento, fractura, empleo de llaves falsas o utilizando a menores de edad.'
+                },
+                '167': {
+                    label: 'Art. 167 – Robo',
+                    modificaciones: [],
+                    incisos: [{ id: '167-1', label: '1° El que, mediante violencia o intimidación, se apoderare de una cosa mueble ajena, será castigado con pena privativa de libertad de dos a diez años.' }, { id: '167-2', label: '2° Si como consecuencia de la violencia resultaren lesiones graves, la pena será de tres a doce años.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 167.- Robo. El que, mediante violencia o intimidación, se apoderare de una cosa mueble ajena, será castigado con pena privativa de libertad de dos a diez años.'
+                },
+                '168': {
+                    label: 'Art. 168 – Robo agravado',
+                    modificaciones: [],
+                    incisos: [{ id: '168-1', label: '1° Con armas (pena de 5 a 15 años).' }, { id: '168-2', label: '2° En banda (pena de 5 a 15 años).' }, { id: '168-3', label: '3° Si resultare la muerte de la víctima (pena de 10 a 25 años).' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 168.- Robo agravado. Será castigado con pena privativa de libertad de cinco a quince años, el que cometiere robo con armas, en banda, o si resultare la muerte de la víctima.'
+                },
+                '111': {
+                    label: 'Art. 111 – Lesión grave',
+                    modificaciones: [],
+                    incisos: [{ id: '111-1', label: '1° Deformidad (pena de 2 a 8 años).' }, { id: '111-2', label: '2° Enfermedad incurable (pena de 2 a 8 años).' }, { id: '111-3', label: '3° Pérdida de algún sentido, órgano o miembro (pena de 3 a 10 años).' }, { id: '111-4', label: '4° Peligro para la vida (pena de 3 a 10 años).' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 111.- Lesión grave. Será castigado con pena privativa de libertad de dos a diez años, el que causare a otro una lesión que le produzca deformidad, enfermedad incurable, pérdida de algún sentido, órgano o miembro, o peligro para la vida.'
+                },
+                '105': {
+                    label: 'Art. 105 – Homicidio doloso',
+                    modificaciones: [],
+                    incisos: [{ id: '105-1', label: '1° El que matare a otro será castigado con pena privativa de libertad de cinco a quince años.' }, { id: '105-2', label: '2° Con alevosía o ensañamiento (pena de 10 a 25 años).' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 105.- Homicidio doloso. El que matare a otro será castigado con pena privativa de libertad de cinco a quince años.'
+                },
+                '106': {
+                    label: 'Art. 106 – Homicidio culposo',
+                    modificaciones: [],
+                    incisos: [{ id: '106-1', label: '1° El que por imprudencia, negligencia, impericia en su arte o profesión, o inobservancia de los reglamentos, causare la muerte de otro, será castigado con pena privativa de libertad de uno a cinco años.' }, { id: '106-2', label: '2° El plazo de inhabilitación será de uno a tres años.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 106.- Homicidio culposo. El que por imprudencia, negligencia, impericia en su arte o profesión, o inobservancia de los reglamentos, causare la muerte de otro, será castigado con pena privativa de libertad de uno a cinco años.'
+                },
+                '173': {
+                    label: 'Art. 173 – Estafa',
+                    modificaciones: [],
+                    incisos: [{ id: '173-1', label: '1° El que, mediante engaño, se hiciere dar, recibiere o percibiere dinero, cosas o valores, o hiciere suscribir un documento que produzca algún efecto jurídico, será castigado con pena privativa de libertad de uno a cinco años.' }, { id: '173-2', label: '2° Si la estafa se cometiere por medios informáticos o telemáticos, la pena será de dos a seis años.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 173.- Estafa. El que, mediante engaño, se hiciere dar, recibiere o percibiere dinero, cosas o valores, o hiciere suscribir un documento que produzca algún efecto jurídico, será castigado con pena privativa de libertad de uno a cinco años.'
+                },
+                '175': {
+                    label: 'Art. 175 – Apropiación',
+                    modificaciones: [],
+                    incisos: [{ id: '175-1', label: '1° El que se apoderare de una cosa mueble ajena que le hubiere sido confiada en custodia, depósito o administración, será castigado con pena privativa de libertad de uno a cuatro años.' }, { id: '175-2', label: '2° Si el valor de la cosa excediere de cuarenta jornales, la pena será de dos a seis años.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 175.- Apropiación. El que se apoderare de una cosa mueble ajena que le hubiere sido confiada en custodia, depósito o administración, será castigado con pena privativa de libertad de uno a cuatro años.'
+                },
+                '212': {
+                    label: 'Art. 212 – Producción de documentos públicos de contenido falso',
+                    modificaciones: [],
+                    incisos: [{ id: '212-1', label: '1° El que, con el fin de hacerlos valer como auténticos, hiciere, en todo o en parte, un documento público falso, será castigado con pena privativa de libertad de dos a ocho años.' }, { id: '212-2', label: '2° El que hiciere uso de un documento público falso será castigado con la misma pena.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 212.- Falsificación de documentos públicos. El que, con el fin de hacerlos valer como auténticos, hiciere, en todo o en parte, un documento público falso, será castigado con pena privativa de libertad de dos a ocho años.'
+                },
+                '126': {
+                    label: 'Art. 126 – Coacción',
+                    modificaciones: [],
+                    incisos: [{ id: '126-1', label: '1° El que, mediante amenaza, forzare a otro a hacer, no hacer o tolerar algo, será castigado con pena privativa de libertad de uno a tres años.' }, { id: '126-2', label: '2° Si la coacción se ejerciere mediante privación de libertad, la pena será de dos a cuatro años.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 126.- Coacción. El que, mediante amenaza, forzare a otro a hacer, no hacer o tolerar algo, será castigado con pena privativa de libertad de uno a tres años.'
+                },
+                '127': {
+                    label: 'Art. 127 – Coacción grave',
+                    modificaciones: [],
+                    incisos: [{ id: '127-1', label: '1° Si la coacción se ejerciere mediante violencia física, la pena será de dos a cinco años.' }],
+                    tipo: 'multiple',
+                    texto: 'Artículo 127.- Coacción grave. Si la coacción se ejerciere mediante violencia física, la pena será de dos a cinco años.'
+                }
             }
         };
-        const GRUPO_A = ['128','135','135b','137','229','225'];
+        const GRUPO_A = ['128', '135', '135b', '137', '229', '225'];
+
         function esGrupoA(hechoId) { return GRUPO_A.includes(hechoId); }
 
         // ================================================================
-        // 3. FUNCIONES AUXILIARES Y DE FECHA
+        // 3. FUNCIONES AUXILIARES Y DE FECHA (con zona horaria local)
         // ================================================================
         function setValueSafe(id, valor) {
             const el = document.getElementById(id);
             if (el) { el.value = (valor !== undefined && valor !== null) ? valor : ''; return true; }
             return false;
         }
+
         function setCheckedSafe(id, estado) {
             const el = document.getElementById(id);
             if (el) { el.checked = !!estado; return true; }
             return false;
         }
+
         function setTextSafe(id, texto) {
             const el = document.getElementById(id);
             if (el) { el.textContent = texto; return true; }
             return false;
         }
+
         function getCausaActual() {
             if (!causaActualId) return null;
             return causas.find(c => c.id === causaActualId) || null;
         }
 
+        // Conversión de fecha string a Date en zona local
         function parseLocalDate(dateStr) {
             if (!dateStr) return null;
             const partes = dateStr.split('-');
             return new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
         }
+
         function getTodayMidnight() {
             const hoy = new Date();
             return new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
@@ -875,7 +2198,7 @@
             if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
             const fecha = parseLocalDate(fechaStr);
             const hoy = getTodayMidnight();
-            const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
+            const diff = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
             let estadoPlazo = 'ok';
             if (diff < 0) estadoPlazo = 'vencido';
             else if (diff <= 15) estadoPlazo = 'proximo';
@@ -892,7 +2215,7 @@
             }
             const fecha = parseLocalDate(fechaManual);
             const hoy = getTodayMidnight();
-            const diff = Math.ceil((fecha - hoy) / (1000*60*60*24));
+            const diff = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
             if (diff < 0) {
                 elDias.textContent = `VENCIDA (hace ${Math.abs(diff)} días)`;
                 elDias.style.color = '#b33c3c';
@@ -915,7 +2238,7 @@
             }
             const fechaObj = parseLocalDate(fecha);
             const hoy = getTodayMidnight();
-            const diff = Math.ceil((fechaObj - hoy) / (1000*60*60*24));
+            const diff = Math.ceil((fechaObj - hoy) / (1000 * 60 * 60 * 24));
             if (diff < 0) {
                 elDias.textContent = `VENCIDA (hace ${Math.abs(diff)} días)`;
                 elDias.style.color = '#b33c3c';
@@ -945,6 +2268,7 @@
             document.getElementById('rebeldia-campos').classList.toggle('hidden', !activa);
             if (activa) calcularDiasSuspendidos();
         }
+
         function calcularDiasSuspendidos() {
             const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
             const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
@@ -960,10 +2284,11 @@
                 elDias.style.color = '#b33c3c';
                 return;
             }
-            const diff = Math.ceil((fin - ini) / (1000*60*60*24));
+            const diff = Math.ceil((fin - ini) / (1000 * 60 * 60 * 24));
             elDias.textContent = `${diff} días`;
             elDias.style.color = '#1a2a4a';
         }
+
         function toggleReincidencia() {
             const activa = document.getElementById('reincidente').checked;
             document.getElementById('num-reincidencias').disabled = !activa;
@@ -980,6 +2305,7 @@
             el.style.display = 'block';
             setTimeout(() => { el.style.display = 'none'; }, 5000);
         }
+
         function toggleAuthMode() {
             const btn = document.getElementById('auth-action-btn');
             const link = document.getElementById('auth-toggle-link');
@@ -1002,6 +2328,7 @@
                 telefono.style.display = 'none';
             }
         }
+
         function handleAuth() {
             const email = document.getElementById('auth-email').value.trim();
             const password = document.getElementById('auth-password').value.trim();
@@ -1136,6 +2463,7 @@
             panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
             if (panel.style.display === 'block') cargarUsuarios();
         }
+
         function cargarUsuarios() {
             if (!isAdmin) return;
             const container = document.getElementById('admin-users-list');
@@ -1155,8 +2483,10 @@
                         const cargo = data.cargo || '';
                         const telefono = data.telefono || '';
                         const estado = data.estado || 'pendiente';
-                        const expiracion = data.fechaExpiracion ? new Date(data.fechaExpiracion.seconds * 1000).toLocaleDateString() : 'N/A';
-                        const estadoClass = estado === 'pendiente' ? 'pendiente' : estado === 'aprobado' ? 'aprobado' : 'rechazado';
+                        const expiracion = data.fechaExpiracion ? new Date(data.fechaExpiracion.seconds * 1000)
+                            .toLocaleDateString() : 'N/A';
+                        const estadoClass = estado === 'pendiente' ? 'pendiente' : estado === 'aprobado' ? 'aprobado' :
+                            'rechazado';
                         const esAdmin = (email === 'waroiapy@gmail.com');
                         html += `<tr>
                             <td data-label="Email">${email} ${esAdmin ? '<span style="color:#d4a843;font-weight:600;">(Admin)</span>' : ''}</td>
@@ -1177,36 +2507,43 @@
                     html += '</tbody></table></div>';
                     container.innerHTML = html;
                 })
-                .catch(err => { container.innerHTML = '<p class="text-muted">Error al cargar usuarios: ' + err.message + '</p>'; });
+                .catch(err => { container.innerHTML = '<p class="text-muted">Error al cargar usuarios: ' + err.message +
+                        '</p>'; });
         }
+
         function aprobarUsuario(uid) {
             if (!confirm('¿Aprobar este usuario? Se le asignará 30 días de acceso.')) return;
             const ahora = new Date();
             const expiracion = new Date(ahora);
             expiracion.setDate(expiracion.getDate() + 30);
             db.collection('usuarios').doc(uid).update({
-                estado: 'aprobado',
-                fechaExpiracion: firebase.firestore.Timestamp.fromDate(expiracion)
-            })
-            .then(() => { mostrarMensaje('Usuario aprobado y con acceso por 30 días.', 'success'); cargarUsuarios(); })
-            .catch(err => { mostrarMensaje('Error: ' + err.message, 'error'); });
+                    estado: 'aprobado',
+                    fechaExpiracion: firebase.firestore.Timestamp.fromDate(expiracion)
+                })
+                .then(() => { mostrarMensaje('Usuario aprobado y con acceso por 30 días.', 'success');
+                    cargarUsuarios(); })
+                .catch(err => { mostrarMensaje('Error: ' + err.message, 'error'); });
         }
+
         function rechazarUsuario(uid) {
             if (!confirm('¿Rechazar este usuario?')) return;
             db.collection('usuarios').doc(uid).update({ estado: 'rechazado', fechaExpiracion: null })
-            .then(() => { mostrarMensaje('Usuario rechazado.', 'success'); cargarUsuarios(); })
-            .catch(err => { mostrarMensaje('Error: ' + err.message, 'error'); });
+                .then(() => { mostrarMensaje('Usuario rechazado.', 'success');
+                    cargarUsuarios(); })
+                .catch(err => { mostrarMensaje('Error: ' + err.message, 'error'); });
         }
+
         function renovarUsuario(uid) {
             if (!confirm('¿Renovar el acceso por 30 días adicionales?')) return;
             const ahora = new Date();
             const expiracion = new Date(ahora);
             expiracion.setDate(expiracion.getDate() + 30);
             db.collection('usuarios').doc(uid).update({
-                fechaExpiracion: firebase.firestore.Timestamp.fromDate(expiracion)
-            })
-            .then(() => { mostrarMensaje('Acceso renovado por 30 días.', 'success'); cargarUsuarios(); })
-            .catch(err => { mostrarMensaje('Error: ' + err.message, 'error'); });
+                    fechaExpiracion: firebase.firestore.Timestamp.fromDate(expiracion)
+                })
+                .then(() => { mostrarMensaje('Acceso renovado por 30 días.', 'success');
+                    cargarUsuarios(); })
+                .catch(err => { mostrarMensaje('Error: ' + err.message, 'error'); });
         }
 
         // ================================================================
@@ -1220,7 +2557,7 @@
                 actualizarIncisos();
                 actualizarPestanas();
             });
-            ['num-causa','imputado'].forEach(id => {
+            ['num-causa', 'imputado'].forEach(id => {
                 document.getElementById(id).addEventListener('input', generarCaratula);
             });
             document.getElementById('incisos-opciones').addEventListener('change', generarCaratula);
@@ -1248,15 +2585,15 @@
             const esA = esGrupoA(hechoPrincipal);
             const container = document.getElementById('tabs-container');
             let tabs = [
-                { id:'tab1', icon:'fa-file-alt', label:'Datos Generales' },
-                { id:'tab2', icon:'fa-balance-scale', label:'Juzgado' }
+                { id: 'tab1', icon: 'fa-file-alt', label: 'Datos Generales' },
+                { id: 'tab2', icon: 'fa-balance-scale', label: 'Juzgado' }
             ];
             if (esA) {
-                tabs.push({ id:'tab3', icon:'fa-clipboard-list', label:'Intervenciones' });
-                tabs.push({ id:'tab4', icon:'fa-notes-medical', label:'Evaluaciones' });
+                tabs.push({ id: 'tab3', icon: 'fa-clipboard-list', label: 'Intervenciones' });
+                tabs.push({ id: 'tab4', icon: 'fa-notes-medical', label: 'Evaluaciones' });
             }
-            tabs.push({ id:'tab5', icon:'fa-file-signature', label:'Informe' });
-            tabs.push({ id:'tab6', icon:'fa-exclamation-triangle', label:'Alertas' });
+            tabs.push({ id: 'tab5', icon: 'fa-file-signature', label: 'Informe' });
+            tabs.push({ id: 'tab6', icon: 'fa-exclamation-triangle', label: 'Alertas' });
 
             container.innerHTML = '';
             tabs.forEach((t, idx) => {
@@ -1324,16 +2661,21 @@
                 let mensajeExtra = '';
                 let prorrogaInfo = 'No';
 
-                if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
-                    prorrogaInfo = `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
+                if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria
+                    .nuevaFecha) {
+                    prorrogaInfo =
+                        `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
                 }
-                if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c.prorrogaExtraordinaria.nuevaFecha) {
+                if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c
+                    .prorrogaExtraordinaria.nuevaFecha) {
                     if (prorrogaInfo !== 'No') prorrogaInfo += ' | ';
-                    prorrogaInfo += `Ext: ${new Date(c.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
+                    prorrogaInfo +=
+                        `Ext: ${new Date(c.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
                 }
 
                 if (info.tipo === 'acto_conclusivo') {
-                    fechaStr = c.fechaActoConclusivo ? new Date(c.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida';
+                    fechaStr = c.fechaActoConclusivo ? new Date(c.fechaActoConclusivo).toLocaleDateString(
+                        'es-ES') : 'No definida';
                     tipoPlazo = 'Acto Conclusivo';
                     if (info.estado === 'acto_conclusivo') {
                         estadoPlazo = '📄 Presentado';
@@ -1344,7 +2686,8 @@
                         else estadoPlazo = '🟢 EN PLAZO';
                     }
                 } else if (info.tipo === 'archivo_provisional') {
-                    fechaStr = c.fechaLimiteArchivo ? new Date(c.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida';
+                    fechaStr = c.fechaLimiteArchivo ? new Date(c.fechaLimiteArchivo).toLocaleDateString(
+                        'es-ES') : 'No definida';
                     tipoPlazo = 'Archivo Provisional';
                     if (info.dias < 0) estadoPlazo = '🔴 VENCIDO';
                     else if (info.dias <= 15) estadoPlazo = '🟡 PRÓXIMO';
@@ -1369,7 +2712,8 @@
                 };
             });
 
-            const orden = { '🔴 VENCIDO': 0, '🟡 PRÓXIMO': 1, '🟢 EN PLAZO': 2, '📄 Presentado': 3, 'Sin plazo': 4, 'Sin fecha': 4 };
+            const orden = { '🔴 VENCIDO': 0, '🟡 PRÓXIMO': 1, '🟢 EN PLAZO': 2, '📄 Presentado': 3, 'Sin plazo': 4,
+                'Sin fecha': 4 };
             lista.sort((a, b) => {
                 const prioridadA = orden[a.estadoPlazo] !== undefined ? orden[a.estadoPlazo] : 4;
                 const prioridadB = orden[b.estadoPlazo] !== undefined ? orden[b.estadoPlazo] : 4;
@@ -1377,11 +2721,13 @@
             });
 
             let texto = '📋 **RESUMEN DE PLAZOS DE CAUSAS**\n\n';
-            texto += 'Nº Causa     | Imputado               | Fecha Límite    | Tipo Plazo     | Estado Plazo   | Prórroga           | Investigación\n';
-            texto += '------------------------------------------------------------------------------------------------------------------\n';
+            texto +=
+                'Nº Causa     | Imputado               | Fecha Límite    | Tipo Plazo     | Estado Plazo   | Prórroga           | Investigación\n';
+            texto +=
+                '------------------------------------------------------------------------------------------------------------------\n';
             lista.forEach(item => {
                 const num = item.num.padEnd(12);
-                const imp = item.imputado.padEnd(22).slice(0,22);
+                const imp = item.imputado.padEnd(22).slice(0, 22);
                 const fecha = item.fecha.padEnd(16);
                 const tipo = item.tipoPlazo.padEnd(15);
                 const estadoP = item.estadoPlazo.padEnd(14);
@@ -1389,7 +2735,8 @@
                 const inv = item.estadoInv.padEnd(12);
                 texto += `${num} | ${imp} | ${fecha} | ${tipo} | ${estadoP} | ${prorroga} | ${inv}\n`;
             });
-            texto += '\n------------------------------------------------------------------------------------------------------------------\n';
+            texto +=
+                '\n------------------------------------------------------------------------------------------------------------------\n';
             texto += `Total: ${lista.length} causas.`;
             return texto;
         }
@@ -1405,6 +2752,7 @@
             const modal = document.getElementById('modal-resumen');
             const cerrarBtn = document.getElementById('cerrar-modal-resumen');
             const cerrarBtn2 = document.getElementById('btn-cerrar-modal-resumen');
+
             function cerrarModal() {
                 modal.style.display = 'none';
             }
@@ -1421,7 +2769,7 @@
         function guardarDatos() {
             try {
                 localStorage.setItem('causasPenalesMP', JSON.stringify(causas));
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         function cargarDatos() {
@@ -1429,7 +2777,7 @@
                 const data = localStorage.getItem('causasPenalesMP');
                 if (data) causas = JSON.parse(data);
                 else causas = [];
-            } catch(e) { causas = []; }
+            } catch (e) { causas = []; }
         }
 
         function actualizarCausa(datos) {
@@ -1654,9 +3002,12 @@
 
             const info = calcularInfoPlazo(causa);
             if (info.estado === 'vencido') {
-                alert(`⚠️ La causa ${causa.numCausa} tiene el plazo VENCIDO (hace ${Math.abs(info.dias)} días). Requiere acción inmediata.`);
+                alert(
+                    `⚠️ La causa ${causa.numCausa} tiene el plazo VENCIDO (hace ${Math.abs(info.dias)} días). Requiere acción inmediata.`
+                    );
             } else if (info.estado === 'proximo') {
-                alert(`⏳ La causa ${causa.numCausa} tiene plazo próximo a vencer (faltan ${info.dias} días).`);
+                alert(
+                    `⏳ La causa ${causa.numCausa} tiene plazo próximo a vencer (faltan ${info.dias} días).`);
             } else if (info.estado === 'acto_conclusivo') {
                 alert(`📄 La causa ${causa.numCausa} ya tiene acto conclusivo presentado.`);
             }
@@ -1830,11 +3181,13 @@
             `;
             container.appendChild(div);
         }
+
         function eliminarVictima(btn) {
             const block = btn.closest('.victima-block');
             if (document.querySelectorAll('.victima-block').length > 1) block.remove();
             else alert('Debe haber al menos una víctima.');
         }
+
         function agregarTestigo() {
             const container = document.getElementById('testigos-container');
             const div = document.createElement('div');
@@ -1849,6 +3202,7 @@
             `;
             container.appendChild(div);
         }
+
         function eliminarTestigo(btn) {
             const block = btn.closest('.testigo-block');
             if (document.querySelectorAll('.testigo-block').length > 1) block.remove();
@@ -1898,7 +3252,8 @@
                     if (numeralContainer) {
                         numeralContainer.style.display = this.checked ? 'block' : 'none';
                         if (!this.checked) {
-                            numeralContainer.querySelectorAll('.numeral-check').forEach(cb => cb.checked = false);
+                            numeralContainer.querySelectorAll('.numeral-check').forEach(cb => cb.checked =
+                            false);
                         }
                     }
                     generarCaratula();
@@ -1952,7 +3307,8 @@
                 actualizarIntervenciones();
             }
             document.getElementById('hecho-selector').value = '';
-            document.getElementById('incisos-opciones').innerHTML = '<span class="text-muted">Seleccione un hecho punible</span>';
+            document.getElementById('incisos-opciones').innerHTML =
+                '<span class="text-muted">Seleccione un hecho punible</span>';
         }
 
         function renderizarHechosAgregados() {
@@ -1969,19 +3325,23 @@
                 h.incisos.forEach(inc => {
                     const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
                     if (incData) {
-                        let incLabel = incData.label.substring(0, 50) + (incData.label.length > 50 ? '…' : '');
+                        let incLabel = incData.label.substring(0, 50) + (incData.label.length > 50 ?
+                            '…' : '');
                         detalles += `<div style="padding-left:12px;font-size:11px;color:#555;">✓ ${incLabel}`;
                         if (inc.numerales && inc.numerales.length > 0) {
                             const nums = inc.numerales.map(id => {
-                                const numData = incData.numerales ? incData.numerales.find(n => n.id === id) : null;
-                                return numData ? numData.label.substring(0, 35) + (numData.label.length > 35 ? '…' : '') : id;
+                                const numData = incData.numerales ? incData.numerales.find(n => n
+                                    .id === id) : null;
+                                return numData ? numData.label.substring(0, 35) + (numData.label
+                                    .length > 35 ? '…' : '') : id;
                             });
                             detalles += ` (numerales: ${nums.join(', ')})`;
                         }
                         detalles += `</div>`;
                     }
                 });
-                html += `<div class="list-item"><span class="label">${label}</span><button class="btn-remover" onclick="quitarHecho(${index})"><i class="fas fa-times"></i> Eliminar</button></div>`;
+                html +=
+                    `<div class="list-item"><span class="label">${label}</span><button class="btn-remover" onclick="quitarHecho(${index})"><i class="fas fa-times"></i> Eliminar</button></div>`;
                 if (detalles) html += `<div style="padding-left:15px;margin-bottom:3px;">${detalles}</div>`;
             });
             html += '</div>';
@@ -2049,41 +3409,117 @@
                     }
                 }
             } else {
-                container.innerHTML = '<p class="text-muted">No hay intervenciones específicas para este tipo de causa.</p>';
+                container.innerHTML =
+                '<p class="text-muted">No hay intervenciones específicas para este tipo de causa.</p>';
                 btnPdf.style.display = 'none';
             }
         }
 
         const preguntasRiesgo = [
-            { id:'r1.1', label:'1.1 – Grado de relación con el supuesto agresor', opciones:[{valor:3,texto:'Cónyuge/concubino/pareja'},{valor:3,texto:'Ex cónyuge/ex concubino/ex pareja'},{valor:2,texto:'Padres/padrastros, abuelos'},{valor:2,texto:'Hijos/nietos'},{valor:1,texto:'Hermanos/sobrinos'},{valor:1,texto:'Tíos/primos'},{valor:0,texto:'Otros'}] },
-            { id:'r1.2', label:'1.2 – ¿La víctima tiene personas a su cargo?', opciones:[{valor:3,texto:'Sí, hijos menores/discapacitados'},{valor:2,texto:'Sí, padres adultos mayores/discapacitados'},{valor:1,texto:'Sí, otros familiares'},{valor:0,texto:'No'}] },
-            { id:'r1.3', label:'1.3 – La víctima ha manifestado al supuesto agresor antes del hecho', opciones:[{valor:3,texto:'Que piensa separarse de él o dejar la casa'},{valor:2,texto:'Que lo ha denunciado o lo va a denunciar'},{valor:1,texto:'Que ha solicitado medidas de protección o piensa solicitarla'},{valor:0,texto:'No le ha manifestado nada'}] },
-            { id:'r1.4', label:'1.4 – La víctima ha tenido que salir de la casa', opciones:[{valor:3,texto:'En una acción repentina (escape)'},{valor:2,texto:'A la fuerza, expulsada por el agresor'},{valor:1,texto:'Por amenaza o miedo al agresor'},{valor:0,texto:'No ha salido de la casa'}] },
-            { id:'r2.1', label:'2.1 – ¿El supuesto agresor o conocidos han generado intimidación en la víctima?', opciones:[{valor:3,texto:'Han amenazado, acosado o atentado recientemente'},{valor:2,texto:'Han amenazado, acosado o atentado en el pasado (hasta 3 meses)'},{valor:1,texto:'No han amenazado, pero tienen antecedentes'},{valor:0,texto:'No tienen antecedentes de amenaza'}] },
-            { id:'r2.2', label:'2.2 – ¿Ha sido la víctima objeto de amenaza, acoso o atentado anteriormente?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está seguro (dubitativo)'},{valor:0,texto:'No'}] },
-            { id:'r2.3', label:'2.3 – ¿Han sido los familiares de la víctima objeto de amenaza, acoso o atentado?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está seguro (dubitativo)'},{valor:0,texto:'No'}] },
-            { id:'r2.4', label:'2.4 – El supuesto agresor ha retenido a la víctima contra su voluntad', opciones:[{valor:3,texto:'Sí, varias veces'},{valor:2,texto:'Sí, una vez'},{valor:1,texto:'No, pero le ha dicho que lo haría'},{valor:0,texto:'No'}] },
-            { id:'r3.1', label:'3.1 – El supuesto agresor acosó, controló o amedrentó sistemáticamente a la víctima', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
-            { id:'r3.2', label:'3.2 – Historial de conductas violentas con una pareja anterior', opciones:[{valor:3,texto:'Sí, con más de 3 casos'},{valor:2,texto:'Sí, con más de 1 caso'},{valor:1,texto:'Este es el primer caso'},{valor:0,texto:'No'}] },
-            { id:'r3.3', label:'3.3 – Existencia de abuso sexual o físico contra hijos u otras personas menores de edad', opciones:[{valor:3,texto:'Sí'},{valor:2,texto:'Ha intentado realizarlo'},{valor:1,texto:'Amenazó con realizarlo'},{valor:0,texto:'No'}] },
-            { id:'r3.4', label:'3.4 – Historial de conductas previas de violencia contra otras personas no familiares', opciones:[{valor:3,texto:'Sí, con más de 3 casos'},{valor:2,texto:'Sí, con más de 1 caso'},{valor:1,texto:'Este es el primer caso'},{valor:0,texto:'No'}] },
-            { id:'r3.5', label:'3.5 – Acceso y conocimiento en el uso de armas de fuego', opciones:[{valor:3,texto:'Conoce, usa y trabaja con ellas siempre'},{valor:2,texto:'Conoce y usa armas frecuentemente'},{valor:1,texto:'Cuenta con un arma, pero no la ha usado'},{valor:0,texto:'No'}] },
-            { id:'r3.6', label:'3.6 – El supuesto agresor abusa de alcohol o drogas', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
-            { id:'r3.7', label:'3.7 – Antecedentes psiquiátricos', opciones:[{valor:3,texto:'Sí, fue internado varias veces y está medicado'},{valor:2,texto:'Sí, fue internado'},{valor:1,texto:'Sí, está medicado'},{valor:0,texto:'No'}] },
-            { id:'r3.8', label:'3.8 – Intentó o amenazó con suicidarse cuando la víctima trató de apartarse', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, varias veces'},{valor:1,texto:'Sí, en una ocasión'},{valor:0,texto:'No'}] },
-            { id:'r3.9', label:'3.9 – Conductas frecuentes de crueldad, desprecio y falta de arrepentimiento', opciones:[{valor:3,texto:'Sí, siempre'},{valor:2,texto:'Sí, frecuentemente'},{valor:1,texto:'Sí, a veces'},{valor:0,texto:'No'}] },
-            { id:'r3.10', label:'3.10 – Menosprecio a las medidas de protección dictadas', opciones:[{valor:2,texto:'Sí, varias veces'},{valor:1,texto:'Sí, en una ocasión'},{valor:0,texto:'No'}] },
-            { id:'r4.1', label:'4.1 – ¿Ha expresado la víctima temor a su seguridad o la de su familia?', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No, pero parece estar nerviosa'},{valor:0,texto:'No'}] },
-            { id:'r4.2', label:'4.2 – ¿Cómo describiría la conducta de la víctima?', opciones:[{valor:3,texto:'Nerviosa, afectada emocionalmente, preocupada por el proceso'},{valor:2,texto:'Tranquila pero muestra recelo'},{valor:1,texto:'Tiene algunas preocupaciones'},{valor:0,texto:'No manifiesta preocupaciones'}] },
-            { id:'r4.3', label:'4.3 – ¿La víctima tiene una buena red de ayuda?', opciones:[{valor:3,texto:'No cuenta con red de ayuda o está aislada'},{valor:1,texto:'Tiene algunas personas que puedan apoyarle'},{valor:0,texto:'Cuenta con una red de personas'}] },
-            { id:'r4.4', label:'4.4 – Condiciones de vulnerabilidad (Reglas de Brasilia)', opciones:[{valor:2,texto:'Reúne tres o más condiciones'},{valor:1,texto:'Reúne una o más condiciones'},{valor:0,texto:'No reúne condiciones'}] },
-            { id:'r4.5', label:'4.5 – Dependencia económica del agresor', opciones:[{valor:2,texto:'Dependencia económica total'},{valor:1,texto:'Dependencia económica parcial'},{valor:0,texto:'No depende económicamente'}] },
-            { id:'r4.6', label:'4.6 – La víctima considera que el supuesto agresor es capaz de matarla', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No está segura'},{valor:0,texto:'No'}] },
-            { id:'r4.7', label:'4.7 – Ha retirado denuncias previas o reanudado la relación', opciones:[{valor:2,texto:'Sí'},{valor:1,texto:'No, pero reanudó la relación'},{valor:0,texto:'No'}] },
-            { id:'r4.8', label:'4.8 – Ha recibido atención en salud como consecuencia de las agresiones', opciones:[{valor:2,texto:'No, a pesar de haber sufrido violencia se negó a recibir asistencia'},{valor:1,texto:'Sí, fue asistida'},{valor:0,texto:'No ha sido necesario'}] },
-            { id:'r5.1', label:'5.1 – El dato o información proporcionada es determinante para esclarecer el hecho', opciones:[{valor:2,texto:'Permitió individualizar al agresor/hallar otros elementos de prueba'},{valor:1,texto:'Permitió hallar el elemento de prueba principal'},{valor:0,texto:'No es pertinente/relevante o se puede prescindir'}] },
-            { id:'r5.2', label:'5.2 – ¿El dato o información está sustentado en otros elementos de prueba?', opciones:[{valor:2,texto:'Corroborado ampliamente'},{valor:1,texto:'Corroborado parcialmente'},{valor:0,texto:'No fue corroborado'}] },
-            { id:'r5.3', label:'5.3 – La víctima manifiesta su voluntad de continuar el proceso', opciones:[{valor:3,texto:'No quiere continuar'},{valor:2,texto:'Duda en continuar'},{valor:1,texto:'Manifiesta su voluntad de continuar'},{valor:0,texto:'Está segura de continuar'}] }
+            { id: 'r1.1', label: '1.1 – Grado de relación con el supuesto agresor', opciones: [{ valor: 3,
+                    texto: 'Cónyuge/concubino/pareja' }, { valor: 3, texto: 'Ex cónyuge/ex concubino/ex pareja' },
+                { valor: 2, texto: 'Padres/padrastros, abuelos' }, { valor: 2, texto: 'Hijos/nietos' }, { valor: 1,
+                    texto: 'Hermanos/sobrinos' }, { valor: 1, texto: 'Tíos/primos' }, { valor: 0,
+                    texto: 'Otros' }] },
+            { id: 'r1.2', label: '1.2 – ¿La víctima tiene personas a su cargo?', opciones: [{ valor: 3,
+                    texto: 'Sí, hijos menores/discapacitados' }, { valor: 2,
+                    texto: 'Sí, padres adultos mayores/discapacitados' }, { valor: 1,
+                    texto: 'Sí, otros familiares' }, { valor: 0, texto: 'No' }] },
+            { id: 'r1.3', label: '1.3 – La víctima ha manifestado al supuesto agresor antes del hecho',
+                opciones: [{ valor: 3, texto: 'Que piensa separarse de él o dejar la casa' }, { valor: 2,
+                    texto: 'Que lo ha denunciado o lo va a denunciar' }, { valor: 1,
+                    texto: 'Que ha solicitado medidas de protección o piensa solicitarla' }, { valor: 0,
+                    texto: 'No le ha manifestado nada' }] },
+            { id: 'r1.4', label: '1.4 – La víctima ha tenido que salir de la casa', opciones: [{ valor: 3,
+                    texto: 'En una acción repentina (escape)' }, { valor: 2,
+                    texto: 'A la fuerza, expulsada por el agresor' }, { valor: 1,
+                    texto: 'Por amenaza o miedo al agresor' }, { valor: 0, texto: 'No ha salido de la casa' }] },
+            { id: 'r2.1', label: '2.1 – ¿El supuesto agresor o conocidos han generado intimidación en la víctima?',
+                opciones: [{ valor: 3, texto: 'Han amenazado, acosado o atentado recientemente' }, { valor: 2,
+                    texto: 'Han amenazado, acosado o atentado en el pasado (hasta 3 meses)' }, { valor: 1,
+                    texto: 'No han amenazado, pero tienen antecedentes' }, { valor: 0,
+                    texto: 'No tienen antecedentes de amenaza' }] },
+            { id: 'r2.2', label: '2.2 – ¿Ha sido la víctima objeto de amenaza, acoso o atentado anteriormente?',
+                opciones: [{ valor: 2, texto: 'Sí' }, { valor: 1, texto: 'No está seguro (dubitativo)' },
+                { valor: 0, texto: 'No' }] },
+            { id: 'r2.3', label: '2.3 – ¿Han sido los familiares de la víctima objeto de amenaza, acoso o atentado?',
+                opciones: [{ valor: 2, texto: 'Sí' }, { valor: 1, texto: 'No está seguro (dubitativo)' },
+                { valor: 0, texto: 'No' }] },
+            { id: 'r2.4', label: '2.4 – El supuesto agresor ha retenido a la víctima contra su voluntad',
+                opciones: [{ valor: 3, texto: 'Sí, varias veces' }, { valor: 2, texto: 'Sí, una vez' },
+                { valor: 1, texto: 'No, pero le ha dicho que lo haría' }, { valor: 0, texto: 'No' }] },
+            { id: 'r3.1', label: '3.1 – El supuesto agresor acosó, controló o amedrentó sistemáticamente a la víctima',
+                opciones: [{ valor: 3, texto: 'Sí, siempre' }, { valor: 2, texto: 'Sí, frecuentemente' },
+                { valor: 1, texto: 'Sí, a veces' }, { valor: 0, texto: 'No' }] },
+            { id: 'r3.2', label: '3.2 – Historial de conductas violentas con una pareja anterior',
+                opciones: [{ valor: 3, texto: 'Sí, con más de 3 casos' }, { valor: 2,
+                    texto: 'Sí, con más de 1 caso' }, { valor: 1, texto: 'Este es el primer caso' }, { valor: 0,
+                    texto: 'No' }] },
+            { id: 'r3.3', label: '3.3 – Existencia de abuso sexual o físico contra hijos u otras personas menores de edad',
+                opciones: [{ valor: 3, texto: 'Sí' }, { valor: 2, texto: 'Ha intentado realizarlo' },
+                { valor: 1, texto: 'Amenazó con realizarlo' }, { valor: 0, texto: 'No' }] },
+            { id: 'r3.4', label: '3.4 – Historial de conductas previas de violencia contra otras personas no familiares',
+                opciones: [{ valor: 3, texto: 'Sí, con más de 3 casos' }, { valor: 2,
+                    texto: 'Sí, con más de 1 caso' }, { valor: 1, texto: 'Este es el primer caso' }, { valor: 0,
+                    texto: 'No' }] },
+            { id: 'r3.5', label: '3.5 – Acceso y conocimiento en el uso de armas de fuego', opciones: [{ valor: 3,
+                    texto: 'Conoce, usa y trabaja con ellas siempre' }, { valor: 2,
+                    texto: 'Conoce y usa armas frecuentemente' }, { valor: 1,
+                    texto: 'Cuenta con un arma, pero no la ha usado' }, { valor: 0, texto: 'No' }] },
+            { id: 'r3.6', label: '3.6 – El supuesto agresor abusa de alcohol o drogas', opciones: [{ valor: 3,
+                    texto: 'Sí, siempre' }, { valor: 2, texto: 'Sí, frecuentemente' }, { valor: 1,
+                    texto: 'Sí, a veces' }, { valor: 0, texto: 'No' }] },
+            { id: 'r3.7', label: '3.7 – Antecedentes psiquiátricos', opciones: [{ valor: 3,
+                    texto: 'Sí, fue internado varias veces y está medicado' }, { valor: 2,
+                    texto: 'Sí, fue internado' }, { valor: 1, texto: 'Sí, está medicado' }, { valor: 0,
+                    texto: 'No' }] },
+            { id: 'r3.8', label: '3.8 – Intentó o amenazó con suicidarse cuando la víctima trató de apartarse',
+                opciones: [{ valor: 3, texto: 'Sí, siempre' }, { valor: 2, texto: 'Sí, varias veces' },
+                { valor: 1, texto: 'Sí, en una ocasión' }, { valor: 0, texto: 'No' }] },
+            { id: 'r3.9', label: '3.9 – Conductas frecuentes de crueldad, desprecio y falta de arrepentimiento',
+                opciones: [{ valor: 3, texto: 'Sí, siempre' }, { valor: 2, texto: 'Sí, frecuentemente' },
+                { valor: 1, texto: 'Sí, a veces' }, { valor: 0, texto: 'No' }] },
+            { id: 'r3.10', label: '3.10 – Menosprecio a las medidas de protección dictadas', opciones: [{ valor: 2,
+                    texto: 'Sí, varias veces' }, { valor: 1, texto: 'Sí, en una ocasión' }, { valor: 0,
+                    texto: 'No' }] },
+            { id: 'r4.1', label: '4.1 – ¿Ha expresado la víctima temor a su seguridad o la de su familia?',
+                opciones: [{ valor: 2, texto: 'Sí' }, { valor: 1, texto: 'No, pero parece estar nerviosa' },
+                { valor: 0, texto: 'No' }] },
+            { id: 'r4.2', label: '4.2 – ¿Cómo describiría la conducta de la víctima?', opciones: [{ valor: 3,
+                    texto: 'Nerviosa, afectada emocionalmente, preocupada por el proceso' }, { valor: 2,
+                    texto: 'Tranquila pero muestra recelo' }, { valor: 1, texto: 'Tiene algunas preocupaciones' },
+                { valor: 0, texto: 'No manifiesta preocupaciones' }] },
+            { id: 'r4.3', label: '4.3 – ¿La víctima tiene una buena red de ayuda?', opciones: [{ valor: 3,
+                    texto: 'No cuenta con red de ayuda o está aislada' }, { valor: 1,
+                    texto: 'Tiene algunas personas que puedan apoyarle' }, { valor: 0,
+                    texto: 'Cuenta con una red de personas' }] },
+            { id: 'r4.4', label: '4.4 – Condiciones de vulnerabilidad (Reglas de Brasilia)', opciones: [{ valor: 2,
+                    texto: 'Reúne tres o más condiciones' }, { valor: 1,
+                    texto: 'Reúne una o más condiciones' }, { valor: 0, texto: 'No reúne condiciones' }] },
+            { id: 'r4.5', label: '4.5 – Dependencia económica del agresor', opciones: [{ valor: 2,
+                    texto: 'Dependencia económica total' }, { valor: 1,
+                    texto: 'Dependencia económica parcial' }, { valor: 0,
+                    texto: 'No depende económicamente' }] },
+            { id: 'r4.6', label: '4.6 – La víctima considera que el supuesto agresor es capaz de matarla',
+                opciones: [{ valor: 2, texto: 'Sí' }, { valor: 1, texto: 'No está segura' }, { valor: 0,
+                    texto: 'No' }] },
+            { id: 'r4.7', label: '4.7 – Ha retirado denuncias previas o reanudado la relación', opciones: [{ valor: 2,
+                    texto: 'Sí' }, { valor: 1, texto: 'No, pero reanudó la relación' }, { valor: 0,
+                    texto: 'No' }] },
+            { id: 'r4.8', label: '4.8 – Ha recibido atención en salud como consecuencia de las agresiones',
+                opciones: [{ valor: 2, texto: 'No, a pesar de haber sufrido violencia se negó a recibir asistencia' },
+                { valor: 1, texto: 'Sí, fue asistida' }, { valor: 0, texto: 'No ha sido necesario' }] },
+            { id: 'r5.1', label: '5.1 – El dato o información proporcionada es determinante para esclarecer el hecho',
+                opciones: [{ valor: 2, texto: 'Permitió individualizar al agresor/hallar otros elementos de prueba' },
+                { valor: 1, texto: 'Permitió hallar el elemento de prueba principal' }, { valor: 0,
+                    texto: 'No es pertinente/relevante o se puede prescindir' }] },
+            { id: 'r5.2', label: '5.2 – ¿El dato o información está sustentado en otros elementos de prueba?',
+                opciones: [{ valor: 2, texto: 'Corroborado ampliamente' }, { valor: 1,
+                    texto: 'Corroborado parcialmente' }, { valor: 0, texto: 'No fue corroborado' }] },
+            { id: 'r5.3', label: '5.3 – La víctima manifiesta su voluntad de continuar el proceso',
+                opciones: [{ valor: 3, texto: 'No quiere continuar' }, { valor: 2, texto: 'Duda en continuar' },
+                { valor: 1, texto: 'Manifiesta su voluntad de continuar' }, { valor: 0,
+                    texto: 'Está segura de continuar' }] }
         ];
 
         function generarCuestionarioRiesgo() {
@@ -2099,19 +3535,25 @@
                     <p class="text-muted">Complete todas las preguntas.</p>
             `;
             const secciones = [
-                { titulo:'1. Relación entre víctima y supuesto agresor', ids:['r1.1','r1.2','r1.3','r1.4'] },
-                { titulo:'2. Antecedentes de intimidación', ids:['r2.1','r2.2','r2.3','r2.4'] },
-                { titulo:'3. Perfil del supuesto agresor', ids:['r3.1','r3.2','r3.3','r3.4','r3.5','r3.6','r3.7','r3.8','r3.9','r3.10'] },
-                { titulo:'4. Vulnerabilidad de la víctima', ids:['r4.1','r4.2','r4.3','r4.4','r4.5','r4.6','r4.7','r4.8'] },
-                { titulo:'5. Trascendencia del dato', ids:['r5.1','r5.2','r5.3'] }
+                { titulo: '1. Relación entre víctima y supuesto agresor', ids: ['r1.1', 'r1.2', 'r1.3', 'r1.4'] },
+                { titulo: '2. Antecedentes de intimidación', ids: ['r2.1', 'r2.2', 'r2.3', 'r2.4'] },
+                { titulo: '3. Perfil del supuesto agresor', ids: ['r3.1', 'r3.2', 'r3.3', 'r3.4', 'r3.5', 'r3.6',
+                        'r3.7', 'r3.8', 'r3.9', 'r3.10'
+                    ] },
+                { titulo: '4. Vulnerabilidad de la víctima', ids: ['r4.1', 'r4.2', 'r4.3', 'r4.4', 'r4.5', 'r4.6',
+                        'r4.7', 'r4.8'
+                    ] },
+                { titulo: '5. Trascendencia del dato', ids: ['r5.1', 'r5.2', 'r5.3'] }
             ];
             secciones.forEach(sec => {
                 html += `<div class="cuestionario-section"><h4>${sec.titulo}</h4>`;
                 sec.ids.forEach(id => {
                     const p = preguntasRiesgo.find(q => q.id === id);
                     if (p) {
-                        html += `<div class="cuestionario-pregunta"><span class="pregunta-texto">${p.label}</span>`;
-                        html += `<select id="riesgo-${p.id}" onchange="calcularRiesgo()"><option value="">-- Seleccionar --</option>`;
+                        html +=
+                            `<div class="cuestionario-pregunta"><span class="pregunta-texto">${p.label}</span>`;
+                        html +=
+                            `<select id="riesgo-${p.id}" onchange="calcularRiesgo()"><option value="">-- Seleccionar --</option>`;
                         p.opciones.forEach(op => {
                             html += `<option value="${op.valor}">${op.texto}</option>`;
                         });
@@ -2175,7 +3617,8 @@
         }
 
         function calcularRiesgo() {
-            let total = 0, respondidas = 0;
+            let total = 0,
+                respondidas = 0;
             preguntasRiesgo.forEach(p => {
                 const sel = document.getElementById(`riesgo-${p.id}`);
                 if (sel && sel.value !== '') {
@@ -2185,14 +3628,18 @@
             });
             const container = document.getElementById('resultado-riesgo-container');
             if (respondidas < preguntasRiesgo.length) {
-                container.innerHTML = `<div class="resultado-riesgo" style="background:#fff3cd;color:#856404;border-left-color:#ffc107;"><strong>Faltan ${preguntasRiesgo.length - respondidas} preguntas.</strong><br>Complete todas para calcular el nivel de riesgo.</div>`;
-                riesgoPuntaje = 0; riesgoNivel = '';
+                container.innerHTML =
+                    `<div class="resultado-riesgo" style="background:#fff3cd;color:#856404;border-left-color:#ffc107;"><strong>Faltan ${preguntasRiesgo.length - respondidas} preguntas.</strong><br>Complete todas para calcular el nivel de riesgo.</div>`;
+                riesgoPuntaje = 0;
+                riesgoNivel = '';
                 return;
             }
-            let nivel = '', clase = '';
-            if (total <= 25) { nivel = 'BAJO'; clase = 'bajo'; }
-            else if (total <= 55) { nivel = 'MEDIO'; clase = 'medio'; }
-            else { nivel = 'ALTO'; clase = 'alto'; }
+            let nivel = '',
+                clase = '';
+            if (total <= 25) { nivel = 'BAJO';
+                clase = 'bajo'; } else if (total <= 55) { nivel = 'MEDIO';
+                clase = 'medio'; } else { nivel = 'ALTO';
+                clase = 'alto'; }
             riesgoPuntaje = total;
             riesgoNivel = nivel;
             const medidas = obtenerMedidasProteccion(nivel);
@@ -2237,6 +3684,7 @@
         }
 
         function imprimirCuestionario() { window.print(); }
+
         function exportarCuestionarioPDF() {
             const container = document.getElementById('intervencion-contenido');
             if (!container || container.innerText.includes('No hay intervenciones')) {
@@ -2334,6 +3782,7 @@
                 cb.checked = estado;
             });
         }
+
         function obtenerDiligenciasMarcadas() {
             const marcadas = [];
             document.querySelectorAll('.diligencia-check:checked').forEach(cb => {
@@ -2341,11 +3790,13 @@
             });
             return marcadas;
         }
+
         function restaurarDiligencias(marcadas) {
             document.querySelectorAll('.diligencia-check').forEach(cb => {
                 cb.checked = marcadas.includes(cb.value);
             });
         }
+
         function calcularLiquidacion() {
             const debido = parseFloat(document.getElementById('monto-debido').value) || 0;
             const abonado = parseFloat(document.getElementById('monto-abonado').value) || 0;
@@ -2370,42 +3821,53 @@
             const grid = document.getElementById('causa-grid');
             const contador = document.getElementById('contador-causas');
             if (causas.length === 0) {
-                grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
+                grid.innerHTML =
+                    `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
                 contador.textContent = '(0)';
                 return;
             }
             contador.textContent = `(${causas.length})`;
             let html = '';
             causas.forEach(c => {
-                const badge = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'badge-alimentos' : 'badge-activa';
-                const badgeText = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'Alimentos' : 'Activa';
+                const badge = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'badge-alimentos' :
+                    'badge-activa';
+                const badgeText = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'Alimentos' :
+                'Activa';
                 const caratula = c.caratula || 'Sin carátula';
                 const tieneAlertas = verificarAlertas(c);
-                const alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
+                const alertaIcon = tieneAlertas ?
+                    '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
 
                 const info = calcularInfoPlazo(c);
                 let diasInfo = '';
                 let actoConclusivoMsg = '';
                 let prorrogaMsg = '';
 
-                if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
-                    prorrogaMsg += `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')} `;
+                if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria
+                    .nuevaFecha) {
+                    prorrogaMsg +=
+                        `Ord: ${new Date(c.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')} `;
                 }
-                if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c.prorrogaExtraordinaria.nuevaFecha) {
-                    prorrogaMsg += `Ext: ${new Date(c.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
+                if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c
+                    .prorrogaExtraordinaria.nuevaFecha) {
+                    prorrogaMsg +=
+                        `Ext: ${new Date(c.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`;
                 }
                 if (prorrogaMsg) {
                     prorrogaMsg = `<div class="prorroga-msg">📅 Prórroga: ${prorrogaMsg}</div>`;
                 }
 
                 if (info.estado === 'acto_conclusivo') {
-                    actoConclusivoMsg = `<div class="acto-conclusivo-msg"><i class="fas fa-check-circle"></i> Acto conclusivo presentado</div>`;
+                    actoConclusivoMsg =
+                        `<div class="acto-conclusivo-msg"><i class="fas fa-check-circle"></i> Acto conclusivo presentado</div>`;
                 } else if (info.estado === 'vencido') {
                     const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
-                    diasInfo = `<div class="dias-restantes vencido">⚠️ ${label} VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
+                    diasInfo =
+                        `<div class="dias-restantes vencido">⚠️ ${label} VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
                 } else if (info.estado === 'proximo') {
                     const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
-                    diasInfo = `<div class="dias-restantes proximo">⏳ ${label} vence en ${info.dias} días</div>`;
+                    diasInfo =
+                        `<div class="dias-restantes proximo">⏳ ${label} vence en ${info.dias} días</div>`;
                 } else if (info.dias !== null) {
                     const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
                     diasInfo = `<div class="dias-restantes">📅 ${label} vence en ${info.dias} días</div>`;
@@ -2417,7 +3879,8 @@
                 const estadoLabel = getEstadoLabel(estado);
                 const estadoClass = getEstadoClass(estado);
                 const estadoBadge = `<span class="badge-estado ${estadoClass}">${estadoLabel}</span>`;
-                const badgePreclusion = esActiva ? 'badge-activa' : (esActoConc ? 'badge-acto-conclusivo' : 'badge-precluida');
+                const badgePreclusion = esActiva ? 'badge-activa' : (esActoConc ? 'badge-acto-conclusivo' :
+                    'badge-precluida');
                 const textPreclusion = esActiva ? 'Activa' : (esActoConc ? 'Acto Conclusivo' : 'Precluida');
                 const borderColor = esActiva ? '#1a2a4a' : (esActoConc ? '#0d47a1' : '#b33c3c');
 
@@ -2491,7 +3954,8 @@
             if (causa.hechos) {
                 causa.hechos.forEach(h => {
                     const config = CONFIG.hechos[h.hecho];
-                    if (config && config.incisos && config.incisos.length > 0 && (!h.incisos || h.incisos.length === 0)) {
+                    if (config && config.incisos && config.incisos.length > 0 && (!h.incisos || h
+                        .incisos.length === 0)) {
                         alertas.push('hecho sin incisos');
                     }
                 });
@@ -2509,10 +3973,10 @@
         }
 
         // ================================================================
-        // 15. ELIMINAR CON REAUTENTICACIÓN
+        // 15. ELIMINAR CON REAUTENTICACIÓN (CORREGIDO)
         // ================================================================
-        function mostrarReauth(callback) {
-            reauthCallback = callback;
+        function mostrarReauth(accion) {
+            reauthAccion = accion;
             document.getElementById('reauth-password').value = '';
             document.getElementById('reauth-message').textContent = '';
             document.getElementById('modal-reauth').style.display = 'flex';
@@ -2520,7 +3984,7 @@
 
         function cerrarReauth() {
             document.getElementById('modal-reauth').style.display = 'none';
-            reauthCallback = null;
+            reauthAccion = null;
         }
 
         function confirmarReauth() {
@@ -2539,38 +4003,61 @@
                 .then(() => {
                     document.getElementById('reauth-message').textContent = '';
                     cerrarReauth();
-                    if (typeof reauthCallback === 'function') {
-                        reauthCallback();
-                        reauthCallback = null;
+                    if (reauthAccion) {
+                        if (reauthAccion.tipo === 'single' && reauthAccion.id) {
+                            eliminarCausaConfirmada(reauthAccion.id);
+                        } else if (reauthAccion.tipo === 'all') {
+                            eliminarTodasConfirmada();
+                        }
+                        reauthAccion = null;
                     }
                 })
                 .catch(err => {
-                    document.getElementById('reauth-message').textContent = 'Contraseña incorrecta. Intente de nuevo.';
-                    console.error(err);
+                    document.getElementById('reauth-message').textContent =
+                    'Contraseña incorrecta. Intente de nuevo.';
+                    console.error('Error de reautenticación:', err);
                 });
         }
 
         function eliminarCausa(id) {
-            mostrarReauth(function() {
-                if (!confirm('¿Está seguro de eliminar esta causa?')) return;
-                causas = causas.filter(c => c.id !== id);
-                guardarDatos();
-                renderizarCausas();
-                if (document.getElementById('form-container').classList.contains('active')) cerrarFormulario();
-            });
+            mostrarReauth({ tipo: 'single', id: id });
+        }
+
+        function eliminarCausaConfirmada(id) {
+            if (!confirm('¿Está seguro de eliminar esta causa?')) return;
+            const antes = causas.length;
+            causas = causas.filter(c => c.id !== id);
+            if (causas.length === antes) {
+                alert('No se encontró la causa para eliminar.');
+                return;
+            }
+            guardarDatos();
+            renderizarCausas();
+            if (document.getElementById('form-container').classList.contains('active')) {
+                cerrarFormulario();
+            }
+            console.log('✅ Causa eliminada:', id);
         }
 
         function eliminarTodasLasCausas() {
-            if (causas.length === 0) { alert('No hay causas para eliminar.'); return; }
-            mostrarReauth(function() {
-                if (!confirm('⚠️ ¿Está seguro de eliminar TODAS las causas? Esta acción es irreversible.')) return;
-                if (!confirm('Confirmación final: ¿Eliminar todas las causas?')) return;
-                causas = [];
-                guardarDatos();
-                renderizarCausas();
-                if (document.getElementById('form-container').classList.contains('active')) cerrarFormulario();
-                alert('Todas las causas han sido eliminadas.');
-            });
+            if (causas.length === 0) {
+                alert('No hay causas para eliminar.');
+                return;
+            }
+            mostrarReauth({ tipo: 'all' });
+        }
+
+        function eliminarTodasConfirmada() {
+            if (!confirm('⚠️ ¿Está seguro de eliminar TODAS las causas? Esta acción es irreversible.')) return;
+            if (!confirm('Confirmación final: ¿Eliminar todas las causas?')) return;
+            causas = [];
+            guardarDatos();
+            renderizarCausas();
+            if (document.getElementById('form-container').classList.contains('active')) {
+                cerrarFormulario();
+            }
+            alert('Todas las causas han sido eliminadas.');
+            console.log('✅ Todas las causas eliminadas.');
         }
 
         // ================================================================
@@ -2583,7 +4070,8 @@
             document.querySelectorAll('input, select, textarea').forEach(el => {
                 if (el.id && !el.id.startsWith('riesgo-') && el.type !== 'checkbox' && el.type !== 'hidden') {
                     if (el.tagName === 'SELECT') el.value = '';
-                    else if (el.type === 'date' || el.type === 'time' || el.type === 'number' || el.type === 'text') el.value = '';
+                    else if (el.type === 'date' || el.type === 'time' || el.type === 'number' || el.type ===
+                        'text') el.value = '';
                     else if (el.tagName === 'TEXTAREA') el.value = '';
                 }
             });
@@ -2602,8 +4090,10 @@
             hechosAgregados = [];
             renderizarHechosAgregados();
             setValueSafe('hecho-selector', '');
-            document.getElementById('incisos-opciones').innerHTML = '<span class="text-muted">Seleccione un hecho punible</span>';
-            document.getElementById('caratula-preview').innerHTML = '<span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span>';
+            document.getElementById('incisos-opciones').innerHTML =
+                '<span class="text-muted">Seleccione un hecho punible</span>';
+            document.getElementById('caratula-preview').innerHTML =
+                '<span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span>';
             setValueSafe('fecha-vencimiento-input', '');
             document.getElementById('dias-restantes').textContent = '';
             document.getElementById('dias-suspendidos').textContent = '--';
@@ -2613,14 +4103,16 @@
             setValueSafe('fecha-limite-archivo', '');
             document.getElementById('dias-restantes-archivo').textContent = '--';
             setValueSafe('observaciones-estado', '');
-            document.getElementById('intervencion-contenido').innerHTML = '<p class="text-muted">Seleccione un hecho del Grupo A para ver las intervenciones.</p>';
+            document.getElementById('intervencion-contenido').innerHTML =
+                '<p class="text-muted">Seleccione un hecho del Grupo A para ver las intervenciones.</p>';
             document.getElementById('btn-pdf-cuestionario').style.display = 'none';
             actualizarEstadoSeccion('tab1', false);
             actualizarEstadoSeccion('tab2', false);
             actualizarEstadoSeccion('tab3', false);
             actualizarEstadoSeccion('tab4', false);
             actualizarPestanas();
-            document.getElementById('alertas-contenido').innerHTML = '<p class="text-muted">Cargue o seleccione una causa para ver las alertas y resúmenes.</p>';
+            document.getElementById('alertas-contenido').innerHTML =
+                '<p class="text-muted">Cargue o seleccione una causa para ver las alertas y resúmenes.</p>';
             document.getElementById('form-container').classList.add('active');
             document.getElementById('listado-view').style.display = 'none';
             activarTab('tab1');
@@ -2634,13 +4126,14 @@
         }
 
         // ================================================================
-        // 17. INFORME COMPLETO
+        // 17. INFORME COMPLETO (con prórrogas)
         // ================================================================
         function actualizarInforme() {
             const container = document.getElementById('informe-contenido');
             const causa = getCausaActual();
             if (!causa) {
-                container.innerHTML = `<div class="text-center" style="padding:20px;"><i class="fas fa-file-pdf" style="font-size:40px;color:#1a2a4a;margin-bottom:10px;"></i><h3 style="color:#1a2a4a;">Informe de Causa</h3><p class="text-muted">Guarde los datos de la causa para generar el informe completo.</p></div>`;
+                container.innerHTML =
+                    `<div class="text-center" style="padding:20px;"><i class="fas fa-file-pdf" style="font-size:40px;color:#1a2a4a;margin-bottom:10px;"></i><h3 style="color:#1a2a4a;">Informe de Causa</h3><p class="text-muted">Guarde los datos de la causa para generar el informe completo.</p></div>`;
                 return;
             }
 
@@ -2649,16 +4142,28 @@
             let fechaMostrada = '';
             if (info.estado === 'acto_conclusivo') {
                 estadoPlazo = '<span style="color:#0d47a1;font-weight:700;">Acto conclusivo presentado</span>';
-                fechaMostrada = causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida';
+                fechaMostrada = causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString(
+                    'es-ES') : 'No definida';
             } else if (info.estado === 'vencido') {
-                estadoPlazo = `<span style="color:#b33c3c;font-weight:700;">VENCIDO (hace ${Math.abs(info.dias)} días)</span>`;
-                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida');
+                estadoPlazo =
+                    `<span style="color:#b33c3c;font-weight:700;">VENCIDO (hace ${Math.abs(info.dias)} días)</span>`;
+                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa
+                    .fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa
+                    .fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') :
+                        'No definida');
             } else if (info.estado === 'proximo') {
-                estadoPlazo = `<span style="color:#b8860b;font-weight:700;">Próximo a vencer (faltan ${info.dias} días)</span>`;
-                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida');
+                estadoPlazo =
+                    `<span style="color:#b8860b;font-weight:700;">Próximo a vencer (faltan ${info.dias} días)</span>`;
+                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa
+                    .fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa
+                    .fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') :
+                        'No definida');
             } else if (info.dias !== null) {
                 estadoPlazo = `<span style="color:#2a7d4f;">En plazo (faltan ${info.dias} días)</span>`;
-                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida');
+                fechaMostrada = info.tipo === 'archivo_provisional' ? (causa.fechaLimiteArchivo ? new Date(causa
+                    .fechaLimiteArchivo).toLocaleDateString('es-ES') : 'No definida') : (causa
+                    .fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') :
+                        'No definida');
             } else {
                 estadoPlazo = '<span>No definido</span>';
                 fechaMostrada = 'No definida';
@@ -2667,7 +4172,8 @@
             const estado = causa.estadoCausa || 'activa';
             const esActiva = (estado === 'activa');
             const esActoConc = esActoConclusivoPresentado(estado);
-            const estadoPreclusion = esActiva ? 'Activa (en investigación)' : (esActoConc ? 'Precluida - Acto conclusivo presentado' : 'Precluida (investigación finalizada)');
+            const estadoPreclusion = esActiva ? 'Activa (en investigación)' : (esActoConc ?
+                'Precluida - Acto conclusivo presentado' : 'Precluida (investigación finalizada)');
 
             const hechosText = causa.hechos ? causa.hechos.map(h => {
                 const config = CONFIG.hechos[h.hecho];
@@ -2701,7 +4207,8 @@
             if (causa.victimas && causa.victimas.length > 0) {
                 html += `<ul style="margin-top:4px;padding-left:20px;">`;
                 causa.victimas.forEach((v, i) => {
-                    html += `<li>${i+1}. ${v.nombre || 'Sin nombre'} (CI: ${v.ci || 'N/A'}, Tel: ${v.telefono || 'N/A'}, Domicilio: ${v.domicilio || 'N/A'}, Edad: ${v.edad || 'N/A'})</li>`;
+                    html +=
+                        `<li>${i+1}. ${v.nombre || 'Sin nombre'} (CI: ${v.ci || 'N/A'}, Tel: ${v.telefono || 'N/A'}, Domicilio: ${v.domicilio || 'N/A'}, Edad: ${v.edad || 'N/A'})</li>`;
                 });
                 html += `</ul>`;
             } else {
@@ -2716,7 +4223,8 @@
             if (causa.testigos && causa.testigos.length > 0) {
                 html += `<ul style="margin-top:4px;padding-left:20px;">`;
                 causa.testigos.forEach((t, i) => {
-                    html += `<li>${i+1}. ${t.nombre || 'Sin nombre'} (CI: ${t.ci || 'N/A'}, Tel: ${t.telefono || 'N/A'})</li>`;
+                    html +=
+                        `<li>${i+1}. ${t.nombre || 'Sin nombre'} (CI: ${t.ci || 'N/A'}, Tel: ${t.telefono || 'N/A'})</li>`;
                 });
                 html += `</ul>`;
             } else {
@@ -2735,14 +4243,18 @@
                     if (h.incisos && h.incisos.length > 0) {
                         html += `<ul style="padding-left:15px;list-style-type:circle;">`;
                         h.incisos.forEach(inc => {
-                            const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
+                            const incData = config ? config.incisos.find(i => i.id === inc.id) :
+                            null;
                             if (incData) {
-                                let incLabel = incData.label.substring(0, 80) + (incData.label.length > 80 ? '…' : '');
+                                let incLabel = incData.label.substring(0, 80) + (incData.label
+                                    .length > 80 ? '…' : '');
                                 html += `<li>${incLabel}`;
                                 if (inc.numerales && inc.numerales.length > 0) {
                                     html += `<ul style="padding-left:15px;list-style-type:disc;">`;
                                     inc.numerales.forEach(numId => {
-                                        const numData = incData.numerales ? incData.numerales.find(n => n.id === numId) : null;
+                                        const numData = incData.numerales ? incData
+                                            .numerales.find(n => n.id === numId) :
+                                            null;
                                         if (numData) {
                                             html += `<li>${numData.label}</li>`;
                                         }
@@ -2774,7 +4286,8 @@
             html += `<div><strong>Observaciones del estado:</strong> ${causa.observacionesEstado || 'No especificadas'}</div>`;
 
             if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
-                html += `<div><strong>Fecha límite para nuevo requerimiento (Archivo Provisional):</strong> ${new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES')}</div>`;
+                html +=
+                    `<div><strong>Fecha límite para nuevo requerimiento (Archivo Provisional):</strong> ${new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES')}</div>`;
                 html += `<div><strong>Estado del plazo de archivo:</strong> ${estadoPlazo}</div>`;
             } else {
                 html += `<div><strong>Fecha de Acto Conclusivo:</strong> ${fechaMostrada}</div>`;
@@ -2786,29 +4299,34 @@
             if (causa.medidas?.notificacion) medidas.push('Notificación del acta de imputación');
             if (causa.medidas?.alternativas) medidas.push('Medidas alternativas a la prisión');
             if (causa.medidas?.privativas) medidas.push('Medidas privativas de la libertad');
-            html += (medidas.length > 0) ? medidas.join(', ') : 'No se registraron medidas específicas.';
+            html += (medidas.length > 0) ? medidas.join(', ') :
+            'No se registraron medidas específicas.';
             html += `</div>`;
 
             // PRÓRROGAS
             html += `<div><strong>Prórrogas:</strong></div>`;
             if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si') {
                 const po = causa.prorrogaOrdinaria;
-                html += `<div style="padding-left:15px;">• <strong>Ordinaria (Art. 325):</strong> Otorgada - Nueva fecha: ${po.nuevaFecha ? new Date(po.nuevaFecha).toLocaleDateString('es-ES') : 'No definida'}`;
+                html +=
+                    `<div style="padding-left:15px;">• <strong>Ordinaria (Art. 325):</strong> Otorgada - Nueva fecha: ${po.nuevaFecha ? new Date(po.nuevaFecha).toLocaleDateString('es-ES') : 'No definida'}`;
                 if (po.fundamento) html += ` - Fundamento: ${po.fundamento}`;
                 html += `</div>`;
             } else if (causa.prorrogaOrdinaria) {
-                html += `<div style="padding-left:15px;">• <strong>Ordinaria (Art. 325):</strong> No otorgada (Presentación: ${causa.prorrogaOrdinaria.fechaPresentacion || 'N/A'})</div>`;
+                html +=
+                    `<div style="padding-left:15px;">• <strong>Ordinaria (Art. 325):</strong> No otorgada (Presentación: ${causa.prorrogaOrdinaria.fechaPresentacion || 'N/A'})</div>`;
             } else {
                 html += `<div style="padding-left:15px;">• No se registró prórroga ordinaria.</div>`;
             }
 
             if (causa.prorrogaExtraordinaria && causa.prorrogaExtraordinaria.otorgada === 'Si') {
                 const pe = causa.prorrogaExtraordinaria;
-                html += `<div style="padding-left:15px;">• <strong>Extraordinaria (Art. 326):</strong> Otorgada - Nueva fecha: ${pe.nuevaFecha ? new Date(pe.nuevaFecha).toLocaleDateString('es-ES') : 'No definida'}`;
+                html +=
+                    `<div style="padding-left:15px;">• <strong>Extraordinaria (Art. 326):</strong> Otorgada - Nueva fecha: ${pe.nuevaFecha ? new Date(pe.nuevaFecha).toLocaleDateString('es-ES') : 'No definida'}`;
                 if (pe.fundamento) html += ` - Fundamento: ${pe.fundamento}`;
                 html += `</div>`;
             } else if (causa.prorrogaExtraordinaria) {
-                html += `<div style="padding-left:15px;">• <strong>Extraordinaria (Art. 326):</strong> No otorgada (Presentación: ${causa.prorrogaExtraordinaria.fechaPresentacion || 'N/A'})</div>`;
+                html +=
+                    `<div style="padding-left:15px;">• <strong>Extraordinaria (Art. 326):</strong> No otorgada (Presentación: ${causa.prorrogaExtraordinaria.fechaPresentacion || 'N/A'})</div>`;
             } else {
                 html += `<div style="padding-left:15px;">• No se registró prórroga extraordinaria.</div>`;
             }
@@ -2817,7 +4335,8 @@
             if (causa.rebeldia) {
                 html += `<div><strong>Rebeldía:</strong> ${causa.rebeldia.activa ? 'ACTIVA' : 'No declarada'}`;
                 if (causa.rebeldia.activa) {
-                    html += ` - Fecha declaración: ${causa.rebeldia.fecha || 'N/A'}, N° Resolución: ${causa.rebeldia.numResolucion || 'N/A'}, Levantamiento: ${causa.rebeldia.levantamiento || 'Pendiente'}, Días suspendidos: ${causa.rebeldia.diasSuspendidos || '0'}`;
+                    html +=
+                        ` - Fecha declaración: ${causa.rebeldia.fecha || 'N/A'}, N° Resolución: ${causa.rebeldia.numResolucion || 'N/A'}, Levantamiento: ${causa.rebeldia.levantamiento || 'Pendiente'}, Días suspendidos: ${causa.rebeldia.diasSuspendidos || '0'}`;
                 }
                 html += `</div>`;
             }
@@ -2863,8 +4382,10 @@
                 } else if (causa.intervenciones.tipo === 'liquidacion') {
                     const l = causa.intervenciones;
                     html += `<div><strong>Liquidación de Alimentos</strong></div>`;
-                    html += `<div><strong>Monto que debía abonar:</strong> ${l.montoDebido ? l.montoDebido.toLocaleString() : 0} Gs.</div>`;
-                    html += `<div><strong>Monto abonado:</strong> ${l.montoAbonado ? l.montoAbonado.toLocaleString() : 0} Gs.</div>`;
+                    html +=
+                        `<div><strong>Monto que debía abonar:</strong> ${l.montoDebido ? l.montoDebido.toLocaleString() : 0} Gs.</div>`;
+                    html +=
+                        `<div><strong>Monto abonado:</strong> ${l.montoAbonado ? l.montoAbonado.toLocaleString() : 0} Gs.</div>`;
                     const saldo = (l.montoDebido || 0) - (l.montoAbonado || 0);
                     html += `<div><strong>Saldo:</strong> ${saldo.toLocaleString()} Gs.</div>`;
                     if (l.diligencias && l.diligencias.length > 0) {
@@ -2881,16 +4402,20 @@
             // SECCIÓN 4: EVALUACIONES
             if (causa.psiFecha || causa.medFecha || causa.psiResultado || causa.medResultado) {
                 html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">4. EVALUACIONES</h3>`;
-                html += `<div><strong>Evaluación Psicológica:</strong> Fecha: ${causa.psiFecha ? new Date(causa.psiFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.psiProfesional || 'N/A'}, Resultado: ${causa.psiResultado || 'Pendiente'}, Observaciones: ${causa.psiObservaciones || 'N/A'}</div>`;
-                html += `<div><strong>Evaluación Médica:</strong> Fecha: ${causa.medFecha ? new Date(causa.medFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.medProfesional || 'N/A'}, Resultado: ${causa.medResultado || 'Pendiente'}, Observaciones: ${causa.medObservaciones || 'N/A'}</div>`;
+                html +=
+                    `<div><strong>Evaluación Psicológica:</strong> Fecha: ${causa.psiFecha ? new Date(causa.psiFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.psiProfesional || 'N/A'}, Resultado: ${causa.psiResultado || 'Pendiente'}, Observaciones: ${causa.psiObservaciones || 'N/A'}</div>`;
+                html +=
+                    `<div><strong>Evaluación Médica:</strong> Fecha: ${causa.medFecha ? new Date(causa.medFecha).toLocaleDateString('es-ES') : 'N/A'}, Profesional: ${causa.medProfesional || 'N/A'}, Resultado: ${causa.medResultado || 'Pendiente'}, Observaciones: ${causa.medObservaciones || 'N/A'}</div>`;
             }
 
             // SECCIÓN 5: ALERTAS
             html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">5. ALERTAS Y OBSERVACIONES FINALES</h3>`;
             let alertas = [];
             const infoAlert = calcularInfoPlazo(causa);
-            if (infoAlert.estado === 'vencido') alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(infoAlert.dias)} días)`);
-            else if (infoAlert.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${infoAlert.dias} días)`);
+            if (infoAlert.estado === 'vencido') alertas.push(
+                `⚠️ Plazo VENCIDO (hace ${Math.abs(infoAlert.dias)} días)`);
+            else if (infoAlert.estado === 'proximo') alertas.push(
+                `⏳ Plazo próximo (faltan ${infoAlert.dias} días)`);
             else if (infoAlert.estado === 'acto_conclusivo') alertas.push('📄 Acto conclusivo presentado');
             if (causa.rebeldia?.activa) {
                 alertas.push('🔴 Rebeldía activa');
@@ -2903,7 +4428,8 @@
             alertas.forEach(a => html += `<li>${a}</li>`);
             html += `</ul>`;
 
-            html += `<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:11px;color:#888;text-align:center;">Documento generado automáticamente por el Sistema de Gestión de Causas Penales - MP</div>`;
+            html +=
+                `<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:11px;color:#888;text-align:center;">Documento generado automáticamente por el Sistema de Gestión de Causas Penales - MP</div>`;
 
             container.innerHTML = html;
         }
@@ -2920,29 +4446,40 @@
             const container = document.getElementById('alertas-contenido');
             const causa = getCausaActual();
             if (!causa) {
-                container.innerHTML = '<p class="text-muted">Cargue o seleccione una causa para ver las alertas y resúmenes.</p>';
+                container.innerHTML =
+                    '<p class="text-muted">Cargue o seleccione una causa para ver las alertas y resúmenes.</p>';
                 return;
             }
             let alertas = [];
             const info = calcularInfoPlazo(causa);
-            if (info.estado === 'vencido') alertas.push(`⚠️ Plazo VENCIDO (hace ${Math.abs(info.dias)} días)`);
-            else if (info.estado === 'proximo') alertas.push(`⏳ Plazo próximo (faltan ${info.dias} días)`);
+            if (info.estado === 'vencido') alertas.push(
+                `⚠️ Plazo VENCIDO (hace ${Math.abs(info.dias)} días)`);
+            else if (info.estado === 'proximo') alertas.push(
+                `⏳ Plazo próximo (faltan ${info.dias} días)`);
             else if (info.estado === 'acto_conclusivo') alertas.push('📄 Acto conclusivo presentado');
             if (causa.rebeldia?.activa) {
                 alertas.push('🔴 Rebeldía activa');
                 if (!causa.rebeldia.levantamiento) alertas.push('⚠️ Rebeldía sin levantar');
-                else alertas.push(`✅ Rebeldía levantada (días suspendidos: ${causa.rebeldia.diasSuspendidos || 0})`);
+                else alertas.push(
+                    `✅ Rebeldía levantada (días suspendidos: ${causa.rebeldia.diasSuspendidos || 0})`);
             }
             if (!causa.victimas || causa.victimas.length === 0) alertas.push('⚠️ Sin víctimas');
             if (causa.estadoCausa && causa.estadoCausa !== 'activa') {
-                alertas.push(`📌 Causa precluida (investigación finalizada) - Estado: ${getEstadoLabel(causa.estadoCausa)}`);
+                alertas.push(
+                    `📌 Causa precluida (investigación finalizada) - Estado: ${getEstadoLabel(causa.estadoCausa)}`);
             }
 
-            if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si' && causa.prorrogaOrdinaria.nuevaFecha) {
-                alertas.push(`📅 Prórroga ordinaria (Art. 325) otorgada. Nueva fecha: ${new Date(causa.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`);
+            if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si' && causa.prorrogaOrdinaria
+                .nuevaFecha) {
+                alertas.push(
+                    `📅 Prórroga ordinaria (Art. 325) otorgada. Nueva fecha: ${new Date(causa.prorrogaOrdinaria.nuevaFecha).toLocaleDateString('es-ES')}`
+                    );
             }
-            if (causa.prorrogaExtraordinaria && causa.prorrogaExtraordinaria.otorgada === 'Si' && causa.prorrogaExtraordinaria.nuevaFecha) {
-                alertas.push(`📅 Prórroga extraordinaria (Art. 326) otorgada. Nueva fecha: ${new Date(causa.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`);
+            if (causa.prorrogaExtraordinaria && causa.prorrogaExtraordinaria.otorgada === 'Si' && causa
+                .prorrogaExtraordinaria.nuevaFecha) {
+                alertas.push(
+                    `📅 Prórroga extraordinaria (Art. 326) otorgada. Nueva fecha: ${new Date(causa.prorrogaExtraordinaria.nuevaFecha).toLocaleDateString('es-ES')}`
+                    );
             }
 
             let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
@@ -2956,16 +4493,20 @@
             html += `<hr style="margin:10px 0;border-color:#e0e4ea;">`;
 
             if (causa.estadoCausa === 'archivo-provisional' && causa.fechaLimiteArchivo) {
-                html += `<div><strong>📅 Fecha límite de archivo:</strong> ${new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES')}</div>`;
+                html +=
+                    `<div><strong>📅 Fecha límite de archivo:</strong> ${new Date(causa.fechaLimiteArchivo).toLocaleDateString('es-ES')}</div>`;
                 const diffArchivo = calcularInfoPlazo(causa);
                 if (diffArchivo.dias !== null) {
-                    html += `<div><strong>⏳ Días restantes para archivo:</strong> ${diffArchivo.dias >= 0 ? diffArchivo.dias : 'Vencido hace ' + Math.abs(diffArchivo.dias) + ' días'}</div>`;
+                    html +=
+                        `<div><strong>⏳ Días restantes para archivo:</strong> ${diffArchivo.dias >= 0 ? diffArchivo.dias : 'Vencido hace ' + Math.abs(diffArchivo.dias) + ' días'}</div>`;
                 }
             } else {
-                html += `<div><strong>📅 Fecha de Acto Conclusivo:</strong> ${causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida'}</div>`;
+                html +=
+                    `<div><strong>📅 Fecha de Acto Conclusivo:</strong> ${causa.fechaActoConclusivo ? new Date(causa.fechaActoConclusivo).toLocaleDateString('es-ES') : 'No definida'}</div>`;
                 const infoPlazo = calcularInfoPlazo(causa);
                 if (infoPlazo.dias !== null && infoPlazo.estado !== 'acto_conclusivo') {
-                    html += `<div><strong>⏳ Días restantes:</strong> ${infoPlazo.dias >= 0 ? infoPlazo.dias : 'Vencido hace ' + Math.abs(infoPlazo.dias) + ' días'}</div>`;
+                    html +=
+                        `<div><strong>⏳ Días restantes:</strong> ${infoPlazo.dias >= 0 ? infoPlazo.dias : 'Vencido hace ' + Math.abs(infoPlazo.dias) + ' días'}</div>`;
                 }
             }
 
@@ -2980,7 +4521,7 @@
         // 19. EXPORTAR E IMPORTAR
         // ================================================================
         function exportarDatos() {
-            const blob = new Blob([JSON.stringify(causas, null, 2)], { type:'application/json' });
+            const blob = new Blob([JSON.stringify(causas, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -3012,7 +4553,9 @@
                         if (Array.isArray(data)) {
                             const valid = data.every(item => item.numCausa && item.imputado);
                             if (!valid) {
-                                alert('El archivo contiene elementos sin número de causa o imputado. Se importarán solo los que cumplan.');
+                                alert(
+                                    'El archivo contiene elementos sin número de causa o imputado. Se importarán solo los que cumplan.'
+                                    );
                             }
                             causas = data;
                             guardarDatos();
@@ -3022,7 +4565,7 @@
                         } else {
                             alert('El archivo no contiene un array válido.');
                         }
-                    } catch(err) {
+                    } catch (err) {
                         alert('Error al leer el archivo: ' + err.message);
                     }
                 };
@@ -3039,5 +4582,6 @@
             console.log('✅ Incluye informe completo, prórrogas, reautenticación, exportación al salir y resumen con prórrogas.');
         });
     </script>
+
 </body>
 </html>
