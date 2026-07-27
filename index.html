@@ -14,25 +14,9 @@
 
     <style>
         /* ===== ESTILOS COMPLETOS (sin cambios) ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f2f5;
-            color: #2d2d2d;
-            padding: 20px;
-        }
-        #auth-container {
-            max-width: 400px;
-            margin: 60px auto;
-            background: #fff;
-            padding: 30px 35px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #2d2d2d; padding: 20px; }
+        #auth-container { max-width: 400px; margin: 60px auto; background: #fff; padding: 30px 35px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
         #auth-container h2 { color: #1a2a4a; text-align: center; margin-bottom: 8px; }
         #auth-container .sub { color: #888; font-size: 14px; text-align: center; margin-bottom: 25px; }
         #auth-container .form-group { margin-bottom: 18px; }
@@ -207,7 +191,6 @@
         .alert-card-body { padding: 10px 14px; display: block; font-size: 13px; }
         .alert-card-body.collapsed { display: none; }
         .alert-item { display: flex; padding: 4px 0; border-bottom: 1px solid #f4f6f9; font-size: 13px; }
-        .alert-item:last-child { border-bottom: none; }
         .alert-item .label { font-weight: 600; color: #555; min-width: 130px; }
         .alert-item .value { color: #333; }
         .espacio-firma { margin-top: 15px; padding-top: 12px; border-top: 1px solid #ccc; }
@@ -326,54 +309,29 @@
 </head>
 <body>
 
-    <!-- ============================================================ -->
     <!-- ===== AUTENTICACIÓN ===== -->
-    <!-- ============================================================ -->
     <div id="auth-container">
         <img src="logo.png" alt="Ministerio Público" style="display:block;margin:0 auto 15px;max-width:200px;height:auto;" onerror="this.style.display='none'">
         <h2><i class="fas fa-gavel" style="color:#d4a843;"></i> MP</h2>
         <div class="sub">Sistema de Gestión de Causas Penales</div>
         <div id="auth-message"></div>
         <div id="auth-form">
-            <div class="form-group">
-                <label>Correo electrónico</label>
-                <input type="email" id="auth-email" placeholder="ejemplo@correo.com">
-            </div>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="auth-password" placeholder="••••••••">
-            </div>
-            <div class="form-group" id="registro-extra" style="display:none;">
-                <label>Nombre completo</label>
-                <input type="text" id="auth-nombre" placeholder="Nombre y apellido">
-            </div>
-            <div class="form-group" id="registro-cargo" style="display:none;">
-                <label>Cargo / Función</label>
-                <input type="text" id="auth-cargo" placeholder="Ej: Fiscal, Secretario">
-            </div>
-            <div class="form-group" id="registro-telefono" style="display:none;">
-                <label>Teléfono</label>
-                <input type="text" id="auth-telefono" placeholder="Número de contacto">
-            </div>
+            <div class="form-group"><label>Correo electrónico</label><input type="email" id="auth-email" placeholder="ejemplo@correo.com"></div>
+            <div class="form-group"><label>Contraseña</label><input type="password" id="auth-password" placeholder="••••••••"></div>
+            <div class="form-group" id="registro-extra" style="display:none;"><label>Nombre completo</label><input type="text" id="auth-nombre" placeholder="Nombre y apellido"></div>
+            <div class="form-group" id="registro-cargo" style="display:none;"><label>Cargo / Función</label><input type="text" id="auth-cargo" placeholder="Ej: Fiscal, Secretario"></div>
+            <div class="form-group" id="registro-telefono" style="display:none;"><label>Teléfono</label><input type="text" id="auth-telefono" placeholder="Número de contacto"></div>
             <button class="btn-auth" id="auth-action-btn" onclick="handleAuth()"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</button>
-            <div class="auth-switch">
-                ¿No tienes cuenta? <a id="auth-toggle-link" onclick="toggleAuthMode()">Regístrate</a>
-            </div>
+            <div class="auth-switch">¿No tienes cuenta? <a id="auth-toggle-link" onclick="toggleAuthMode()">Regístrate</a></div>
         </div>
     </div>
 
-    <!-- ============================================================ -->
     <!-- ===== SISTEMA PRINCIPAL ===== -->
-    <!-- ============================================================ -->
     <div id="app">
-        <!-- HEADER -->
         <header class="header">
             <div style="display:flex;align-items:center;gap:10px;">
                 <img src="logo.png" style="height:40px;" onerror="this.style.display='none'">
-                <div>
-                    <h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1>
-                    <span class="subtitle">Ministerio Público – Sistema de Gestión Integral</span>
-                </div>
+                <div><h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1><span class="subtitle">Ministerio Público – Sistema de Gestión Integral</span></div>
             </div>
             <div class="user-info">
                 <span id="user-info-display" style="font-size:13px; font-weight:500;"></span>
@@ -383,7 +341,6 @@
             </div>
         </header>
 
-        <!-- TOOLBAR -->
         <div class="toolbar no-print">
             <div class="toolbar-left">
                 <button class="btn btn-primary" onclick="nuevaCausa()"><i class="fas fa-plus"></i> Nueva Causa</button>
@@ -393,125 +350,81 @@
                 <button class="btn btn-danger" onclick="eliminarTodasLasCausas()"><i class="fas fa-trash-alt"></i> Eliminar todas</button>
             </div>
             <div class="toolbar-right">
-                <div class="search-box">
-                    <input type="text" id="buscador" placeholder="Buscar causa..." oninput="filtrarCausas()">
-                    <button><i class="fas fa-search"></i></button>
-                </div>
+                <div class="search-box"><input type="text" id="buscador" placeholder="Buscar causa..." oninput="filtrarCausas()"><button><i class="fas fa-search"></i></button></div>
             </div>
         </div>
 
-        <!-- MAIN CONTENT -->
         <div class="main-content">
-            <!-- LISTADO -->
             <div id="listado-view">
-                <div class="section-title">
-                    <i class="fas fa-folder-open"></i> Causas Registradas
-                    <span id="contador-causas" style="font-weight:400;font-size:13px;color:#888;margin-left:10px;">(0)</span>
-                </div>
+                <div class="section-title"><i class="fas fa-folder-open"></i> Causas Registradas <span id="contador-causas" style="font-weight:400;font-size:13px;color:#888;margin-left:10px;">(0)</span></div>
                 <div id="causa-grid" class="causa-grid"></div>
             </div>
 
-            <!-- ADMIN PANEL -->
             <div id="admin-panel">
                 <h3><i class="fas fa-users-cog"></i> Gestión de Usuarios</h3>
                 <div id="admin-users-list"><p class="text-muted">Cargando usuarios...</p></div>
             </div>
 
-            <!-- FORMULARIO DE CAUSA -->
             <div id="form-container" class="form-container">
                 <div class="form-header">
                     <h2 id="form-title"><i class="fas fa-edit"></i> Nueva Causa</h2>
-                    <div>
-                        <span id="estado-causa" class="estado-guardado" style="margin-right:12px;"></span>
-                        <button class="btn-cerrar" onclick="cerrarFormulario()">&times;</button>
-                    </div>
+                    <div><span id="estado-causa" class="estado-guardado" style="margin-right:12px;"></span><button class="btn-cerrar" onclick="cerrarFormulario()">&times;</button></div>
                 </div>
                 <div class="tabs no-print" id="tabs-container"></div>
 
                 <!-- TAB 1: DATOS GENERALES -->
                 <div id="tab1" class="tab-pane active">
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Número de Causa <span class="required">*</span></label>
-                            <input type="text" id="num-causa" placeholder="Ej: 123/2026" oninput="generarCaratula()">
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre del Imputado <span class="required">*</span></label>
-                            <input type="text" id="imputado" placeholder="Nombre completo" oninput="generarCaratula()">
-                        </div>
+                        <div class="form-group"><label>Número de Causa <span class="required">*</span></label><input type="text" id="num-causa" placeholder="Ej: 123/2026" oninput="generarCaratula()"></div>
+                        <div class="form-group"><label>Nombre del Imputado <span class="required">*</span></label><input type="text" id="imputado" placeholder="Nombre completo" oninput="generarCaratula()"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Número de Identidad (CI)</label>
-                            <input type="text" id="ci-imputado" placeholder="Ej: 4.567.890"></div>
-                        <div class="form-group"><label>Domicilio</label>
-                            <input type="text" id="domicilio-imputado" placeholder="Dirección completa"></div>
-                        <div class="form-group"><label>Teléfono</label>
-                            <input type="text" id="telefono-imputado" placeholder="Ej: 0981-123-456"></div>
+                        <div class="form-group"><label>Número de Identidad (CI)</label><input type="text" id="ci-imputado" placeholder="Ej: 4.567.890"></div>
+                        <div class="form-group"><label>Domicilio</label><input type="text" id="domicilio-imputado" placeholder="Dirección completa"></div>
+                        <div class="form-group"><label>Teléfono</label><input type="text" id="telefono-imputado" placeholder="Ej: 0981-123-456"></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label>
-                            <div class="checkbox-group">
-                                <input type="checkbox" id="reincidente" onchange="toggleReincidencia()">
-                                <label for="reincidente">Sí</label>
-                            </div>
-                        </div>
-                        <div class="form-group"><label>Número de veces</label>
-                            <input type="number" id="num-reincidencias" min="0" value="0" disabled></div>
+                        <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="reincidente" onchange="toggleReincidencia()"><label for="reincidente">Sí</label></div></div>
+                        <div class="form-group"><label>Número de veces</label><input type="number" id="num-reincidencias" min="0" value="0" disabled></div>
                     </div>
                     <div class="sub-seccion">
                         <h4>Víctima(s)</h4>
                         <div id="victimas-container">
                             <div class="victima-block" data-index="0">
                                 <div class="form-row">
-                                    <div class="form-group"><label>Nombre completo</label>
-                                        <input type="text" class="victima-nombre" placeholder="Nombre de la víctima"></div>
-                                    <div class="form-group"><label>Cédula de identidad</label>
-                                        <input type="text" class="victima-ci" placeholder="CI"></div>
-                                    <div class="form-group"><label>Teléfono</label>
-                                        <input type="text" class="victima-telefono" placeholder="Teléfono"></div>
+                                    <div class="form-group"><label>Nombre completo</label><input type="text" class="victima-nombre" placeholder="Nombre de la víctima"></div>
+                                    <div class="form-group"><label>Cédula de identidad</label><input type="text" class="victima-ci" placeholder="CI"></div>
+                                    <div class="form-group"><label>Teléfono</label><input type="text" class="victima-telefono" placeholder="Teléfono"></div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="form-group"><label>Domicilio</label>
-                                        <input type="text" class="victima-domicilio" placeholder="Dirección"></div>
-                                    <div class="form-group"><label>Edad</label>
-                                        <input type="number" class="victima-edad" placeholder="Edad" min="0"></div>
-                                    <div class="form-group" style="justify-content:flex-end;">
-                                        <button class="btn-remover" onclick="eliminarVictima(this)"><i class="fas fa-times"></i> Eliminar</button>
-                                    </div>
+                                    <div class="form-group"><label>Domicilio</label><input type="text" class="victima-domicilio" placeholder="Dirección"></div>
+                                    <div class="form-group"><label>Edad</label><input type="number" class="victima-edad" placeholder="Edad" min="0"></div>
+                                    <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarVictima(this)"><i class="fas fa-times"></i> Eliminar</button></div>
                                 </div>
                             </div>
                         </div>
                         <button class="btn btn-agregar" onclick="agregarVictima()"><i class="fas fa-plus"></i> Agregar otra víctima</button>
                     </div>
                     <div class="form-row">
-                        <div class="form-group"><label>Lugar del hecho</label>
-                            <input type="text" id="lugar-hecho" placeholder="Dirección o ubicación"></div>
-                        <div class="form-group"><label>Fecha del hecho</label>
-                            <input type="date" id="fecha-hecho"></div>
-                        <div class="form-group"><label>Hora del hecho</label>
-                            <input type="time" id="hora-hecho"></div>
+                        <div class="form-group"><label>Lugar del hecho</label><input type="text" id="lugar-hecho" placeholder="Dirección o ubicación"></div>
+                        <div class="form-group"><label>Fecha del hecho</label><input type="date" id="fecha-hecho"></div>
+                        <div class="form-group"><label>Hora del hecho</label><input type="time" id="hora-hecho"></div>
                     </div>
                     <div class="sub-seccion">
                         <h4>Testigos</h4>
                         <div id="testigos-container">
                             <div class="testigo-block" data-index="0">
                                 <div class="form-row">
-                                    <div class="form-group"><label>Nombre completo</label>
-                                        <input type="text" class="testigo-nombre" placeholder="Nombre del testigo"></div>
-                                    <div class="form-group"><label>Cédula de identidad</label>
-                                        <input type="text" class="testigo-ci" placeholder="CI"></div>
-                                    <div class="form-group"><label>Teléfono</label>
-                                        <input type="text" class="testigo-telefono" placeholder="Teléfono"></div>
-                                    <div class="form-group" style="justify-content:flex-end;">
-                                        <button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button>
-                                    </div>
+                                    <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" placeholder="Nombre del testigo"></div>
+                                    <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" placeholder="CI"></div>
+                                    <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" placeholder="Teléfono"></div>
+                                    <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button></div>
                                 </div>
                             </div>
                         </div>
                         <button class="btn btn-agregar" onclick="agregarTestigo()"><i class="fas fa-plus"></i> Agregar otro testigo</button>
                     </div>
-                    <div class="form-group"><label>Breve descripción del hecho</label>
-                        <textarea id="descripcion-hecho" rows="2" placeholder="Describa brevemente los hechos..."></textarea></div>
+                    <div class="form-group"><label>Breve descripción del hecho</label><textarea id="descripcion-hecho" rows="2" placeholder="Describa brevemente los hechos..."></textarea></div>
                     <div class="sub-seccion">
                         <h4>Hechos Punibles</h4>
                         <div class="flex-wrap">
@@ -541,12 +454,8 @@
                         <div id="incisos-container" style="margin-top:6px;"><div id="incisos-opciones"></div></div>
                         <div id="lista-hechos" style="margin-top:6px;"></div>
                     </div>
-                    <div class="form-group"><label>Carátula Generada</label>
-                        <div id="caratula-preview" class="caratula-preview"><span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span></div>
-                    </div>
-                    <div class="form-group"><label>Observaciones Generales</label>
-                        <textarea id="observaciones-generales" rows="2" placeholder="Comentarios adicionales sobre la causa..."></textarea>
-                    </div>
+                    <div class="form-group"><label>Carátula Generada</label><div id="caratula-preview" class="caratula-preview"><span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span></div></div>
+                    <div class="form-group"><label>Observaciones Generales</label><textarea id="observaciones-generales" rows="2" placeholder="Comentarios adicionales sobre la causa..."></textarea></div>
                     <div class="footer-seccion">
                         <span class="estado" id="estado-tab1">Sin guardar</span>
                         <button class="btn btn-guardar-seccion" onclick="guardarPestana1()"><i class="fas fa-save"></i> Guardar Datos Generales</button>
@@ -558,19 +467,12 @@
                     <div class="sub-seccion">
                         <h4>Datos de Imputación</h4>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label>Fecha de Imputación</label>
-                                <input type="date" id="fecha-imputacion">
-                                <span class="text-muted">(Solo referencia)</span>
-                            </div>
-                            <div class="form-group"><label>Resuelto por AI N°</label>
-                                <input type="text" id="num-ai" placeholder="N° de AI"></div>
-                            <div class="form-group"><label>Fecha del AI</label>
-                                <input type="date" id="fecha-ai"></div>
+                            <div class="form-group"><label>Fecha de Imputación</label><input type="date" id="fecha-imputacion"><span class="text-muted">(Solo referencia)</span></div>
+                            <div class="form-group"><label>Resuelto por AI N°</label><input type="text" id="num-ai" placeholder="N° de AI"></div>
+                            <div class="form-group"><label>Fecha del AI</label><input type="date" id="fecha-ai"></div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group"><label>Número de Juzgado / Penal de Garantías</label>
-                                <input type="text" id="num-juzgado" placeholder="Ej: Juzgado Penal de Garantías N° 3"></div>
+                            <div class="form-group"><label>Número de Juzgado / Penal de Garantías</label><input type="text" id="num-juzgado" placeholder="Ej: Juzgado Penal de Garantías N° 3"></div>
                         </div>
                     </div>
                     <div class="sub-seccion destacada">
@@ -595,22 +497,12 @@
                                     <option value="otro">Otro</option>
                                 </select>
                             </div>
-                            <div class="form-group">
-                                <label>Observaciones del estado</label>
-                                <textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..."></textarea>
-                            </div>
+                            <div class="form-group"><label>Observaciones del estado</label><textarea id="observaciones-estado" rows="2" placeholder="Detalles adicionales sobre el estado..."></textarea></div>
                         </div>
                         <div id="campo-fecha-archivo" style="display:none; margin-top:10px;">
                             <div class="form-row">
-                                <div class="form-group">
-                                    <label>Fecha límite para nuevo requerimiento (Archivo Provisional) <span class="required">*</span></label>
-                                    <input type="date" id="fecha-limite-archivo" onchange="calcularDiasRestantesArchivo()">
-                                    <span class="text-muted">Fecha hasta la cual se puede solicitar la reapertura.</span>
-                                </div>
-                                <div class="form-group">
-                                    <label>Días restantes para archivo</label>
-                                    <div id="dias-restantes-archivo" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div>
-                                </div>
+                                <div class="form-group"><label>Fecha límite para nuevo requerimiento (Archivo Provisional) <span class="required">*</span></label><input type="date" id="fecha-limite-archivo" onchange="calcularDiasRestantesArchivo()"><span class="text-muted">Fecha hasta la cual se puede solicitar la reapertura.</span></div>
+                                <div class="form-group"><label>Días restantes para archivo</label><div id="dias-restantes-archivo" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div></div>
                             </div>
                         </div>
                     </div>
@@ -619,14 +511,8 @@
                         <h4>Fecha de Acto Conclusivo <span class="text-muted">(ingreso manual)</span></h4>
                         <p class="text-muted">Ingrese la fecha en que vence el plazo para presentar el requerimiento conclusivo.</p>
                         <div class="form-row">
-                            <div class="form-group">
-                                <label>Fecha del Acto Conclusivo <span class="required">*</span></label>
-                                <input type="date" id="fecha-vencimiento-input" onchange="calcularDiasRestantesDesdeFecha();">
-                            </div>
-                            <div class="form-group">
-                                <label>Días restantes</label>
-                                <div id="dias-restantes" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div>
-                            </div>
+                            <div class="form-group"><label>Fecha del Acto Conclusivo <span class="required">*</span></label><input type="date" id="fecha-vencimiento-input" onchange="calcularDiasRestantesDesdeFecha();"></div>
+                            <div class="form-group"><label>Días restantes</label><div id="dias-restantes" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div></div>
                         </div>
                     </div>
 
@@ -656,23 +542,15 @@
                     </div>
                     <div class="sub-seccion">
                         <h4>Rebeldía</h4>
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="rebeldia-activa" onchange="toggleRebeldia()">
-                            <label for="rebeldia-activa"><strong>Declarado en rebeldía</strong></label>
-                        </div>
+                        <div class="checkbox-group"><input type="checkbox" id="rebeldia-activa" onchange="toggleRebeldia()"><label for="rebeldia-activa"><strong>Declarado en rebeldía</strong></label></div>
                         <div id="rebeldia-campos" class="hidden">
                             <div class="form-row">
-                                <div class="form-group"><label>Fecha de declaración</label>
-                                    <input type="date" id="fecha-rebeldia"></div>
-                                <div class="form-group"><label>N° de resolución</label>
-                                    <input type="text" id="num-resolucion-rebeldia" placeholder="N° de resolución"></div>
+                                <div class="form-group"><label>Fecha de declaración</label><input type="date" id="fecha-rebeldia"></div>
+                                <div class="form-group"><label>N° de resolución</label><input type="text" id="num-resolucion-rebeldia" placeholder="N° de resolución"></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label>Fecha de levantamiento</label>
-                                    <input type="date" id="fecha-levantamiento-rebeldia"></div>
-                                <div class="form-group"><label>Días suspendidos (referencia)</label>
-                                    <div id="dias-suspendidos" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div>
-                                </div>
+                                <div class="form-group"><label>Fecha de levantamiento</label><input type="date" id="fecha-levantamiento-rebeldia"></div>
+                                <div class="form-group"><label>Días suspendidos (referencia)</label><div id="dias-suspendidos" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div></div>
                             </div>
                         </div>
                     </div>
@@ -695,9 +573,7 @@
                 <!-- TAB 3: INTERVENCIONES (solo Grupo A) -->
                 <div id="tab3" class="tab-pane">
                     <div id="intervencion-contenido"><p class="text-muted">Seleccione un hecho del Grupo A para ver las intervenciones.</p></div>
-                    <div id="btn-pdf-cuestionario" style="display:none; margin-top:10px;">
-                        <button class="btn btn-primary" onclick="exportarCuestionarioPDF()"><i class="fas fa-file-pdf"></i> Guardar Cuestionario en PDF</button>
-                    </div>
+                    <div id="btn-pdf-cuestionario" style="display:none; margin-top:10px;"><button class="btn btn-primary" onclick="exportarCuestionarioPDF()"><i class="fas fa-file-pdf"></i> Guardar Cuestionario en PDF</button></div>
                     <div class="footer-seccion">
                         <span class="estado" id="estado-tab3">Sin guardar</span>
                         <button class="btn btn-guardar-seccion" onclick="guardarPestana3()"><i class="fas fa-save"></i> Guardar Intervenciones</button>
@@ -731,9 +607,7 @@
                 <!-- TAB 5: INFORME -->
                 <div id="tab5" class="tab-pane">
                     <div id="informe-contenido" style="background:#fff;padding:15px;border-radius:6px;border:1px solid #e0e4ea;"><p class="text-muted">Complete los datos para generar el informe.</p></div>
-                    <div class="text-center mt-20 no-print">
-                        <button class="btn btn-imprimir" onclick="imprimirInforme()"><i class="fas fa-print"></i> Imprimir Informe</button>
-                    </div>
+                    <div class="text-center mt-20 no-print"><button class="btn btn-imprimir" onclick="imprimirInforme()"><i class="fas fa-print"></i> Imprimir Informe</button></div>
                 </div>
 
                 <!-- TAB 6: ALERTAS -->
@@ -744,27 +618,21 @@
         </div>
     </div>
 
-    <!-- ===== MODAL DE RESUMEN ===== -->
+    <!-- ===== MODALES ===== -->
     <div id="modal-resumen">
         <div class="modal-contenido">
             <button class="modal-cerrar" id="cerrar-modal-resumen">&times;</button>
             <h3 style="color:#1a2a4a; margin-bottom:12px;"><i class="fas fa-list"></i> Resumen de Plazos de Causas</h3>
             <pre id="contenido-modal"></pre>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="btn-cerrar-modal-resumen">Cerrar</button>
-            </div>
+            <div class="modal-footer"><button class="btn btn-primary" id="btn-cerrar-modal-resumen">Cerrar</button></div>
         </div>
     </div>
 
-    <!-- ===== MODAL DE REAUTENTICACIÓN ===== -->
     <div id="modal-reauth">
         <div class="reauth-contenido">
             <h3><i class="fas fa-lock"></i> Verificación de seguridad</h3>
             <p>Para eliminar esta causa, ingrese su contraseña actual.</p>
-            <div class="form-group">
-                <label>Contraseña</label>
-                <input type="password" id="reauth-password" placeholder="••••••••">
-            </div>
+            <div class="form-group"><label>Contraseña</label><input type="password" id="reauth-password" placeholder="••••••••"></div>
             <div id="reauth-message" class="reauth-message"></div>
             <div class="reauth-actions">
                 <button class="btn btn-outline" onclick="cerrarReauth()">Cancelar</button>
@@ -774,7 +642,7 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- ===== SCRIPT COMPLETO CORREGIDO ===== -->
+    <!-- ===== SCRIPT COMPLETO ===== -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
@@ -806,22 +674,14 @@
         let reauthAccion = null;
 
         const ESTADOS_ACTO_CONCLUSIVO = [
-            'criterio-oportunidad',
-            'archivo-definitivo',
-            'sobreseimiento',
-            'elevacion-juicio',
-            'sentencia-condenatoria',
-            'sentencia-absolutoria',
-            'suspension-condicional',
-            'acuerdo-reparatorio',
-            'conciliacion',
-            'remision-justicia-menores',
-            'inhibitoria',
-            'otro'
+            'criterio-oportunidad', 'archivo-definitivo', 'sobreseimiento',
+            'elevacion-juicio', 'sentencia-condenatoria', 'sentencia-absolutoria',
+            'suspension-condicional', 'acuerdo-reparatorio', 'conciliacion',
+            'remision-justicia-menores', 'inhibitoria', 'otro'
         ];
 
         // ================================================================
-        // 2. CONFIGURACIÓN DE HECHOS - TEXTOS COMPLETOS
+        // 2. CONFIGURACIÓN DE HECHOS - TODOS LOS TEXTOS COMPLETOS
         // ================================================================
         const CONFIG = {
             hechos: {
@@ -1002,15 +862,87 @@
         function esGrupoA(hechoId) { return GRUPO_A.includes(hechoId); }
 
         // ================================================================
-        // 3. FUNCIONES AUXILIARES (FECHAS CORREGIDAS)
+        // 3. FUNCIONES DE FECHA - CÁLCULO CORRECTO INCLUYENDO EL DÍA DE HOY (UTC)
         // ================================================================
-        function formatearFechaLocal(fechaStr) {
-            if (!fechaStr) return 'No definida';
-            const fecha = new Date(fechaStr);
-            if (isNaN(fecha.getTime())) return 'Fecha inválida';
-            return fecha.toLocaleDateString('es-ES');
+        function getTodayUTC() {
+            const hoy = new Date();
+            return new Date(Date.UTC(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()));
         }
 
+        function parseUTCDate(dateStr) {
+            if (!dateStr) return null;
+            const partes = dateStr.split('-');
+            return new Date(Date.UTC(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2])));
+        }
+
+        function formatearFechaLocal(fechaStr) {
+            if (!fechaStr) return 'No definida';
+            const fecha = parseUTCDate(fechaStr);
+            if (!fecha || isNaN(fecha.getTime())) return 'Fecha inválida';
+            return fecha.toLocaleDateString('es-ES', { timeZone: 'UTC' });
+        }
+
+        function calcularDiasRestantesDesdeFecha() {
+            const fechaManual = document.getElementById('fecha-vencimiento-input').value;
+            const elDias = document.getElementById('dias-restantes');
+            if (!fechaManual) {
+                elDias.textContent = 'No definida';
+                elDias.style.color = '#888';
+                return;
+            }
+            const hoy = getTodayUTC();
+            const fecha = parseUTCDate(fechaManual);
+            if (!fecha) {
+                elDias.textContent = 'Fecha inválida';
+                elDias.style.color = '#b33c3c';
+                return;
+            }
+            const diffMs = fecha - hoy;
+            const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            if (diffDias < 0) {
+                elDias.textContent = `VENCIDA (hace ${Math.abs(diffDias)} días)`;
+                elDias.style.color = '#b33c3c';
+            } else if (diffDias <= 15) {
+                elDias.textContent = `Faltan ${diffDias} días (próximo)`;
+                elDias.style.color = '#b8860b';
+            } else {
+                elDias.textContent = `Faltan ${diffDias} días`;
+                elDias.style.color = '#2a7d4f';
+            }
+        }
+
+        function calcularDiasRestantesArchivo() {
+            const fecha = document.getElementById('fecha-limite-archivo').value;
+            const elDias = document.getElementById('dias-restantes-archivo');
+            if (!fecha) {
+                elDias.textContent = 'No definida';
+                elDias.style.color = '#888';
+                return;
+            }
+            const hoy = getTodayUTC();
+            const fechaObj = parseUTCDate(fecha);
+            if (!fechaObj) {
+                elDias.textContent = 'Fecha inválida';
+                elDias.style.color = '#b33c3c';
+                return;
+            }
+            const diffMs = fechaObj - hoy;
+            const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            if (diffDias < 0) {
+                elDias.textContent = `VENCIDA (hace ${Math.abs(diffDias)} días)`;
+                elDias.style.color = '#b33c3c';
+            } else if (diffDias <= 15) {
+                elDias.textContent = `Faltan ${diffDias} días (próximo)`;
+                elDias.style.color = '#b8860b';
+            } else {
+                elDias.textContent = `Faltan ${diffDias} días`;
+                elDias.style.color = '#2a7d4f';
+            }
+        }
+
+        // ================================================================
+        // 4. OTRAS FUNCIONES AUXILIARES
+        // ================================================================
         function setValueSafe(id, valor) {
             const el = document.getElementById(id);
             if (el) { el.value = (valor !== undefined && valor !== null) ? valor : ''; return true; }
@@ -1026,17 +958,6 @@
         function getCausaActual() {
             if (!causaActualId) return null;
             return causas.find(c => c.id === causaActualId) || null;
-        }
-
-        function parseLocalDate(dateStr) {
-            if (!dateStr) return null;
-            const partes = dateStr.split('-');
-            return new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
-        }
-
-        function getTodayMidnight() {
-            const hoy = new Date();
-            return new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
         }
 
         function esActoConclusivoPresentado(estado) {
@@ -1057,60 +978,19 @@
                 tipo = 'acto_conclusivo';
             }
             if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-            const fecha = parseLocalDate(fechaStr);
-            const hoy = getTodayMidnight();
-            const diff = Math.floor((fecha - hoy) / (1000 * 60 * 60 * 24)) + 1;  // CORREGIDO: incluye el día de hoy
+
+            const hoy = getTodayUTC();
+            const fecha = parseUTCDate(fechaStr);
+            if (!fecha) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
+
+            const diffMs = fecha - hoy;
+            const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
             let estadoPlazo = 'ok';
-            if (diff < 0) estadoPlazo = 'vencido';
-            else if (diff <= 15) estadoPlazo = 'proximo';
-            return { dias: diff, estado: estadoPlazo, tipo: tipo };
-        }
+            if (diffDias < 0) estadoPlazo = 'vencido';
+            else if (diffDias <= 15) estadoPlazo = 'proximo';
 
-        // Cálculo de días para el Acto Conclusivo (incluye el día de hoy)
-        function calcularDiasRestantesDesdeFecha() {
-            const fechaManual = document.getElementById('fecha-vencimiento-input').value;
-            const elDias = document.getElementById('dias-restantes');
-            if (!fechaManual) {
-                elDias.textContent = 'No definida';
-                elDias.style.color = '#888';
-                return;
-            }
-            const fecha = parseLocalDate(fechaManual);
-            const hoy = getTodayMidnight();
-            const diff = Math.floor((fecha - hoy) / (1000 * 60 * 60 * 24)) + 1;  // CORREGIDO
-            if (diff < 0) {
-                elDias.textContent = `VENCIDA (hace ${Math.abs(diff)} días)`;
-                elDias.style.color = '#b33c3c';
-            } else if (diff <= 15) {
-                elDias.textContent = `Faltan ${diff} días (próximo)`;
-                elDias.style.color = '#b8860b';
-            } else {
-                elDias.textContent = `Faltan ${diff} días`;
-                elDias.style.color = '#2a7d4f';
-            }
-        }
-
-        function calcularDiasRestantesArchivo() {
-            const fecha = document.getElementById('fecha-limite-archivo').value;
-            const elDias = document.getElementById('dias-restantes-archivo');
-            if (!fecha) {
-                elDias.textContent = 'No definida';
-                elDias.style.color = '#888';
-                return;
-            }
-            const fechaObj = parseLocalDate(fecha);
-            const hoy = getTodayMidnight();
-            const diff = Math.floor((fechaObj - hoy) / (1000 * 60 * 60 * 24)) + 1;  // CORREGIDO
-            if (diff < 0) {
-                elDias.textContent = `VENCIDA (hace ${Math.abs(diff)} días)`;
-                elDias.style.color = '#b33c3c';
-            } else if (diff <= 15) {
-                elDias.textContent = `Faltan ${diff} días (próximo)`;
-                elDias.style.color = '#b8860b';
-            } else {
-                elDias.textContent = `Faltan ${diff} días`;
-                elDias.style.color = '#2a7d4f';
-            }
+            return { dias: diffDias, estado: estadoPlazo, tipo: tipo };
         }
 
         function toggleFechaArchivoProvisional() {
@@ -1139,9 +1019,9 @@
                 elDias.textContent = '--';
                 return;
             }
-            const ini = parseLocalDate(fechaDeclaracion);
-            const fin = parseLocalDate(fechaLevantamiento);
-            if (fin < ini) {
+            const ini = parseUTCDate(fechaDeclaracion);
+            const fin = parseUTCDate(fechaLevantamiento);
+            if (!ini || !fin || fin < ini) {
                 elDias.textContent = 'Fecha de levantamiento anterior';
                 elDias.style.color = '#b33c3c';
                 return;
@@ -1158,7 +1038,7 @@
         }
 
         // ================================================================
-        // 4. AUTENTICACIÓN (sin cambios)
+        // 5. AUTENTICACIÓN (sin cambios)
         // ================================================================
         function mostrarMensaje(texto, tipo) {
             const el = document.getElementById('auth-message');
@@ -1318,7 +1198,7 @@
         }
 
         // ================================================================
-        // 5. ADMIN (sin cambios)
+        // 6. ADMIN (sin cambios)
         // ================================================================
         function toggleAdminPanel() {
             const panel = document.getElementById('admin-panel');
@@ -1403,7 +1283,7 @@
         }
 
         // ================================================================
-        // 6. INICIALIZACIÓN
+        // 7. INICIALIZACIÓN
         // ================================================================
         function inicializarSistema() {
             cargarDatos();
@@ -1434,7 +1314,7 @@
         }
 
         // ================================================================
-        // 7. PESTAÑAS
+        // 8. PESTAÑAS
         // ================================================================
         function actualizarPestanas() {
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
@@ -1504,7 +1384,7 @@
         }
 
         // ================================================================
-        // 8. MODAL DE RESUMEN (con prórrogas)
+        // 9. RESUMEN
         // ================================================================
         function generarResumenRequerimientos() {
             if (causas.length === 0) return '📭 No hay causas registradas.';
@@ -1610,7 +1490,7 @@
         });
 
         // ================================================================
-        // 9. CRUD
+        // 10. CRUD
         // ================================================================
         function guardarDatos() {
             try {
@@ -1659,7 +1539,7 @@
         }
 
         // ================================================================
-        // 10. GUARDAR PESTAÑAS (sin cambios)
+        // 11. GUARDAR PESTAÑAS
         // ================================================================
         function guardarPestana1() {
             const num = document.getElementById('num-causa').value.trim();
@@ -1837,7 +1717,7 @@
         }
 
         // ================================================================
-        // 11. CARGAR CAUSA PARA EDITAR
+        // 12. CARGAR CAUSA PARA EDITAR
         // ================================================================
         function cargarCausaParaEditar(id) {
             const causa = causas.find(c => c.id === id);
@@ -2004,7 +1884,7 @@
         }
 
         // ================================================================
-        // 12. VÍCTIMAS, TESTIGOS, HECHOS (con incisos completos)
+        // 13. VÍCTIMAS, TESTIGOS, HECHOS
         // ================================================================
         function agregarVictima() {
             const container = document.getElementById('victimas-container');
@@ -2152,7 +2032,6 @@
             document.getElementById('incisos-opciones').innerHTML = '<span class="text-muted">Seleccione un hecho punible</span>';
         }
 
-        // Renderiza los hechos agregados con sus incisos y numerales COMPLETOS
         function renderizarHechosAgregados() {
             const container = document.getElementById('lista-hechos');
             if (hechosAgregados.length === 0) {
@@ -2215,7 +2094,7 @@
         }
 
         // ================================================================
-        // 13. INTERVENCIONES (Cuestionario y Liquidación) - solo lo esencial
+        // 14. INTERVENCIONES (Cuestionario y Liquidación)
         // ================================================================
         const preguntasRiesgo = [
             { id: 'r1.1', label: '1.1 – Grado de relación con el supuesto agresor', opciones: [{valor:3,texto:'Cónyuge/concubino/pareja'},{valor:3,texto:'Ex cónyuge/ex concubino/ex pareja'},{valor:2,texto:'Padres/padrastros, abuelos'},{valor:2,texto:'Hijos/nietos'},{valor:1,texto:'Hermanos/sobrinos'},{valor:1,texto:'Tíos/primos'},{valor:0,texto:'Otros'}] },
@@ -2564,7 +2443,7 @@
         }
 
         // ================================================================
-        // 14. RENDERIZAR LISTADO
+        // 15. RENDERIZAR LISTADO
         // ================================================================
         function renderizarCausas() {
             const grid = document.getElementById('causa-grid');
@@ -2709,7 +2588,7 @@
         }
 
         // ================================================================
-        // 15. ELIMINAR
+        // 16. ELIMINAR
         // ================================================================
         function mostrarReauth(accion) {
             reauthAccion = accion;
@@ -2794,7 +2673,7 @@
         }
 
         // ================================================================
-        // 16. NUEVA CAUSA Y CERRAR
+        // 17. NUEVA CAUSA Y CERRAR
         // ================================================================
         function nuevaCausa() {
             causaActualId = null;
@@ -2854,7 +2733,7 @@
         }
 
         // ================================================================
-        // 17. INFORME COMPLETO (con fechas formateadas)
+        // 18. INFORME
         // ================================================================
         function actualizarInforme() {
             const container = document.getElementById('informe-contenido');
@@ -3128,7 +3007,7 @@
         }
 
         // ================================================================
-        // 18. ALERTAS
+        // 19. ALERTAS
         // ================================================================
         function actualizarAlertas() {
             const container = document.getElementById('alertas-contenido');
@@ -3191,7 +3070,7 @@
         }
 
         // ================================================================
-        // 19. EXPORTAR E IMPORTAR
+        // 20. EXPORTAR E IMPORTAR
         // ================================================================
         function exportarDatos() {
             const blob = new Blob([JSON.stringify(causas, null, 2)], { type: 'application/json' });
@@ -3246,7 +3125,7 @@
         }
 
         // ================================================================
-        // 20. CIERRE
+        // 21. CIERRE
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Sistema de Gestión de Causas Penales - MP cargado completamente.');
