@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        /* ===== ESTILOS COMPLETOS (sin cambios) ===== */
+        /* ===== ESTILOS COMPLETOS ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; color: #2d2d2d; padding: 20px; }
         #auth-container { max-width: 400px; margin: 60px auto; background: #fff; padding: 30px 35px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
@@ -205,6 +205,47 @@
         .fundamento-articulo { margin: 6px 0; padding: 5px 10px; background: #f8f9fa; border-left: 3px solid #1a2a4a; border-radius: 4px; }
         .fundamento-articulo strong { color: #1a2a4a; }
         .fundamento-articulo .texto-ley { font-size: 12px; color: #333; margin-top: 3px; }
+
+        /* ===== SECCIONES DEL LISTADO ===== */
+        .seccion-grupo {
+            grid-column: 1 / -1;
+            margin: 18px 0 8px 0;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+        .seccion-grupo:first-child { margin-top: 0; }
+        .seccion-grupo .contador-grupo {
+            font-weight: 400;
+            font-size: 12px;
+            opacity: 0.85;
+            margin-left: auto;
+        }
+        .seccion-urgentes {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 5px solid #b33c3c;
+        }
+        .seccion-activas {
+            background: #d4edda;
+            color: #155724;
+            border-left: 5px solid #2a7d4f;
+        }
+        .seccion-acto {
+            background: #bbdefb;
+            color: #0d47a1;
+            border-left: 5px solid #1976d2;
+        }
+        .seccion-sin-imputacion {
+            background: #e0e0e0;
+            color: #424242;
+            border-left: 5px solid #757575;
+        }
 
         #modal-resumen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; overflow: auto; padding: 20px; }
         #modal-resumen .modal-contenido { background: #fff; max-width: 1050px; width: 100%; border-radius: 12px; padding: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); position: relative; max-height: 90vh; overflow-y: auto; }
@@ -446,8 +487,9 @@
                                 <option value="173">Art. 173 – Estafa</option>
                                 <option value="175">Art. 175 – Apropiación</option>
                                 <option value="212">Art. 212 – Producción de documentos públicos de contenido falso</option>
-                                <option value="126">Art. 126 – Coacción</option>
-                                <option value="127">Art. 127 – Coacción grave</option>
+                                <option value="121">Art. 121 – Coacción grave</option>
+                                <option value="260">Art. 260 – Abuso de documentos de identidad</option>
+                                <option value="260b">Art. 260 b) – Suplantación de identidad virtual</option>
                             </select>
                             <button class="btn btn-agregar" onclick="agregarHecho()"><i class="fas fa-plus"></i> Agregar hecho</button>
                         </div>
@@ -681,7 +723,7 @@
         ];
 
         // ================================================================
-        // 2. CONFIGURACIÓN DE HECHOS - TODOS LOS TEXTOS COMPLETOS
+        // 2. CONFIGURACIÓN DE HECHOS PUNIBLES (SOLO ACCIÓN PENAL PÚBLICA)
         // ================================================================
         const CONFIG = {
             hechos: {
@@ -691,7 +733,7 @@
                         { id: '128-1', label: '1° El que, mediante fuerza o amenaza con peligro presente para la vida o la integridad física, coaccionara a otro a padecer en su persona actos sexuales, o a realizar tales actos en sí mismo o con terceros, será castigado con pena privativa de libertad de hasta diez años.' },
                         { id: '128-2', label: '2° Cuando la víctima haya sido violada, coaccionándosela al coito con el autor o con terceros, la pena privativa de libertad será de tres a doce años.' },
                         { id: '128-3', label: '3° Cuando la victima del coito haya sido una persona no menor de catorce años ni mayor de edad, la pena privativa de libertad será de tres a quince años.' },
-                        { id: '128-4', label: '4° La pena podrá ser atenuada con arreglo al artículo 67 de la Ley N° 1160/1997 “CODIGO PENAL”, cuando de la relación de la víctima con el autor, surgieren considerables circunstancias que lo ameriten.' },
+                        { id: '128-4', label: '4° La pena podrá ser atenuada con arreglo al artículo 67 de la Ley N° 1160/1997 "CODIGO PENAL", cuando de la relación de la víctima con el autor, surgieren considerables circunstancias que lo ameriten.' },
                         { id: '128-5', label: '5° A los efectos de la presente ley se entenderán como:', numerales: [
                             { id: '128-5-1', label: '1. actos sexuales, aquellos que sean manifiestamente relevantes contra la autonomía sexual, o tratándose de niños, la indemnidad sexual;' },
                             { id: '128-5-2', label: '2. actos sexuales realizados ante otro, aquellos en el sentido del numeral anterior que el otro percibiera a través de sus sentidos;' },
@@ -718,10 +760,10 @@
                         { id: '135-4', label: '4° En los casos señalados en el inciso 1°, la pena privativa de libertad no será menor de quince años cuando el autor haya realizado el coito con la víctima. En caso de que la víctima sea menor de diez años, la pena no será menor de veinte años.' },
                         { id: '135-5', label: '5° A los efectos de este artículo:', numerales: [
                             { id: '135-5-1', label: '1. se entenderá por niño, a los efectos de este capítulo, la persona que no haya cumplido catorce años de edad;' },
-                            { id: '135-5-2', label: '2. se entenderá por “entorno cercano”, a los efectos de este artículo, a los padres, padrastros, abuelos, abuelastros, hermanos, hermanastros, tíos, primos; así como a cualquier persona cuya educación, cuidado, protección, tutela o guarda del niño este a su cargo;' },
-                            { id: '135-5-3', label: '3. se entenderá por “afinidad en la familia”, el vínculo estrecho y continuo que se manifiesta en la convivencia, cuidado, protección, relación afectiva que incluye a cualquier persona que frecuente el ámbito del niño, sea pariente o no.' }
+                            { id: '135-5-2', label: '2. se entenderá por "entorno cercano", a los efectos de este artículo, a los padres, padrastros, abuelos, abuelastros, hermanos, hermanastros, tíos, primos; así como a cualquier persona cuya educación, cuidado, protección, tutela o guarda del niño este a su cargo;' },
+                            { id: '135-5-3', label: '3. se entenderá por "afinidad en la familia", el vínculo estrecho y continuo que se manifiesta en la convivencia, cuidado, protección, relación afectiva que incluye a cualquier persona que frecuente el ámbito del niño, sea pariente o no.' }
                         ]},
-                        { id: '135-6', label: '6° A los autores del hecho se les aplicará penas complementarias y adicionales establecidas en los artículos 57 y 59 de la Ley N° 1160/1997 “CODIGO PENAL”.' }
+                        { id: '135-6', label: '6° A los autores del hecho se les aplicará penas complementarias y adicionales establecidas en los artículos 57 y 59 de la Ley N° 1160/1997 "CODIGO PENAL".' }
                     ],
                     tipo: 'multiple'
                 },
@@ -738,7 +780,7 @@
                 '229': {
                     label: 'Art. 229 – Violencia familiar (Ley Nº 6934/2022)',
                     incisos: [
-                        { id: '229-1', label: '1° El que, aprovechándose del ámbito familiar, ejerciera actos de violencia física o psicológica sobre: 1. Quien sea o hubiese sido su cónyuge, concubino, pareja sentimental, o contra quien se hubiese negado a restablecer una relación de pareja. 2. Sus parientes hasta el cuarto grado de consanguinidad, segundo de afinidad o por adopción, será castigado con pena privativa de libertad de uno a seis años. Se entenderá por “Ámbito Familiar” a los efectos de este artículo, a los parientes sean por consanguinidad o por afinidad, al cónyuge o conviviente y a la pareja sentimental. Este vínculo incluye a las relaciones vigentes o finalizadas, no siendo requisito la convivencia.' },
+                        { id: '229-1', label: '1° El que, aprovechándose del ámbito familiar, ejerciera actos de violencia física o psicológica sobre: 1. Quien sea o hubiese sido su cónyuge, concubino, pareja sentimental, o contra quien se hubiese negado a restablecer una relación de pareja. 2. Sus parientes hasta el cuarto grado de consanguinidad, segundo de afinidad o por adopción, será castigado con pena privativa de libertad de uno a seis años. Se entenderá por "Ámbito Familiar" a los efectos de este artículo, a los parientes sean por consanguinidad o por afinidad, al cónyuge o conviviente y a la pareja sentimental. Este vínculo incluye a las relaciones vigentes o finalizadas, no siendo requisito la convivencia.' },
                         { id: '229-2', label: '2° Igual pena se impondrá al que ejerciera los mismos actos sobre: 1. El niño, niña o adolescente con quien conviva y esté bajo su guarda o tutela sin vínculo de parentesco o en abrigo. 2. La persona bajo su curatela con quien conviva. 3. La persona adulta mayor o con discapacidad, con quien conviva en un ámbito familiar, sin que exista vínculo de parentesco.' },
                         { id: '229-3', label: '3° La pena podrá ser aumentada hasta ocho años: 1. Cuando el autor fuese reincidente o hubiese tenido una salida alternativa que implique reconocimiento del mismo hecho punible. 2. Cuando el acto de violencia se realizare en contra de niños, niñas y adolescentes o en su presencia. 3. Cuando el autor utilizara un arma u otro instrumento para ejercer violencia física o psicológica contra la víctima. 4. Cuando los actos tengan lugar en el domicilio común o en el domicilio de la víctima.' },
                         { id: '229-4', label: '4° Cuando los actos de violencia física pudieran configurarse como lesiones graves, se aplicará la pena correspondiente al Art. 112.' }
@@ -839,18 +881,27 @@
                     ],
                     tipo: 'multiple'
                 },
-                '126': {
-                    label: 'Art. 126 – Coacción',
+                '121': {
+                    label: 'Art. 121 – Coacción grave',
                     incisos: [
-                        { id: '126-1', label: '1° El que, mediante amenaza, forzare a otro a hacer, no hacer o tolerar algo, será castigado con pena privativa de libertad de uno a tres años.' },
-                        { id: '126-2', label: '2° Si la coacción se ejerciere mediante privación de libertad, la pena será de dos a cuatro años.' }
+                        { id: '121-1', label: '1° El que, mediante violencia física, forzare a otro a hacer, no hacer o tolerar algo, será castigado con pena privativa de libertad de dos a cinco años.' },
+                        { id: '121-2', label: '2° Cuando la coacción se ejerciere mediante privación de libertad, la pena privativa de libertad será de hasta ocho años.' }
                     ],
                     tipo: 'multiple'
                 },
-                '127': {
-                    label: 'Art. 127 – Coacción grave',
+                '260': {
+                    label: 'Art. 260 – Abuso de documentos de identidad',
                     incisos: [
-                        { id: '127-1', label: '1° Si la coacción se ejerciere mediante violencia física, la pena será de dos a cinco años.' }
+                        { id: '260-1', label: '1° El que con la intención de inducir al error en las relaciones jurídicas, utilizara como propio un documento personal expedido a nombre de otro o cediera a otro un documento no expedido para éste, será castigado con pena privativa de libertad de hasta dos años o con multa.' },
+                        { id: '260-2', label: '2° Se entenderá como documento personal todo aquel que acredite la identidad de una persona.' }
+                    ],
+                    tipo: 'multiple'
+                },
+                '260b': {
+                    label: 'Art. 260 b) – Suplantación de identidad virtual',
+                    incisos: [
+                        { id: '260b-1', label: '1° El que adoptara, creara, usurpara o utilizara la identidad personal de otro en cualquier red social, sitio de internet, medio electrónico o tecnológico de información, será castigado con pena privativa de libertad de hasta un año o multa.' },
+                        { id: '260b-2', label: '2° Cuando el autor haya actuado para cometer otro hecho punible o causar un perjuicio a un tercero, la pena privativa de libertad podrá ser aumentada hasta tres años o multa.' }
                     ],
                     tipo: 'multiple'
                 }
@@ -862,7 +913,7 @@
         function esGrupoA(hechoId) { return GRUPO_A.includes(hechoId); }
 
         // ================================================================
-        // 3. FUNCIONES DE FECHA - CÁLCULO CORRECTO INCLUYENDO EL DÍA DE HOY (UTC)
+        // 3. FUNCIONES DE FECHA
         // ================================================================
         function getTodayUTC() {
             const hoy = new Date();
@@ -1038,7 +1089,7 @@
         }
 
         // ================================================================
-        // 5. AUTENTICACIÓN (sin cambios)
+        // 5. AUTENTICACIÓN
         // ================================================================
         function mostrarMensaje(texto, tipo) {
             const el = document.getElementById('auth-message');
@@ -1198,7 +1249,7 @@
         }
 
         // ================================================================
-        // 6. ADMIN (sin cambios)
+        // 6. ADMIN
         // ================================================================
         function toggleAdminPanel() {
             const panel = document.getElementById('admin-panel');
@@ -2094,7 +2145,7 @@
         }
 
         // ================================================================
-        // 14. INTERVENCIONES (Cuestionario y Liquidación)
+        // 14. INTERVENCIONES
         // ================================================================
         const preguntasRiesgo = [
             { id: 'r1.1', label: '1.1 – Grado de relación con el supuesto agresor', opciones: [{valor:3,texto:'Cónyuge/concubino/pareja'},{valor:3,texto:'Ex cónyuge/ex concubino/ex pareja'},{valor:2,texto:'Padres/padrastros, abuelos'},{valor:2,texto:'Hijos/nietos'},{valor:1,texto:'Hermanos/sobrinos'},{valor:1,texto:'Tíos/primos'},{valor:0,texto:'Otros'}] },
@@ -2443,7 +2494,7 @@
         }
 
         // ================================================================
-        // 15. RENDERIZAR LISTADO
+        // 15. RENDERIZAR LISTADO (CON CATEGORIZACIÓN)
         // ================================================================
         function renderizarCausas() {
             const grid = document.getElementById('causa-grid');
@@ -2454,68 +2505,136 @@
                 return;
             }
             contador.textContent = `(${causas.length})`;
-            let html = '';
+
+            // ===== CLASIFICAR CAUSAS EN GRUPOS =====
+            const grupoUrgentes = [];
+            const grupoActivas = [];
+            const grupoActoConclusivo = [];
+            const grupoSinImputacion = [];
+
             causas.forEach(c => {
-                const badge = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'badge-alimentos' : 'badge-activa';
-                const badgeText = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'Alimentos' : 'Activa';
-                const caratula = c.caratula || 'Sin carátula';
-                const tieneAlertas = verificarAlertas(c);
-                const alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
-
                 const info = calcularInfoPlazo(c);
-                let diasInfo = '';
-                let actoConclusivoMsg = '';
-                let prorrogaMsg = '';
-
-                if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
-                    prorrogaMsg += `Ord: ${formatearFechaLocal(c.prorrogaOrdinaria.nuevaFecha)} `;
-                }
-                if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c.prorrogaExtraordinaria.nuevaFecha) {
-                    prorrogaMsg += `Ext: ${formatearFechaLocal(c.prorrogaExtraordinaria.nuevaFecha)}`;
-                }
-                if (prorrogaMsg) {
-                    prorrogaMsg = `<div class="prorroga-msg">📅 Prórroga: ${prorrogaMsg}</div>`;
-                }
-
-                if (info.estado === 'acto_conclusivo') {
-                    actoConclusivoMsg = `<div class="acto-conclusivo-msg"><i class="fas fa-check-circle"></i> Acto conclusivo presentado</div>`;
-                } else if (info.estado === 'vencido') {
-                    const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
-                    diasInfo = `<div class="dias-restantes vencido">⚠️ ${label} VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
-                } else if (info.estado === 'proximo') {
-                    const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
-                    diasInfo = `<div class="dias-restantes proximo">⏳ ${label} vence en ${info.dias} días</div>`;
-                } else if (info.dias !== null) {
-                    const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
-                    diasInfo = `<div class="dias-restantes">📅 ${label} vence en ${info.dias} días</div>`;
-                }
-
                 const estado = c.estadoCausa || 'activa';
-                const esActiva = (estado === 'activa');
                 const esActoConc = esActoConclusivoPresentado(estado);
-                const estadoLabel = getEstadoLabel(estado);
-                const estadoClass = getEstadoClass(estado);
-                const estadoBadge = `<span class="badge-estado ${estadoClass}">${estadoLabel}</span>`;
-                const badgePreclusion = esActiva ? 'badge-activa' : (esActoConc ? 'badge-acto-conclusivo' : 'badge-precluida');
-                const textPreclusion = esActiva ? 'Activa' : (esActoConc ? 'Acto Conclusivo' : 'Precluida');
-                const borderColor = esActiva ? '#1a2a4a' : (esActoConc ? '#0d47a1' : '#b33c3c');
 
-                html += `
-                    <div class="causa-card" onclick="cargarCausaParaEditar('${c.id}')" style="border-left-color:${borderColor};">
-                        <div class="numero">${alertaIcon} ${c.numCausa}</div>
-                        <div class="caratula">${caratula}</div>
-                        <span class="badge ${badge}">${badgeText}</span>
-                        <span class="badge ${badgePreclusion}" style="margin-left:5px;">${textPreclusion}</span>
-                        ${estadoBadge}
-                        ${tieneAlertas ? `<span class="badge badge-alerta" style="margin-left:5px;"><i class="fas fa-exclamation-circle"></i> Alertas</span>` : ''}
-                        ${diasInfo}
-                        ${actoConclusivoMsg}
-                        ${prorrogaMsg}
-                        <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                `;
+                if (esActoConc) {
+                    grupoActoConclusivo.push(c);
+                } else if (info.estado === 'vencido' || info.estado === 'proximo') {
+                    grupoUrgentes.push(c);
+                } else if (info.estado === 'sin_fecha' || !c.fechaActoConclusivo) {
+                    grupoSinImputacion.push(c);
+                } else {
+                    grupoActivas.push(c);
+                }
             });
+
+            const ordenarPorNumero = (a, b) => {
+                const na = (a.numCausa || '').toString();
+                const nb = (b.numCausa || '').toString();
+                return na.localeCompare(nb, undefined, { numeric: true });
+            };
+            grupoUrgentes.sort(ordenarPorNumero);
+            grupoActivas.sort(ordenarPorNumero);
+            grupoActoConclusivo.sort(ordenarPorNumero);
+            grupoSinImputacion.sort(ordenarPorNumero);
+
+            // ===== RENDERIZAR CADA GRUPO =====
+            let html = '';
+
+            if (grupoUrgentes.length > 0) {
+                html += `<div class="seccion-grupo seccion-urgentes">
+                            <i class="fas fa-exclamation-triangle"></i> URGENTES (plazo vencido o próximo)
+                            <span class="contador-grupo">${grupoUrgentes.length} causa${grupoUrgentes.length > 1 ? 's' : ''}</span>
+                         </div>`;
+                grupoUrgentes.forEach(c => { html += generarCardCausa(c); });
+            }
+
+            if (grupoActivas.length > 0) {
+                html += `<div class="seccion-grupo seccion-activas">
+                            <i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO
+                            <span class="contador-grupo">${grupoActivas.length} causa${grupoActivas.length > 1 ? 's' : ''}</span>
+                         </div>`;
+                grupoActivas.forEach(c => { html += generarCardCausa(c); });
+            }
+
+            if (grupoActoConclusivo.length > 0) {
+                html += `<div class="seccion-grupo seccion-acto">
+                            <i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO
+                            <span class="contador-grupo">${grupoActoConclusivo.length} causa${grupoActoConclusivo.length > 1 ? 's' : ''}</span>
+                         </div>`;
+                grupoActoConclusivo.forEach(c => { html += generarCardCausa(c); });
+            }
+
+            if (grupoSinImputacion.length > 0) {
+                html += `<div class="seccion-grupo seccion-sin-imputacion">
+                            <i class="fas fa-hourglass-start"></i> SIN IMPUTACIÓN / SIN PLAZO
+                            <span class="contador-grupo">${grupoSinImputacion.length} causa${grupoSinImputacion.length > 1 ? 's' : ''}</span>
+                         </div>`;
+                grupoSinImputacion.forEach(c => { html += generarCardCausa(c); });
+            }
+
             grid.innerHTML = html;
+        }
+
+        function generarCardCausa(c) {
+            const badge = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'badge-alimentos' : 'badge-activa';
+            const badgeText = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'Alimentos' : 'Activa';
+            const caratula = c.caratula || 'Sin carátula';
+            const tieneAlertas = verificarAlertas(c);
+            const alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
+
+            const info = calcularInfoPlazo(c);
+            let diasInfo = '';
+            let actoConclusivoMsg = '';
+            let prorrogaMsg = '';
+
+            if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
+                prorrogaMsg += `Ord: ${formatearFechaLocal(c.prorrogaOrdinaria.nuevaFecha)} `;
+            }
+            if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c.prorrogaExtraordinaria.nuevaFecha) {
+                prorrogaMsg += `Ext: ${formatearFechaLocal(c.prorrogaExtraordinaria.nuevaFecha)}`;
+            }
+            if (prorrogaMsg) {
+                prorrogaMsg = `<div class="prorroga-msg">📅 Prórroga: ${prorrogaMsg}</div>`;
+            }
+
+            if (info.estado === 'acto_conclusivo') {
+                actoConclusivoMsg = `<div class="acto-conclusivo-msg"><i class="fas fa-check-circle"></i> Acto conclusivo presentado</div>`;
+            } else if (info.estado === 'vencido') {
+                const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
+                diasInfo = `<div class="dias-restantes vencido">⚠️ ${label} VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
+            } else if (info.estado === 'proximo') {
+                const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
+                diasInfo = `<div class="dias-restantes proximo">⏳ ${label} vence en ${info.dias} días</div>`;
+            } else if (info.dias !== null) {
+                const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
+                diasInfo = `<div class="dias-restantes">📅 ${label} vence en ${info.dias} días</div>`;
+            }
+
+            const estado = c.estadoCausa || 'activa';
+            const esActiva = (estado === 'activa');
+            const esActoConc = esActoConclusivoPresentado(estado);
+            const estadoLabel = getEstadoLabel(estado);
+            const estadoClass = getEstadoClass(estado);
+            const estadoBadge = `<span class="badge-estado ${estadoClass}">${estadoLabel}</span>`;
+            const badgePreclusion = esActiva ? 'badge-activa' : (esActoConc ? 'badge-acto-conclusivo' : 'badge-precluida');
+            const textPreclusion = esActiva ? 'Activa' : (esActoConc ? 'Acto Conclusivo' : 'Precluida');
+            const borderColor = esActiva ? '#1a2a4a' : (esActoConc ? '#0d47a1' : '#b33c3c');
+
+            return `
+                <div class="causa-card" onclick="cargarCausaParaEditar('${c.id}')" style="border-left-color:${borderColor};">
+                    <div class="numero">${alertaIcon} ${c.numCausa}</div>
+                    <div class="caratula">${caratula}</div>
+                    <span class="badge ${badge}">${badgeText}</span>
+                    <span class="badge ${badgePreclusion}" style="margin-left:5px;">${textPreclusion}</span>
+                    ${estadoBadge}
+                    ${tieneAlertas ? `<span class="badge badge-alerta" style="margin-left:5px;"><i class="fas fa-exclamation-circle"></i> Alertas</span>` : ''}
+                    ${diasInfo}
+                    ${actoConclusivoMsg}
+                    ${prorrogaMsg}
+                    <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `;
         }
 
         function getEstadoLabel(valor) {
@@ -2882,7 +3001,6 @@
             html += (medidas.length > 0) ? medidas.join(', ') : 'No se registraron medidas específicas.';
             html += `</div>`;
 
-            // PRÓRROGAS
             html += `<div><strong>Prórrogas:</strong></div>`;
             if (causa.prorrogaOrdinaria && causa.prorrogaOrdinaria.otorgada === 'Si') {
                 const po = causa.prorrogaOrdinaria;
@@ -2906,7 +3024,6 @@
                 html += `<div style="padding-left:15px;">• No se registró prórroga extraordinaria.</div>`;
             }
 
-            // Rebeldía
             if (causa.rebeldia) {
                 html += `<div><strong>Rebeldía:</strong> ${causa.rebeldia.activa ? 'ACTIVA' : 'No declarada'}`;
                 if (causa.rebeldia.activa) {
@@ -3129,7 +3246,7 @@
         // ================================================================
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ Sistema de Gestión de Causas Penales - MP cargado completamente.');
-            console.log('✅ Fechas corregidas (incluye día de hoy), incisos completos, todo actualizado.');
+            console.log('✅ Mejoras aplicadas: categorización del listado, corrección 121, artículos 260/260b.');
         });
     </script>
 
