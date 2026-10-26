@@ -11,6 +11,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="codigo-penal/estilos.css" />
+    <script src="codigo-penal/datos/catalogo.js"></script>
+    <script src="codigo-penal/catalogo.js"></script>
 
     <style>
         /* ===== ESTILOS COMPLETOS ===== */
@@ -388,6 +391,7 @@
                 <button class="btn btn-outline" onclick="exportarDatos()"><i class="fas fa-file-export"></i> Exportar</button>
                 <button class="btn btn-outline" onclick="importarDatos()"><i class="fas fa-file-import"></i> Importar</button>
                 <button class="btn btn-outline" onclick="enviarCorreoConRespaldo()"><i class="fas fa-envelope"></i> Enviar respaldo</button>
+                <button class="btn btn-outline" onclick="abrirCodigoPenal()"><i class="fas fa-book-open"></i> Código Penal</button>
                 <button class="btn btn-danger" onclick="eliminarTodasLasCausas()"><i class="fas fa-trash-alt"></i> Eliminar todas</button>
             </div>
             <div class="toolbar-right">
@@ -404,6 +408,15 @@
             <div id="admin-panel">
                 <h3><i class="fas fa-users-cog"></i> Gestión de Usuarios</h3>
                 <div id="admin-users-list"><p class="text-muted">Cargando usuarios...</p></div>
+                <section class="cp-admin-box" aria-labelledby="cp-admin-title">
+                    <h3 id="cp-admin-title"><i class="fas fa-database"></i> Catálogo del Código Penal</h3>
+                    <p>La aplicación consulta Firestore y utiliza el dataset externo como respaldo de lectura. La sincronización reemplaza únicamente los documentos del catálogo; no modifica las causas guardadas en este navegador. Para autorizar la escritura, deben estar aplicadas las reglas incluidas y el administrador debe tener el rol «administrador» en su documento de usuario.</p>
+                    <div class="cp-admin-actions">
+                        <button class="btn btn-primary" id="btn-sincronizar-cp" onclick="sincronizarCodigoPenal()"><i class="fas fa-cloud-upload-alt"></i> Sincronizar catálogo</button>
+                        <button class="btn btn-outline" onclick="abrirCodigoPenal()"><i class="fas fa-book-open"></i> Revisar contenido</button>
+                        <span class="cp-admin-status" id="cp-admin-status">Pendiente de carga.</span>
+                    </div>
+                </section>
             </div>
 
             <div id="form-container" class="form-container">
@@ -468,30 +481,18 @@
                     <div class="form-group"><label>Breve descripción del hecho</label><textarea id="descripcion-hecho" rows="2" placeholder="Describa brevemente los hechos..."></textarea></div>
                     <div class="sub-seccion">
                         <h4>Hechos Punibles</h4>
-                        <div class="flex-wrap">
-                            <select id="hecho-selector" style="flex:1;min-width:180px;">
-                                <option value="">-- Seleccionar hecho --</option>
-                                <option value="128">Art. 128 – Coacción sexual y violación (Ley 7394/2024)</option>
-                                <option value="135">Art. 135 – Abuso sexual en niños (Ley 7394/2024)</option>
-                                <option value="135b">Art. 135 b) – Abuso sexual por medios tecnológicos (Ley 7394/2024)</option>
-                                <option value="137">Art. 137 – Estupro</option>
-                                <option value="229">Art. 229 – Violencia familiar (Ley 6934/2022)</option>
-                                <option value="225">Art. 225 – Incumplimiento del deber legal alimentario</option>
-                                <option value="166">Art. 166 – Hurto</option>
-                                <option value="166ag">Art. 166 – Hurto agravado</option>
-                                <option value="167">Art. 167 – Robo</option>
-                                <option value="168">Art. 168 – Robo agravado</option>
-                                <option value="111">Art. 111 – Lesión grave</option>
-                                <option value="105">Art. 105 – Homicidio doloso</option>
-                                <option value="106">Art. 106 – Homicidio culposo</option>
-                                <option value="173">Art. 173 – Estafa</option>
-                                <option value="175">Art. 175 – Apropiación</option>
-                                <option value="212">Art. 212 – Producción de documentos públicos de contenido falso</option>
-                                <option value="121">Art. 121 – Coacción grave</option>
-                                <option value="260">Art. 260 – Abuso de documentos de identidad</option>
-                                <option value="260b">Art. 260 b) – Suplantación de identidad virtual</option>
-                            </select>
-                            <button class="btn btn-agregar" onclick="agregarHecho()"><i class="fas fa-plus"></i> Agregar hecho</button>
+                        <div class="cp-selector-panel">
+                            <div class="cp-selector-tools">
+                                <input type="search" id="hecho-busqueda" class="cp-busqueda" placeholder="Buscar por artículo, nombre o título…" aria-label="Buscar hecho punible" disabled>
+                                <button type="button" class="btn btn-outline btn-sm" onclick="verArticuloSeleccionado()"><i class="fas fa-book-open"></i> Consultar texto y modificatorias</button>
+                            </div>
+                            <div class="flex-wrap">
+                                <select id="hecho-selector" style="flex:1;min-width:180px;" disabled>
+                                    <option value="">Cargando Código Penal…</option>
+                                </select>
+                                <button class="btn btn-agregar" onclick="agregarHecho()"><i class="fas fa-plus"></i> Agregar hecho</button>
+                            </div>
+                            <div class="cp-catalogo-estado" id="cp-catalogo-estado" role="status"><i class="fas fa-circle-notch fa-spin"></i> Cargando catálogo jurídico…</div>
                         </div>
                         <div id="incisos-container" style="margin-top:6px;"><div id="incisos-opciones"></div></div>
                         <div id="lista-hechos" style="margin-top:6px;"></div>
@@ -725,190 +726,23 @@
         // ================================================================
         // 2. CONFIGURACIÓN DE HECHOS PUNIBLES (SOLO ACCIÓN PENAL PÚBLICA)
         // ================================================================
-        const CONFIG = {
-            hechos: {
-                '128': {
-                    label: 'Art. 128 – Coacción sexual y violación (Ley Nº 7394/2024)',
-                    incisos: [
-                        { id: '128-1', label: '1° El que, mediante fuerza o amenaza con peligro presente para la vida o la integridad física, coaccionara a otro a padecer en su persona actos sexuales, o a realizar tales actos en sí mismo o con terceros, será castigado con pena privativa de libertad de hasta diez años.' },
-                        { id: '128-2', label: '2° Cuando la víctima haya sido violada, coaccionándosela al coito con el autor o con terceros, la pena privativa de libertad será de tres a doce años.' },
-                        { id: '128-3', label: '3° Cuando la victima del coito haya sido una persona no menor de catorce años ni mayor de edad, la pena privativa de libertad será de tres a quince años.' },
-                        { id: '128-4', label: '4° La pena podrá ser atenuada con arreglo al artículo 67 de la Ley N° 1160/1997 "CODIGO PENAL", cuando de la relación de la víctima con el autor, surgieren considerables circunstancias que lo ameriten.' },
-                        { id: '128-5', label: '5° A los efectos de la presente ley se entenderán como:', numerales: [
-                            { id: '128-5-1', label: '1. actos sexuales, aquellos que sean manifiestamente relevantes contra la autonomía sexual, o tratándose de niños, la indemnidad sexual;' },
-                            { id: '128-5-2', label: '2. actos sexuales realizados ante otro, aquellos en el sentido del numeral anterior que el otro percibiera a través de sus sentidos;' },
-                            { id: '128-5-3', label: '3. coito, el acceso carnal por vía vaginal, anal o bucal, o la introducción de miembros corporales u objetos por alguna de las dos primeras vías.' }
-                        ]}
-                    ],
-                    tipo: 'multiple'
-                },
-                '135': {
-                    label: 'Art. 135 – Abuso sexual en niños (Ley Nº 7394/2024)',
-                    incisos: [
-                        { id: '135-1', label: '1° El que realizara actos sexuales con un niño, o lo indujera a realizarlos en sí mismo o a terceros, será castigado con pena privativa de libertad de cinco a dieciocho años. Con la misma pena será castigado el que realizara actos sexuales manifiestamente relevantes ante un niño y dirigidos a él, o lo indujera a realizarlos ante sí o ante terceros.' },
-                        { id: '135-2', label: '2° En los casos señalados en el inciso anterior, la pena privativa de libertad será de diez a veinte años cuando el autor:', numerales: [
-                            { id: '135-2-1', label: '1. al realizar el hecho haya maltratado físicamente o psicológicamente a la víctima;' },
-                            { id: '135-2-2', label: '2. haya abusado de la víctima en más de una ocasión;' },
-                            { id: '135-2-3', label: '3. haya cometido el hecho con un niño que sea su hijo biológico, adoptivo o hijastro, o con un niño de su entorno cercano o cuya educación, cuidado, protección, tutela o guarda esté a su cargo;' },
-                            { id: '135-2-4', label: '4. haya cometido el hecho aprovechándose de una relación de superioridad o de la afinidad en la familia o del estado de vulnerabilidad de la víctima;' },
-                            { id: '135-2-5', label: '5. haya realizado el hecho con una o más personas;' },
-                            { id: '135-2-6', label: '6. haya filmado, fotografiado o registrado el hecho por cualquier medio;' },
-                            { id: '135-2-7', label: '7. haya suministrado a la víctima sustancias tóxicas, estupefacientes o alcohol;' },
-                            { id: '135-2-8', label: '8. haya empleado armas o medios que pongan en riesgo la vida de la víctima.' }
-                        ]},
-                        { id: '135-3', label: '3° Cuando concurra más de una circunstancia de las señaladas en el inciso 2°, el autor será castigado con pena privativa de libertad de quince a veinticinco años.' },
-                        { id: '135-4', label: '4° En los casos señalados en el inciso 1°, la pena privativa de libertad no será menor de quince años cuando el autor haya realizado el coito con la víctima. En caso de que la víctima sea menor de diez años, la pena no será menor de veinte años.' },
-                        { id: '135-5', label: '5° A los efectos de este artículo:', numerales: [
-                            { id: '135-5-1', label: '1. se entenderá por niño, a los efectos de este capítulo, la persona que no haya cumplido catorce años de edad;' },
-                            { id: '135-5-2', label: '2. se entenderá por "entorno cercano", a los efectos de este artículo, a los padres, padrastros, abuelos, abuelastros, hermanos, hermanastros, tíos, primos; así como a cualquier persona cuya educación, cuidado, protección, tutela o guarda del niño este a su cargo;' },
-                            { id: '135-5-3', label: '3. se entenderá por "afinidad en la familia", el vínculo estrecho y continuo que se manifiesta en la convivencia, cuidado, protección, relación afectiva que incluye a cualquier persona que frecuente el ámbito del niño, sea pariente o no.' }
-                        ]},
-                        { id: '135-6', label: '6° A los autores del hecho se les aplicará penas complementarias y adicionales establecidas en los artículos 57 y 59 de la Ley N° 1160/1997 "CODIGO PENAL".' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '135b': {
-                    label: 'Art. 135 b) – Abuso sexual por medios tecnológicos (Ley Nº 7394/2024)',
-                    incisos: [
-                        { id: '135b-1', label: '1° El que por cualquier medio electrónico de telecomunicaciones u otra tecnología de transmisión de datos, contacte con un niño y le proponga mantener o mantenga una comunicación de índole sexual o le solicite o exija de cualquier modo, que realice actos sexuales en sí mismo o con un tercero o que le envíe imagen o material audiovisual de sí mismo o de un tercero con contenido sexual, o facilite o muestre al niño material pornográfico, será castigado con pena privativa de libertad de tres a cinco años. La pena privativa de libertad será de tres a ocho años, cuando mediare coacción, intimidación o engaño.' },
-                        { id: '135b-2', label: '2° Cuando el autor proponga al niño concertar un encuentro o acercamiento físico a fin de realizar actos sexuales, sea con el autor, el niño en sí mismo o a un tercero, siempre que la propuesta se acompañe de actos materiales encaminados al acercamiento; la pena privativa de libertad será de tres a ocho años. La pena privativa de libertad será de cinco a diez años, cuando el acercamiento se obtenga mediante coacción, intimidación o engaño.' },
-                        { id: '135b-3', label: '3° Sera castigada también la tentativa.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '137': { label: 'Art. 137 – Estupro', incisos: [], tipo: 'ninguno' },
-                '229': {
-                    label: 'Art. 229 – Violencia familiar (Ley Nº 6934/2022)',
-                    incisos: [
-                        { id: '229-1', label: '1° El que, aprovechándose del ámbito familiar, ejerciera actos de violencia física o psicológica sobre: 1. Quien sea o hubiese sido su cónyuge, concubino, pareja sentimental, o contra quien se hubiese negado a restablecer una relación de pareja. 2. Sus parientes hasta el cuarto grado de consanguinidad, segundo de afinidad o por adopción, será castigado con pena privativa de libertad de uno a seis años. Se entenderá por "Ámbito Familiar" a los efectos de este artículo, a los parientes sean por consanguinidad o por afinidad, al cónyuge o conviviente y a la pareja sentimental. Este vínculo incluye a las relaciones vigentes o finalizadas, no siendo requisito la convivencia.' },
-                        { id: '229-2', label: '2° Igual pena se impondrá al que ejerciera los mismos actos sobre: 1. El niño, niña o adolescente con quien conviva y esté bajo su guarda o tutela sin vínculo de parentesco o en abrigo. 2. La persona bajo su curatela con quien conviva. 3. La persona adulta mayor o con discapacidad, con quien conviva en un ámbito familiar, sin que exista vínculo de parentesco.' },
-                        { id: '229-3', label: '3° La pena podrá ser aumentada hasta ocho años: 1. Cuando el autor fuese reincidente o hubiese tenido una salida alternativa que implique reconocimiento del mismo hecho punible. 2. Cuando el acto de violencia se realizare en contra de niños, niñas y adolescentes o en su presencia. 3. Cuando el autor utilizara un arma u otro instrumento para ejercer violencia física o psicológica contra la víctima. 4. Cuando los actos tengan lugar en el domicilio común o en el domicilio de la víctima.' },
-                        { id: '229-4', label: '4° Cuando los actos de violencia física pudieran configurarse como lesiones graves, se aplicará la pena correspondiente al Art. 112.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '225': {
-                    label: 'Art. 225 – Incumplimiento del deber legal alimentario',
-                    incisos: [
-                        { id: '225-1', label: 'Inciso 1 – Incumplimiento de deber legal (hasta 2 años)' },
-                        { id: '225-2', label: 'Inciso 2 – Incumplimiento de convenio judicial (hasta 5 años)' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '166': {
-                    label: 'Art. 166 – Hurto',
-                    incisos: [
-                        { id: '166-1', label: '1° El que se apoderare de una cosa mueble ajena, sin la voluntad de su dueño, será castigado con pena privativa de libertad de uno a cinco años.' },
-                        { id: '166-2', label: '2° Si el valor de la cosa sustraída excediere de cuarenta jornales mínimos para actividades diversas no especificadas, la pena será de dos a seis años.' },
-                        { id: '166-3', label: '3° Si la cosa sustraída tuviere valor científico, histórico o artístico, la pena será de dos a cinco años.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '166ag': {
-                    label: 'Art. 166 – Hurto agravado',
-                    incisos: [
-                        { id: '166ag-1', label: '1° Con escalamiento (pena de 2 a 8 años).' },
-                        { id: '166ag-2', label: '2° Mediante fractura de paredes, techos o cerraduras (pena de 2 a 8 años).' },
-                        { id: '166ag-3', label: '3° Empleando llaves falsas o instrumentos para forzar cerraduras (pena de 2 a 8 años).' },
-                        { id: '166ag-4', label: '4° Utilizando a menores de edad para cometer el hecho (pena de 3 a 10 años).' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '167': {
-                    label: 'Art. 167 – Robo',
-                    incisos: [
-                        { id: '167-1', label: '1° El que, mediante violencia o intimidación, se apoderare de una cosa mueble ajena, será castigado con pena privativa de libertad de dos a diez años.' },
-                        { id: '167-2', label: '2° Si como consecuencia de la violencia resultaren lesiones graves, la pena será de tres a doce años.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '168': {
-                    label: 'Art. 168 – Robo agravado',
-                    incisos: [
-                        { id: '168-1', label: '1° Con armas (pena de 5 a 15 años).' },
-                        { id: '168-2', label: '2° En banda (pena de 5 a 15 años).' },
-                        { id: '168-3', label: '3° Si resultare la muerte de la víctima (pena de 10 a 25 años).' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '111': {
-                    label: 'Art. 111 – Lesión grave',
-                    incisos: [
-                        { id: '111-1', label: '1° Deformidad (pena de 2 a 8 años).' },
-                        { id: '111-2', label: '2° Enfermedad incurable (pena de 2 a 8 años).' },
-                        { id: '111-3', label: '3° Pérdida de algún sentido, órgano o miembro (pena de 3 a 10 años).' },
-                        { id: '111-4', label: '4° Peligro para la vida (pena de 3 a 10 años).' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '105': {
-                    label: 'Art. 105 – Homicidio doloso',
-                    incisos: [
-                        { id: '105-1', label: '1° El que matare a otro será castigado con pena privativa de libertad de cinco a quince años.' },
-                        { id: '105-2', label: '2° Con alevosía o ensañamiento (pena de 10 a 25 años).' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '106': {
-                    label: 'Art. 106 – Homicidio culposo',
-                    incisos: [
-                        { id: '106-1', label: '1° El que por imprudencia, negligencia, impericia en su arte o profesión, o inobservancia de los reglamentos, causare la muerte de otro, será castigado con pena privativa de libertad de uno a cinco años.' },
-                        { id: '106-2', label: '2° El plazo de inhabilitación será de uno a tres años.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '173': {
-                    label: 'Art. 173 – Estafa',
-                    incisos: [
-                        { id: '173-1', label: '1° El que, mediante engaño, se hiciere dar, recibiere o percibiere dinero, cosas o valores, o hiciere suscribir un documento que produzca algún efecto jurídico, será castigado con pena privativa de libertad de uno a cinco años.' },
-                        { id: '173-2', label: '2° Si la estafa se cometiere por medios informáticos o telemáticos, la pena será de dos a seis años.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '175': {
-                    label: 'Art. 175 – Apropiación',
-                    incisos: [
-                        { id: '175-1', label: '1° El que se apoderare de una cosa mueble ajena que le hubiere sido confiada en custodia, depósito o administración, será castigado con pena privativa de libertad de uno a cuatro años.' },
-                        { id: '175-2', label: '2° Si el valor de la cosa excediere de cuarenta jornales, la pena será de dos a seis años.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '212': {
-                    label: 'Art. 212 – Producción de documentos públicos de contenido falso',
-                    incisos: [
-                        { id: '212-1', label: '1° El que, con el fin de hacerlos valer como auténticos, hiciere, en todo o en parte, un documento público falso, será castigado con pena privativa de libertad de dos a ocho años.' },
-                        { id: '212-2', label: '2° El que hiciere uso de un documento público falso será castigado con la misma pena.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '121': {
-                    label: 'Art. 121 – Coacción grave',
-                    incisos: [
-                        { id: '121-1', label: '1° El que, mediante violencia física, forzare a otro a hacer, no hacer o tolerar algo, será castigado con pena privativa de libertad de dos a cinco años.' },
-                        { id: '121-2', label: '2° Cuando la coacción se ejerciere mediante privación de libertad, la pena privativa de libertad será de hasta ocho años.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '260': {
-                    label: 'Art. 260 – Abuso de documentos de identidad',
-                    incisos: [
-                        { id: '260-1', label: '1° El que con la intención de inducir al error en las relaciones jurídicas, utilizara como propio un documento personal expedido a nombre de otro o cediera a otro un documento no expedido para éste, será castigado con pena privativa de libertad de hasta dos años o con multa.' },
-                        { id: '260-2', label: '2° Se entenderá como documento personal todo aquel que acredite la identidad de una persona.' }
-                    ],
-                    tipo: 'multiple'
-                },
-                '260b': {
-                    label: 'Art. 260 b) – Suplantación de identidad virtual',
-                    incisos: [
-                        { id: '260b-1', label: '1° El que adoptara, creara, usurpara o utilizara la identidad personal de otro en cualquier red social, sitio de internet, medio electrónico o tecnológico de información, será castigado con pena privativa de libertad de hasta un año o multa.' },
-                        { id: '260b-2', label: '2° Cuando el autor haya actuado para cometer otro hecho punible o causar un perjuicio a un tercero, la pena privativa de libertad podrá ser aumentada hasta tres años o multa.' }
-                    ],
-                    tipo: 'multiple'
-                }
-            }
-        };
+        const CONFIG = { hechos: {} };
+        let catalogoActual = null;
+        let sistemaInicializado = false;
 
-        const GRUPO_A = ['128', '135', '135b', '137', '229', '225'];
+        function esArticulo(hechoId, numero) {
+            return window.CodigoPenal && CodigoPenal.estado.data
+                ? CodigoPenal.esArticulo(hechoId, numero)
+                : hechoId === numero || hechoId === 'art-' + numero;
+        }
+
+        function escapeHTML(valor) {
+            return String(valor == null ? '' : valor).replace(/[&<>'"]/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+            })[c]);
+        }
+
+        const GRUPO_A = ['art-128', 'art-135a', 'art-135b', 'art-137', 'art-229', 'art-225', '128', '135', '135b', '137', '229', '225'];
 
         function esGrupoA(hechoId) { return GRUPO_A.includes(hechoId); }
 
@@ -1336,32 +1170,121 @@
         // ================================================================
         // 7. INICIALIZACIÓN
         // ================================================================
-        function inicializarSistema() {
-            cargarDatos();
-            renderizarCausas();
+        function poblarSelectorHechos(filtro) {
+            const selector = document.getElementById('hecho-selector');
+            if (!catalogoActual || !catalogoActual.data) return;
+            const termino = CodigoPenal.normalizar(filtro).trim();
+            const leyes = Object.fromEntries(catalogoActual.data.leyes.map(l => [l.id, l]));
+            const articulos = catalogoActual.data.articulos.filter(a => {
+                if (!a.seleccionable) return false;
+                if (!termino) return true;
+                return CodigoPenal.normalizar([a.numero, a.nombre, a.label, a.titulo, a.capitulo].join(' ')).includes(termino);
+            });
+            selector.innerHTML = '';
+            const inicial = document.createElement('option');
+            inicial.value = '';
+            inicial.textContent = articulos.length
+                ? `-- Seleccionar entre ${articulos.length} hechos --`
+                : '-- Sin resultados para esta búsqueda --';
+            selector.appendChild(inicial);
+            const grupos = new Map();
+            articulos.forEach(a => {
+                const grupo = a.titulo || 'Parte especial';
+                if (!grupos.has(grupo)) grupos.set(grupo, []);
+                grupos.get(grupo).push(a);
+            });
+            grupos.forEach((items, titulo) => {
+                const grupo = document.createElement('optgroup');
+                grupo.label = titulo;
+                items.forEach(a => {
+                    const option = document.createElement('option');
+                    option.value = a.id;
+                    const ultima = a.ultimaModificatoria && leyes[a.ultimaModificatoria];
+                    option.textContent = a.label + (ultima ? ` · ${ultima.nombre}` : '');
+                    grupo.appendChild(option);
+                });
+                selector.appendChild(grupo);
+            });
+        }
 
-            document.getElementById('hecho-selector').addEventListener('change', function() {
+        function actualizarEstadoCatalogo() {
+            if (!catalogoActual) return;
+            const meta = catalogoActual.data.meta;
+            const remoto = catalogoActual.fuente === 'firestore';
+            const texto = remoto
+                ? `${meta.totalSeleccionables} hechos seleccionables · ${meta.totalArticulos} artículos y disposiciones · Firestore · versión ${meta.version}`
+                : `${meta.totalSeleccionables} hechos seleccionables · respaldo externo de lectura · Firestore pendiente o no disponible · versión ${meta.version}`;
+            const estado = document.getElementById('cp-catalogo-estado');
+            estado.dataset.fuente = catalogoActual.fuente;
+            estado.innerHTML = `<i class="fas ${remoto ? 'fa-cloud' : 'fa-shield-alt'}"></i><span>${escapeHTML(texto)}</span>`;
+            const admin = document.getElementById('cp-admin-status');
+            if (admin) admin.textContent = texto;
+        }
+
+        async function inicializarSistema() {
+            if (sistemaInicializado) return;
+            sistemaInicializado = true;
+            const selector = document.getElementById('hecho-selector');
+            const busqueda = document.getElementById('hecho-busqueda');
+            selector.addEventListener('change', function() {
                 actualizarIncisos();
                 actualizarPestanas();
             });
+            busqueda.addEventListener('input', function() { poblarSelectorHechos(this.value); });
             ['num-causa', 'imputado'].forEach(id => {
                 document.getElementById(id).addEventListener('input', generarCaratula);
             });
             document.getElementById('incisos-opciones').addEventListener('change', generarCaratula);
-
-            document.getElementById('fecha-vencimiento-input').addEventListener('change', function() {
-                calcularDiasRestantesDesdeFecha();
-            });
+            document.getElementById('fecha-vencimiento-input').addEventListener('change', calcularDiasRestantesDesdeFecha);
             document.getElementById('estado-causa-select').addEventListener('change', toggleFechaArchivoProvisional);
 
+            catalogoActual = await CodigoPenal.inicializar(db);
+            CONFIG.hechos = CodigoPenal.crearConfig(catalogoActual.data).hechos;
+            selector.disabled = false;
+            busqueda.disabled = false;
+            poblarSelectorHechos('');
+            actualizarEstadoCatalogo();
+            cargarDatos();
+            renderizarCausas();
             actualizarPestanas();
             if (isAdmin) cargarUsuarios();
+            setTimeout(() => { if (causas.length > 0) mostrarResumenRequerimientos(); }, 500);
+        }
 
-            setTimeout(() => {
-                if (causas.length > 0) {
-                    mostrarResumenRequerimientos();
-                }
-            }, 500);
+        function abrirCodigoPenal() {
+            window.open('codigo-penal/index.html', '_blank', 'noopener');
+        }
+
+        function verArticuloSeleccionado() {
+            const id = document.getElementById('hecho-selector').value;
+            const destino = 'codigo-penal/index.html' + (id ? `#articulo=${encodeURIComponent(id)}` : '');
+            window.open(destino, '_blank', 'noopener');
+        }
+
+        async function sincronizarCodigoPenal() {
+            if (!isAdmin) { alert('Solo el administrador puede sincronizar el catálogo.'); return; }
+            const data = window.CP_DATA;
+            if (!data) { alert('No está disponible el catálogo externo.'); return; }
+            const mensaje = `Se sincronizarán ${data.meta.totalArticulos} artículos, ${data.leyes.length} leyes y ${Object.keys(data.legacy).length} registros históricos en Firestore.\n\nEsta acción no modifica las causas. ¿Desea continuar?`;
+            if (!confirm(mensaje)) return;
+            const boton = document.getElementById('btn-sincronizar-cp');
+            const salida = document.getElementById('cp-admin-status');
+            boton.disabled = true;
+            salida.textContent = 'Sincronizando catálogo…';
+            try {
+                catalogoActual = await CodigoPenal.sincronizar(db, { userId: currentUser.uid });
+                CONFIG.hechos = CodigoPenal.crearConfig(catalogoActual.data).hechos;
+                poblarSelectorHechos(document.getElementById('hecho-busqueda').value);
+                actualizarEstadoCatalogo();
+                salida.textContent = 'Catálogo sincronizado correctamente en Firestore.';
+                alert('El Código Penal se sincronizó correctamente.');
+            } catch (error) {
+                console.error(error);
+                salida.textContent = 'No se pudo sincronizar: ' + error.message;
+                alert('No se pudo sincronizar el catálogo. Revise los permisos de administrador en Firestore: ' + error.message);
+            } finally {
+                boton.disabled = false;
+            }
         }
 
         // ================================================================
@@ -1712,7 +1635,7 @@
             if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
             let datos = {};
-            if (hechoPrincipal === '229') {
+            if (esArticulo(hechoPrincipal, '229')) {
                 const respuestas = {};
                 preguntasRiesgo.forEach(p => {
                     const sel = document.getElementById(`riesgo-${p.id}`);
@@ -1726,7 +1649,7 @@
                     puntaje: riesgoPuntaje,
                     nivel: riesgoNivel
                 };
-            } else if (hechoPrincipal === '225') {
+            } else if (esArticulo(hechoPrincipal, '225')) {
                 const montoDebidoEl = document.getElementById('monto-debido');
                 const montoAbonadoEl = document.getElementById('monto-abonado');
                 const diligencias = obtenerDiligenciasMarcadas();
@@ -1842,28 +1765,13 @@
             setValueSafe('descripcion-hecho', causa.descripcionHecho || '');
             setValueSafe('observaciones-generales', causa.observacionesGenerales || '');
 
-            hechosAgregados = [];
-            if (causa.hechos) {
-                causa.hechos.forEach(h => {
-                    const config = CONFIG.hechos[h.hecho];
-                    if (config) {
-                        const incisosValidos = h.incisos.filter(inc => {
-                            const incData = config.incisos.find(i => i.id === inc.id);
-                            if (!incData) return false;
-                            if (inc.numerales) {
-                                inc.numerales = inc.numerales.filter(numId => {
-                                    if (!incData.numerales) return false;
-                                    return incData.numerales.some(n => n.id === numId);
-                                });
-                            }
-                            return true;
-                        });
-                        if (incisosValidos.length > 0 || config.incisos.length === 0) {
-                            hechosAgregados.push({ hecho: h.hecho, incisos: incisosValidos });
-                        }
-                    }
-                });
-            }
+            hechosAgregados = (causa.hechos || []).filter(h => h && h.hecho).map(h => ({
+                hecho: h.hecho,
+                incisos: Array.isArray(h.incisos) ? h.incisos.map(inc => ({
+                    id: inc.id,
+                    numerales: Array.isArray(inc.numerales) ? inc.numerales.slice() : []
+                })) : []
+            }));
             renderizarHechosAgregados();
 
             setValueSafe('fecha-vencimiento-input', causa.fechaActoConclusivo || '');
@@ -1913,9 +1821,9 @@
 
             if (causa.intervenciones) {
                 const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
-                if (hechoPrincipal === '229' && causa.intervenciones.tipo === 'cuestionario') {
+                if (esArticulo(hechoPrincipal, '229') && causa.intervenciones.tipo === 'cuestionario') {
                     window._cuestionarioPendiente = causa.intervenciones;
-                } else if (hechoPrincipal === '225' && causa.intervenciones.tipo === 'liquidacion') {
+                } else if (esArticulo(hechoPrincipal, '225') && causa.intervenciones.tipo === 'liquidacion') {
                     window._liquidacionPendiente = causa.intervenciones;
                 }
             }
@@ -2002,14 +1910,14 @@
                 html += `<div class="inciso-group">`;
                 html += `<label style="display:flex;align-items:flex-start;gap:6px;font-size:12px;line-height:1.3;padding:2px 0;">
                             <input type="checkbox" value="${inc.id}" class="inciso-check" data-hecho="${hecho}" data-inciso="${inc.id}" style="margin-top:2px;">
-                            <span class="inciso-check-label">${inc.label}</span>
+                            <span class="inciso-check-label">${escapeHTML(inc.label)}</span>
                          </label>`;
                 if (tieneNumerales) {
                     html += `<div class="numerales-container" id="numerales-${inc.id}" style="padding-left:25px;display:none;margin-top:3px;">`;
                     inc.numerales.forEach(num => {
                         html += `<label style="display:flex;align-items:flex-start;gap:6px;font-size:11px;line-height:1.2;padding:1px 0;color:#444;">
                                     <input type="checkbox" value="${num.id}" class="numeral-check" data-hecho="${hecho}" data-inciso="${inc.id}" data-numeral="${num.id}" style="margin-top:2px;">
-                                    <span class="numeral-check-label">${num.label}</span>
+                                    <span class="numeral-check-label">${escapeHTML(num.label)}</span>
                                  </label>`;
                     });
                     html += `</div>`;
@@ -2097,18 +2005,21 @@
                 h.incisos.forEach(inc => {
                     const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
                     if (incData) {
-                        detalles += `<div style="padding-left:12px;font-size:11px;color:#555;">✓ ${incData.label}`;
+                        detalles += `<div style="padding-left:12px;font-size:11px;color:#555;">✓ ${escapeHTML(incData.label)}`;
                         if (inc.numerales && inc.numerales.length > 0) {
                             const nums = inc.numerales.map(id => {
                                 const numData = incData.numerales ? incData.numerales.find(n => n.id === id) : null;
                                 return numData ? numData.label : id;
                             });
-                            detalles += ` (numerales: ${nums.join(', ')})`;
+                            detalles += ` (numerales: ${nums.map(escapeHTML).join(', ')})`;
                         }
                         detalles += `</div>`;
+                    } else {
+                        const nums = inc.numerales && inc.numerales.length ? ` · numerales: ${inc.numerales.map(escapeHTML).join(', ')}` : '';
+                        detalles += `<div class="cp-historico">✓ Selección histórica conservada: ${escapeHTML(inc.id)}${nums}</div>`;
                     }
                 });
-                html += `<div class="list-item"><span class="label">${label}</span><button class="btn-remover" onclick="quitarHecho(${index})"><i class="fas fa-times"></i> Eliminar</button></div>`;
+                html += `<div class="list-item"><span class="label">${escapeHTML(label)}</span><button class="btn-remover" onclick="quitarHecho(${index})"><i class="fas fa-times"></i> Eliminar</button></div>`;
                 if (detalles) html += `<div style="padding-left:15px;margin-bottom:3px;">${detalles}</div>`;
             });
             html += '</div>';
@@ -2139,7 +2050,7 @@
             }
             const hechosText = hechosAgregados.map(h => {
                 const config = CONFIG.hechos[h.hecho];
-                return config ? config.label.replace(/^Art\.\s*\d+\s*[–-]\s*/, '') : h.hecho;
+                return config ? config.label.replace(/^Art\.\s*\d+[a-z]?\s*[–-]\s*/i, '') : h.hecho;
             }).join('; ');
             preview.textContent = `Causa Nº ${num} "${imputado}" S/ ${hechosText}`;
         }
@@ -2202,7 +2113,7 @@
             const hechoPrincipal = hechosAgregados.length > 0 ? hechosAgregados[0].hecho : '';
             const container = document.getElementById('intervencion-contenido');
             const btnPdf = document.getElementById('btn-pdf-cuestionario');
-            if (hechoPrincipal === '229') {
+            if (esArticulo(hechoPrincipal, '229')) {
                 container.innerHTML = generarCuestionarioRiesgo();
                 btnPdf.style.display = 'block';
                 if (window._cuestionarioPendiente) {
@@ -2214,7 +2125,7 @@
                         restaurarCuestionario(causa.intervenciones);
                     }
                 }
-            } else if (hechoPrincipal === '225') {
+            } else if (esArticulo(hechoPrincipal, '225')) {
                 container.innerHTML = generarLiquidacionYdiligencias();
                 btnPdf.style.display = 'none';
                 if (window._liquidacionPendiente) {
@@ -2577,8 +2488,8 @@
         }
 
         function generarCardCausa(c) {
-            const badge = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'badge-alimentos' : 'badge-activa';
-            const badgeText = c.hechos && c.hechos.some(h => h.hecho === '225') ? 'Alimentos' : 'Activa';
+            const badge = c.hechos && c.hechos.some(h => esArticulo(h.hecho, '225')) ? 'badge-alimentos' : 'badge-activa';
+            const badgeText = c.hechos && c.hechos.some(h => esArticulo(h.hecho, '225')) ? 'Alimentos' : 'Activa';
             const caratula = c.caratula || 'Sin carátula';
             const tieneAlertas = verificarAlertas(c);
             const alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
@@ -2795,6 +2706,7 @@
         // 17. NUEVA CAUSA Y CERRAR
         // ================================================================
         function nuevaCausa() {
+            if (!catalogoActual) { alert('El Código Penal todavía se está cargando. Intente nuevamente en unos segundos.'); return; }
             causaActualId = null;
             document.getElementById('form-title').textContent = 'Nueva Causa';
             document.getElementById('estado-causa').textContent = '';
