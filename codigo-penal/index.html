@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Consulta del Código Penal paraguayo, texto consolidado y leyes modificatorias.">
+    <title>Código Penal Paraguayo | Consulta jurídica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="estilos.css">
+    <script src="datos/catalogo.js"></script>
+    <script src="catalogo.js"></script>
+    <script src="app.js" defer></script>
+</head>
+<body class="cp-body">
+    <header class="cp-topbar">
+        <div class="cp-brand">
+            <span class="cp-brand-icon"><i class="fas fa-scale-balanced"></i></span>
+            <div>
+                <h1>Código Penal de la República del Paraguay</h1>
+                <p id="cp-edicion">Texto consolidado y leyes modificatorias</p>
+            </div>
+        </div>
+        <a class="cp-back" href="../index.html" title="Volver al sistema"><i class="fas fa-arrow-left"></i> Volver al sistema</a>
+    </header>
+
+    <div class="cp-layout">
+        <aside class="cp-sidebar" aria-label="Índice de artículos">
+            <div class="cp-filters">
+                <label>Buscar en el Código
+                    <input class="cp-input" id="cp-search" type="search" placeholder="Artículo, nombre o texto…" autocomplete="off">
+                </label>
+                <label>Título
+                    <select class="cp-select" id="cp-title-filter"><option value="">Todos los títulos</option></select>
+                </label>
+                <label class="cp-check"><input id="cp-selectable-filter" type="checkbox"> Solo hechos punibles seleccionables</label>
+                <label class="cp-check"><input id="cp-modified-filter" type="checkbox"> Solo artículos con modificatorias</label>
+                <div class="cp-results" id="cp-results" role="status"></div>
+            </div>
+            <nav class="cp-article-list" id="cp-article-list" aria-label="Artículos"></nav>
+        </aside>
+
+        <main class="cp-content">
+            <article class="cp-article-card" id="cp-article" aria-live="polite"></article>
+        </main>
+    </div>
+    <footer class="cp-footnote">Texto de consulta elaborado a partir de la edición oficial actualizada y concordada. Cada artículo enlaza con su fuente y con las leyes modificatorias correspondientes.</footer>
+</body>
+</html>
