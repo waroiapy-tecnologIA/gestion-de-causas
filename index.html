@@ -1464,17 +1464,7 @@
         if (panel.style.display === 'block') cargarUsuarios();
     }
 
-    function cargarUsuarios() {
-        if (!isAdmin) return;
-        const container = document.getElementById('admin-users-list');
-        container.innerHTML = '<p class="text-muted">Cargando usuarios...</p>';
-        db.collection('usuarios').orderBy('createdAt', 'desc').get()
-            .then(snapshot => {
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted">No hay usuarios registrados.</p>';
-                    return;
-                }
-                function cargarUsuarios() {
+function cargarUsuarios() {
     if (!isAdmin) return;
     const container = document.getElementById('admin-users-list');
     container.innerHTML = '<p class="text-muted">Cargando usuarios...</p>';
@@ -1484,15 +1474,10 @@
                 container.innerHTML = '<p class="text-muted">No hay usuarios registrados.</p>';
                 return;
             }
-            let html = `<div style="overflow-x:auto;"><table class="user-table"><thead><tr>
-                <th>Email</th>
-                <th>Nombre</th>
-                <th>Estado</th>
-                <th>Accesos</th>
-                <th>Último acceso</th>
-                <th>Expiración</th>
-                <th>Acciones</th>
-            </tr></thead><tbody>`;
+            let html = '<div style="overflow-x:auto;"><table class="user-table"><thead><tr>' +
+                '<th>Email</th><th>Nombre</th><th>Estado</th><th>Accesos</th>' +
+                '<th>Último acceso</th><th>Expiración</th><th>Acciones</th>' +
+                '</tr></thead><tbody>';
             snapshot.forEach(doc => {
                 const data = doc.data();
                 const uid = doc.id;
@@ -1501,12 +1486,10 @@
                 const estado = data.estado || 'pendiente';
                 const esAdmin = (email === 'waroiapy@gmail.com');
 
-                // Expiración
                 const expiracion = data.fechaExpiracion
                     ? new Date(data.fechaExpiracion.seconds * 1000).toLocaleDateString('es-PY')
                     : 'N/A';
 
-                // Último acceso
                 let ultimoAcceso = 'Nunca';
                 if (data.ultimoAcceso) {
                     const fecha = data.ultimoAcceso.seconds
@@ -1518,34 +1501,33 @@
                     });
                 }
 
-                // Accesos: total y desde la suscripción actual
                 const totalAccesos = data.totalAccesos || 0;
                 const accesosSus = data.accesosDesdeSuscripcion || 0;
                 const inicioSus = data.inicioSuscripcion
                     ? new Date(data.inicioSuscripcion.seconds * 1000).toLocaleDateString('es-PY')
                     : null;
                 const textoAccesos = inicioSus
-                    ? `${accesosSus} <span style="color:#888;font-size:11px;">desde ${inicioSus}</span><br><span style="color:#aaa;font-size:10px;">(${totalAccesos} total)</span>`
-                    : `${totalAccesos}`;
+                    ? accesosSus + ' <span style="color:#888;font-size:11px;">desde ' + inicioSus + '</span><br><span style="color:#aaa;font-size:10px;">(' + totalAccesos + ' total)</span>'
+                    : String(totalAccesos);
 
                 const estadoClass = estado === 'pendiente' ? 'pendiente'
                     : estado === 'aprobado' ? 'aprobado' : 'rechazado';
 
-                html += `<tr>
-                    <td data-label="Email">${email} ${esAdmin ? '<span style="color:#d4a843;font-weight:600;">(Admin)</span>' : ''}</td>
-                    <td data-label="Nombre">${nombre}</td>
-                    <td data-label="Estado"><span class="estado-badge ${estadoClass}">${estado.charAt(0).toUpperCase() + estado.slice(1)}</span></td>
-                    <td data-label="Accesos">${textoAccesos}</td>
-                    <td data-label="Último acceso">${ultimoAcceso}</td>
-                    <td data-label="Expiración">${expiracion}</td>
-                    <td data-label="Acciones" class="acciones">
-                        ${!esAdmin ? `
-                            ${estado === 'pendiente' ? `<button class="btn btn-sm btn-approve" onclick="aprobarUsuario('${uid}')"><i class="fas fa-check"></i> Aprobar</button>` : ''}
-                            ${estado === 'aprobado' ? `<button class="btn btn-sm btn-renew" onclick="renovarUsuario('${uid}')"><i class="fas fa-clock"></i> Renovar (30d)</button>` : ''}
-                            ${estado !== 'rechazado' ? `<button class="btn btn-sm btn-reject" onclick="rechazarUsuario('${uid}')"><i class="fas fa-times"></i> Rechazar</button>` : ''}
-                        ` : '<span class="text-muted">—</span>'}
-                    </td>
-                </tr>`;
+                html += '<tr>' +
+                    '<td data-label="Email">' + email + ' ' + (esAdmin ? '<span style="color:#d4a843;font-weight:600;">(Admin)</span>' : '') + '</td>' +
+                    '<td data-label="Nombre">' + nombre + '</td>' +
+                    '<td data-label="Estado"><span class="estado-badge ' + estadoClass + '">' + estado.charAt(0).toUpperCase() + estado.slice(1) + '</span></td>' +
+                    '<td data-label="Accesos">' + textoAccesos + '</td>' +
+                    '<td data-label="Último acceso">' + ultimoAcceso + '</td>' +
+                    '<td data-label="Expiración">' + expiracion + '</td>' +
+                    '<td data-label="Acciones" class="acciones">' +
+                        (!esAdmin ? (
+                            (estado === 'pendiente' ? '<button class="btn btn-sm btn-approve" onclick="aprobarUsuario(\'' + uid + '\')"><i class="fas fa-check"></i> Aprobar</button>' : '') +
+                            (estado === 'aprobado' ? '<button class="btn btn-sm btn-renew" onclick="renovarUsuario(\'' + uid + '\')"><i class="fas fa-clock"></i> Renovar (30d)</button>' : '') +
+                            (estado !== 'rechazado' ? '<button class="btn btn-sm btn-reject" onclick="rechazarUsuario(\'' + uid + '\')"><i class="fas fa-times"></i> Rechazar</button>' : '')
+                        ) : '<span class="text-muted">—</span>') +
+                    '</td>' +
+                '</tr>';
             });
             html += '</tbody></table></div>';
             container.innerHTML = html;
