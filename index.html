@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sistema de Gestión de Causas Penales - MP</title>
+    <title>Sistema de Gestión de Causas Penales</title>
 
     <!-- Firebase y librerías externas -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -593,11 +593,11 @@
     <div id="modal-tyc">
         <div class="tyc-contenido">
             <h2><i class="fas fa-shield-alt" style="color:#d4a843;"></i> Términos y Condiciones de Uso</h2>
-            <p class="tyc-sub">Sistema de Gestión de Causas Penales — Ministerio Público</p>
+            <p class="tyc-sub">Sistema de Gestión de Causas Penales</p>
             <div class="tyc-cuerpo">
                 <p><strong>1. Almacenamiento de datos.</strong> Las causas que usted cargue se guardan <strong>únicamente en el almacenamiento local de este navegador</strong> (localStorage). No se sincronizan automáticamente entre computadoras ni entre usuarios. Los datos de registro de usuario (nombre, cargo, teléfono, correo, estado de aprobación) sí se almacenan en un servicio en la nube (Firebase Firestore) para gestionar el acceso.</p>
                 <p><strong>2. Pérdida de información.</strong> Si usted borra los datos del navegador, cambia de equipo, usa modo incógnito, reinstala el navegador o limpia la caché, <strong>las causas se perderán de forma definitiva</strong>. Se recomienda exportar un respaldo (botón "Exportar") periódicamente y guardarlo en un lugar seguro.</p>
-                <p><strong>3. Responsabilidad.</strong> El mal uso de la información, la pérdida de datos, la carga de datos incorrectos o la divulgación de información sensible es <strong>responsabilidad exclusiva del usuario</strong>. Esta herramienta es un apoyo operativo y no reemplaza los sistemas oficiales del Ministerio Público.</p>
+                <p><strong>3. Responsabilidad.</strong> El mal uso de la información, la pérdida de datos, la carga de datos incorrectos o la divulgación de información sensible es <strong>responsabilidad exclusiva del usuario</strong>. Esta herramienta es un apoyo operativo y no reemplaza los sistemas oficiales de la institución.</p>
                 <p><strong>4. Confidencialidad.</strong> Usted se compromete a no compartir credenciales, a no cargar datos de causas en equipos públicos y a resguardar la información conforme a las normas de su institución.</p>
                 <p><strong>5. Uso compartido.</strong> Cada usuario ve únicamente las causas guardadas en su propio navegador. Para compartir información con un compañero, use la exportación/importación de JSON.</p>
                 <p><strong>6. Aceptación.</strong> Al continuar, usted declara haber leído y aceptado estos términos.</p>
@@ -611,7 +611,7 @@
 
     <!-- ===== AUTENTICACIÓN ===== -->
     <div id="auth-container">
-        <img src="logo.png" alt="Ministerio Público" style="display:block;margin:0 auto 15px;max-width:200px;height:auto;" onerror="this.style.display='none'">
+        <img src="logo.png" alt="Gestión de" style="display:block;margin:0 auto 15px;max-width:200px;height:auto;" onerror="this.style.display='none'">
         <h2><i class="fas fa-gavel" style="color:#d4a843;"></i> MP</h2>
         <div class="sub">Sistema de Gestión de Causas Penales</div>
         <div id="auth-message"></div>
@@ -631,7 +631,7 @@
         <header class="header">
             <div style="display:flex;align-items:center;gap:10px;">
                 <img src="logo.png" style="height:40px;" onerror="this.style.display='none'">
-                <div><h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1><span class="subtitle">Ministerio Público – Sistema de Gestión Integral</span></div>
+                <div><h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1><span class="subtitle"> – Sistema de Gestión Integral</span></div>
             </div>
             <div class="user-info">
                 <span id="user-info-display" style="font-size:13px; font-weight:500;"></span>
@@ -995,7 +995,81 @@
         </div>
     </div>
 
-    <div id="modal-reauth">
+    <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
+            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
+            <input type="hidden" id="modal-imp-index" value="">
+            <div class="form-row">
+                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-imp-nombre" placeholder="Nombre y apellido"></div>
+                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-imp-ci" placeholder="Ej: 4.567.890"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Domicilio</label><input type="text" id="modal-imp-domicilio" placeholder="Dirección completa"></div>
+                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-imp-telefono" placeholder="Ej: 0981-123-456"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="modal-imp-reincidente" onchange="toggleReincidenciaModal()"><label for="modal-imp-reincidente">Sí</label></div></div>
+                <div class="form-group"><label>Número de veces</label><input type="number" id="modal-imp-num-reincidencias" min="0" value="0" disabled></div>
+            </div>
+            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn btn-outline" onclick="cerrarModalImputado()">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarImputadoEnLista()"><i class="fas fa-save"></i> Guardar imputado</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
+            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
+            <input type="hidden" id="modal-imp-index" value="">
+            <div class="form-row">
+                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-imp-nombre" placeholder="Nombre y apellido"></div>
+                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-imp-ci" placeholder="Ej: 4.567.890"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Domicilio</label><input type="text" id="modal-imp-domicilio" placeholder="Dirección completa"></div>
+                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-imp-telefono" placeholder="Ej: 0981-123-456"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="modal-imp-reincidente" onchange="toggleReincidenciaModal()"><label for="modal-imp-reincidente">Sí</label></div></div>
+                <div class="form-group"><label>Número de veces</label><input type="number" id="modal-imp-num-reincidencias" min="0" value="0" disabled></div>
+            </div>
+            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn btn-outline" onclick="cerrarModalImputado()">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarImputadoEnLista()"><i class="fas fa-save"></i> Guardar imputado</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
+            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
+            <input type="hidden" id="modal-imp-index" value="">
+            <div class="form-row">
+                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-imp-nombre" placeholder="Nombre y apellido"></div>
+                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-imp-ci" placeholder="Ej: 4.567.890"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Domicilio</label><input type="text" id="modal-imp-domicilio" placeholder="Dirección completa"></div>
+                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-imp-telefono" placeholder="Ej: 0981-123-456"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="modal-imp-reincidente" onchange="toggleReincidenciaModal()"><label for="modal-imp-reincidente">Sí</label></div></div>
+                <div class="form-group"><label>Número de veces</label><input type="number" id="modal-imp-num-reincidencias" min="0" value="0" disabled></div>
+            </div>
+            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn btn-outline" onclick="cerrarModalImputado()">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarImputadoEnLista()"><i class="fas fa-save"></i> Guardar imputado</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+                    <div class="sub-seccion">
+                        <h4><i class="fas fa-user-tag"></i> Imputado(s)</h4>
+                        <div id="imputados-list"></div>
+                        <button class="btn btn-agregar mt-10" onclick="abrirModalImputado()"><i class="fas fa-plus"></i> Agregar imputado</button>
+                    </div>
         <div class="reauth-contenido">
             <h3><i class="fas fa-lock"></i> Verificación de seguridad</h3>
             <p>Para eliminar esta causa, ingrese su contraseña actual.</p>
@@ -1276,6 +1350,194 @@
         elDias.textContent = `${diff} días`;
         elDias.style.color = '#1a2a4a';
     }
+    // ===== MÚLTIPLES IMPUTADOS =====
+    let imputadosTemporales = [];
+
+    function abrirModalImputado(indice) {
+        document.getElementById('modal-imp-index').value = (indice !== undefined && indice !== null) ? String(indice) : '';
+        document.getElementById('modal-imp-titulo').textContent = (indice !== undefined && indice !== null) ? 'Editar imputado' : 'Agregar imputado';
+        if (indice !== undefined && indice !== null && imputadosTemporales[indice]) {
+            const imp = imputadosTemporales[indice];
+            document.getElementById('modal-imp-nombre').value = imp.nombre || '';
+            document.getElementById('modal-imp-ci').value = imp.ci || '';
+            document.getElementById('modal-imp-domicilio').value = imp.domicilio || '';
+            document.getElementById('modal-imp-telefono').value = imp.telefono || '';
+            document.getElementById('modal-imp-reincidente').checked = !!imp.reincidente;
+            document.getElementById('modal-imp-num-reincidencias').value = imp.numReincidencias || 0;
+        } else {
+            document.getElementById('modal-imp-nombre').value = '';
+            document.getElementById('modal-imp-ci').value = '';
+            document.getElementById('modal-imp-domicilio').value = '';
+            document.getElementById('modal-imp-telefono').value = '';
+            document.getElementById('modal-imp-reincidente').checked = false;
+            document.getElementById('modal-imp-num-reincidencias').value = 0;
+        }
+        toggleReincidenciaModal();
+        document.getElementById('modal-imputado').style.display = 'flex';
+        setTimeout(() => document.getElementById('modal-imp-nombre').focus(), 100);
+    }
+
+    function cerrarModalImputado() {
+        document.getElementById('modal-imputado').style.display = 'none';
+    }
+
+    function toggleReincidenciaModal() {
+        const activa = document.getElementById('modal-imp-reincidente').checked;
+        document.getElementById('modal-imp-num-reincidencias').disabled = !activa;
+        if (!activa) document.getElementById('modal-imp-num-reincidencias').value = 0;
+    }
+
+    function guardarImputadoEnLista() {
+        const nombre = document.getElementById('modal-imp-nombre').value.trim();
+        if (!nombre) { alert('El nombre del imputado es obligatorio.'); return; }
+        const imputado = {
+            nombre,
+            ci: document.getElementById('modal-imp-ci').value.trim(),
+            domicilio: document.getElementById('modal-imp-domicilio').value.trim(),
+            telefono: document.getElementById('modal-imp-telefono').value.trim(),
+            reincidente: document.getElementById('modal-imp-reincidente').checked,
+            numReincidencias: parseInt(document.getElementById('modal-imp-num-reincidencias').value) || 0
+        };
+        const idxStr = document.getElementById('modal-imp-index').value;
+        if (idxStr !== '') {
+            imputadosTemporales[parseInt(idxStr, 10)] = imputado;
+        } else {
+            imputadosTemporales.push(imputado);
+        }
+        cerrarModalImputado();
+        renderizarImputados();
+        generarCaratula();
+    }
+
+    function renderizarImputados() {
+        const cont = document.getElementById('imputados-list');
+        if (!cont) return;
+        if (imputadosTemporales.length === 0) {
+            cont.innerHTML = '<p class="text-muted" style="margin-bottom:8px;">No hay imputados cargados. Haga clic en "Agregar imputado".</p>';
+            return;
+        }
+        let html = '';
+        imputadosTemporales.forEach((imp, idx) => {
+            const detalles = [];
+            if (imp.ci) detalles.push('CI: ' + imp.ci);
+            if (imp.domicilio) detalles.push('Domicilio: ' + imp.domicilio);
+            if (imp.telefono) detalles.push('Tel: ' + imp.telefono);
+            if (imp.reincidente) detalles.push('Reincidente: Sí (' + (imp.numReincidencias || 0) + ')');
+            html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
+            html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
+            html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(imp.nombre) + '</strong>';
+            if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
+            html += '</div>';
+            html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
+            html += '<button type="button" onclick="abrirModalImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
+            html += '<button type="button" onclick="eliminarImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
+            html += '</div></div>';
+        });
+        cont.innerHTML = html;
+    }
+
+    function eliminarImputado(indice) {
+        if (!confirm('¿Eliminar este imputado de la lista?')) return;
+        imputadosTemporales.splice(indice, 1);
+        renderizarImputados();
+        generarCaratula();
+    }
+    // ===== FIN MÚLTIPLES IMPUTADOS =====
+
+    // ===== MÚLTIPLES IMPUTADOS =====
+    let imputadosTemporales = [];
+
+    function abrirModalImputado(indice) {
+        document.getElementById('modal-imp-index').value = (indice !== undefined && indice !== null) ? String(indice) : '';
+        document.getElementById('modal-imp-titulo').textContent = (indice !== undefined && indice !== null) ? 'Editar imputado' : 'Agregar imputado';
+        if (indice !== undefined && indice !== null && imputadosTemporales[indice]) {
+            const imp = imputadosTemporales[indice];
+            document.getElementById('modal-imp-nombre').value = imp.nombre || '';
+            document.getElementById('modal-imp-ci').value = imp.ci || '';
+            document.getElementById('modal-imp-domicilio').value = imp.domicilio || '';
+            document.getElementById('modal-imp-telefono').value = imp.telefono || '';
+            document.getElementById('modal-imp-reincidente').checked = !!imp.reincidente;
+            document.getElementById('modal-imp-num-reincidencias').value = imp.numReincidencias || 0;
+        } else {
+            document.getElementById('modal-imp-nombre').value = '';
+            document.getElementById('modal-imp-ci').value = '';
+            document.getElementById('modal-imp-domicilio').value = '';
+            document.getElementById('modal-imp-telefono').value = '';
+            document.getElementById('modal-imp-reincidente').checked = false;
+            document.getElementById('modal-imp-num-reincidencias').value = 0;
+        }
+        toggleReincidenciaModal();
+        document.getElementById('modal-imputado').style.display = 'flex';
+        setTimeout(() => document.getElementById('modal-imp-nombre').focus(), 100);
+    }
+
+    function cerrarModalImputado() {
+        document.getElementById('modal-imputado').style.display = 'none';
+    }
+
+    function toggleReincidenciaModal() {
+        const activa = document.getElementById('modal-imp-reincidente').checked;
+        document.getElementById('modal-imp-num-reincidencias').disabled = !activa;
+        if (!activa) document.getElementById('modal-imp-num-reincidencias').value = 0;
+    }
+
+    function guardarImputadoEnLista() {
+        const nombre = document.getElementById('modal-imp-nombre').value.trim();
+        if (!nombre) { alert('El nombre del imputado es obligatorio.'); return; }
+        const imputado = {
+            nombre,
+            ci: document.getElementById('modal-imp-ci').value.trim(),
+            domicilio: document.getElementById('modal-imp-domicilio').value.trim(),
+            telefono: document.getElementById('modal-imp-telefono').value.trim(),
+            reincidente: document.getElementById('modal-imp-reincidente').checked,
+            numReincidencias: parseInt(document.getElementById('modal-imp-num-reincidencias').value) || 0
+        };
+        const idxStr = document.getElementById('modal-imp-index').value;
+        if (idxStr !== '') {
+            imputadosTemporales[parseInt(idxStr, 10)] = imputado;
+        } else {
+            imputadosTemporales.push(imputado);
+        }
+        cerrarModalImputado();
+        renderizarImputados();
+        generarCaratula();
+    }
+
+    function renderizarImputados() {
+        const cont = document.getElementById('imputados-list');
+        if (!cont) return;
+        if (imputadosTemporales.length === 0) {
+            cont.innerHTML = '<p class="text-muted" style="margin-bottom:8px;">No hay imputados cargados. Haga clic en "Agregar imputado".</p>';
+            return;
+        }
+        let html = '';
+        imputadosTemporales.forEach((imp, idx) => {
+            const detalles = [];
+            if (imp.ci) detalles.push('CI: ' + imp.ci);
+            if (imp.domicilio) detalles.push('Domicilio: ' + imp.domicilio);
+            if (imp.telefono) detalles.push('Tel: ' + imp.telefono);
+            if (imp.reincidente) detalles.push('Reincidente: Sí (' + (imp.numReincidencias || 0) + ')');
+            html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
+            html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
+            html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(imp.nombre) + '</strong>';
+            if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
+            html += '</div>';
+            html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
+            html += '<button type="button" onclick="abrirModalImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
+            html += '<button type="button" onclick="eliminarImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
+            html += '</div></div>';
+        });
+        cont.innerHTML = html;
+    }
+
+    function eliminarImputado(indice) {
+        if (!confirm('¿Eliminar este imputado de la lista?')) return;
+        imputadosTemporales.splice(indice, 1);
+        renderizarImputados();
+        generarCaratula();
+    }
+    // ===== FIN MÚLTIPLES IMPUTADOS =====
+
     function toggleReincidencia() {
         const activa = document.getElementById('reincidente').checked;
         document.getElementById('num-reincidencias').disabled = !activa;
@@ -1895,7 +2157,14 @@
     // ================================================================
     function guardarPestana1() {
         const num = document.getElementById('num-causa').value.trim();
-        const imputado = document.getElementById('imputado').value.trim();
+        let imputado = '';
+        if (imputadosTemporales.length === 1) {
+            imputado = imputadosTemporales[0].nombre || '';
+        } else if (imputadosTemporales.length === 2) {
+            imputado = (imputadosTemporales[0].nombre || '') + ' y ' + (imputadosTemporales[1].nombre || '');
+        } else if (imputadosTemporales.length > 2) {
+            imputado = (imputadosTemporales[0].nombre || '') + ' y otros';
+        }
         if (!num || !imputado) { alert('Complete Nº Causa e Imputado.'); return; }
         if (hechosAgregados.length === 0) { alert('Agregue al menos un hecho punible.'); return; }
 
@@ -1926,12 +2195,20 @@
 
         const datos = {
             numCausa: num,
+            imputados: imputadosTemporales.map(imp => ({
+                nombre: imp.nombre || '',
+                ci: imp.ci || '',
+                domicilio: imp.domicilio || '',
+                telefono: imp.telefono || '',
+                reincidente: !!imp.reincidente,
+                numReincidencias: imp.numReincidencias || 0
+            })),
             imputado,
-            ciImputado: document.getElementById('ci-imputado').value.trim(),
-            domicilioImputado: document.getElementById('domicilio-imputado').value.trim(),
-            telefonoImputado: document.getElementById('telefono-imputado').value.trim(),
-            reincidente: document.getElementById('reincidente').checked,
-            numReincidencias: parseInt(document.getElementById('num-reincidencias').value) || 0,
+            ciImputado: primerImputado.ci || '',
+            domicilioImputado: primerImputado.domicilio || '',
+            telefonoImputado: primerImputado.telefono || '',
+            reincidente: !!primerImputado.reincidente,
+            numReincidencias: primerImputado.numReincidencias || 0,
             victimas,
             lugarHecho: document.getElementById('lugar-hecho').value.trim(),
             fechaHecho: document.getElementById('fecha-hecho').value,
@@ -2151,13 +2428,28 @@
         }
 
         setValueSafe('num-causa', causa.numCausa);
-        setValueSafe('imputado', causa.imputado);
-        setValueSafe('ci-imputado', causa.ciImputado || '');
-        setValueSafe('domicilio-imputado', causa.domicilioImputado || '');
-        setValueSafe('telefono-imputado', causa.telefonoImputado || '');
-        setCheckedSafe('reincidente', causa.reincidente || false);
-        setValueSafe('num-reincidencias', causa.numReincidencias || 0);
-        document.getElementById('num-reincidencias').disabled = !causa.reincidente;
+        if (Array.isArray(causa.imputados) && causa.imputados.length > 0) {
+            imputadosTemporales = causa.imputados.map(imp => ({
+                nombre: imp.nombre || '',
+                ci: imp.ci || '',
+                domicilio: imp.domicilio || '',
+                telefono: imp.telefono || '',
+                reincidente: !!imp.reincidente,
+                numReincidencias: imp.numReincidencias || 0
+            }));
+        } else if (causa.imputado) {
+            imputadosTemporales = [{
+                nombre: causa.imputado || '',
+                ci: causa.ciImputado || '',
+                domicilio: causa.domicilioImputado || '',
+                telefono: causa.telefonoImputado || '',
+                reincidente: !!causa.reincidente,
+                numReincidencias: causa.numReincidencias || 0
+            }];
+        } else {
+            imputadosTemporales = [];
+        }
+        renderizarImputados();
 
         const victimasContainer = document.getElementById('victimas-container');
         victimasContainer.innerHTML = '';
@@ -2475,7 +2767,14 @@
 
     function generarCaratula() {
         const num = document.getElementById('num-causa').value.trim();
-        const imputado = document.getElementById('imputado').value.trim();
+        let imputado = '';
+        if (imputadosTemporales.length === 1) {
+            imputado = imputadosTemporales[0].nombre || '';
+        } else if (imputadosTemporales.length === 2) {
+            imputado = (imputadosTemporales[0].nombre || '') + ' y ' + (imputadosTemporales[1].nombre || '');
+        } else if (imputadosTemporales.length > 2) {
+            imputado = (imputadosTemporales[0].nombre || '') + ' y otros';
+        }
         const preview = document.getElementById('caratula-preview');
         if (!num || !imputado) {
             preview.innerHTML = '<span class="text-muted">Complete Nº causa e Imputado</span>';
@@ -3060,10 +3359,9 @@
         document.querySelectorAll('input[type="checkbox"]').forEach(el => {
             if (el.id !== 'reincidente' && el.id !== 'rebeldia-activa') el.checked = false;
         });
-        setCheckedSafe('reincidente', false);
         setCheckedSafe('rebeldia-activa', false);
-        document.getElementById('num-reincidencias').disabled = true;
-        setValueSafe('num-reincidencias', 0);
+        imputadosTemporales = [];
+        renderizarImputados();
         toggleRebeldia();
         document.getElementById('victimas-container').innerHTML = '';
         agregarVictima();
@@ -3143,7 +3441,7 @@
 
         let html = `
             <div class="informe-header" style="text-align:center;padding-bottom:12px;border-bottom:2px solid #1a2a4a;margin-bottom:12px;">
-                <h2 style="color:#1a2a4a;">MINISTERIO PÚBLICO</h2>
+                <h2 style="color:#1a2a4a;">G</h2>
                 <div style="color:#666;font-size:13px;">INFORME DE CAUSA PENAL</div>
                 <div style="font-size:11px;color:#888;margin-top:3px;">Fecha de emisión: ${new Date().toLocaleDateString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
             </div>
@@ -3155,11 +3453,19 @@
 
         html += `<h3 style="color:#1a2a4a;margin-top:20px;border-bottom:1px solid #ccc;padding-bottom:5px;">1. DATOS GENERALES</h3>`;
         html += `<div><strong>Nº Causa:</strong> ${causa.numCausa || 'No definido'}</div>`;
-        html += `<div><strong>Imputado:</strong> ${causa.imputado || 'No definido'}</div>`;
-        html += `<div><strong>CI del Imputado:</strong> ${causa.ciImputado || 'No registrado'}</div>`;
-        html += `<div><strong>Domicilio:</strong> ${causa.domicilioImputado || 'No registrado'}</div>`;
-        html += `<div><strong>Teléfono:</strong> ${causa.telefonoImputado || 'No registrado'}</div>`;
-        html += `<div><strong>Reincidente:</strong> ${causa.reincidente ? 'Sí (' + (causa.numReincidencias || 0) + ' veces)' : 'No'}</div>`;
+        html += `<div><strong>Imputado(s):</strong></div>`;
+        const impsInforme = (Array.isArray(causa.imputados) && causa.imputados.length > 0)
+            ? causa.imputados
+            : (causa.imputado ? [{ nombre: causa.imputado, ci: causa.ciImputado, domicilio: causa.domicilioImputado, telefono: causa.telefonoImputado, reincidente: causa.reincidente, numReincidencias: causa.numReincidencias }] : []);
+        if (impsInforme.length > 0) {
+            html += `<ul style="margin-top:4px;padding-left:20px;">`;
+            impsInforme.forEach((imp) => {
+                html += `<li><strong>${imp.nombre || 'Sin nombre'}</strong> — CI: ${imp.ci || 'N/A'} · Domicilio: ${imp.domicilio || 'N/A'} · Tel: ${imp.telefono || 'N/A'} · Reincidente: ${imp.reincidente ? 'Sí (' + (imp.numReincidencias || 0) + ' veces)' : 'No'}</li>`;
+            });
+            html += `</ul>`;
+        } else {
+            html += `<div class="text-muted">No se registraron imputados.</div>`;
+        }
 
         html += `<div><strong>Víctima(s):</strong></div>`;
         if (causa.victimas && causa.victimas.length > 0) {
@@ -3375,7 +3681,7 @@
         alertas.forEach(a => html += `<li>${a}</li>`);
         html += `</ul>`;
 
-        html += `<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:11px;color:#888;text-align:center;">Documento generado automáticamente por el Sistema de Gestión de Causas Penales - MP</div>`;
+        html += `<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:11px;color:#888;text-align:center;">Documento generado automáticamente por el Sistema de Gestión de Causas Penales</div>`;
 
         container.innerHTML = html;
     }
@@ -3495,7 +3801,7 @@
     // 21. LOG DE CIERRE
     // ================================================================
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('✅ Sistema de Gestión de Causas Penales - MP cargado completamente.');
+        console.log('✅ Sistema de Gestión de Causas Penales cargado completamente.');
         console.log('✅ Suscripciones flexibles: 30 / 90 / 180 / 365 días.');
     });
     </script>
