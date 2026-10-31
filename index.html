@@ -2080,10 +2080,12 @@
     if (causa) {
         actualizarEstadoSeccion('tab1', true);
         document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
-        alert('Datos Generales guardados correctamente.');
+                alert('Datos Generales guardados correctamente.');
     }
 }
-        if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
+
+function guardarPestana2() {
+    if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
         const fechaManual = document.getElementById('fecha-vencimiento-input').value;
         if (!fechaManual) { alert('La fecha de acto conclusivo es obligatoria.'); return; }
         const datos = {
