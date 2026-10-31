@@ -705,6 +705,11 @@
                 <div id="tab1" class="tab-pane active">
                     <div class="form-row">
                         <div class="form-group"><label>Número de Causa <span class="required">*</span></label><input type="text" id="num-causa" placeholder="Ej: 123/2026" data-guia="Formato recomendado: 123/2026. Es el número que identifica la carpeta fiscal." oninput="generarCaratula()"></div>
+                                            <div class="sub-seccion">
+                        <h4>Imputado(s) <span class="required">*</span></h4>
+                        <div id="imputados-list"></div>
+                        <button type="button" class="btn btn-agregar" onclick="abrirModalImputado()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar imputado</button>
+                    </div>
                         <div class="form-group"><label>Nombre del Imputado <span class="required">*</span></label><input type="text" id="imputado" placeholder="Nombre completo" data-guia="Nombre y apellido completo del imputado, tal como figura en el acta de imputación." oninput="generarCaratula()"></div>
                     </div>
                     <div class="form-row">
@@ -2005,62 +2010,79 @@
     // 11. GUARDAR PESTAÑAS
     // ================================================================
     function guardarPestana1() {
-        const num = document.getElementById('num-causa').value.trim();
-        let imputado = '';
-        if (imputadosTemporales.length === 1) {
-            imputado = imputadosTemporales[0].nombre || '';
-        } else if (imputadosTemporales.length === 2) {
-            imputado = (imputadosTemporales[0].nombre || '') + ' y ' + (imputadosTemporales[1].nombre || '');
-        } else if (imputadosTemporales.length > 2) {
-            imputado = (imputadosTemporales[0].nombre || '') + ' y otros';
-        }
-        if (!num || !imputado) { alert('Complete Nº Causa e Imputado.'); return; }
-        if (hechosAgregados.length === 0) { alert('Agregue al menos un hecho punible.'); return; }
-
-        const victimas = [];
-        document.querySelectorAll('.victima-block').forEach(block => {
-            const nombre = block.querySelector('.victima-nombre').value.trim();
-            if (nombre) {
-                victimas.push({
-                    nombre,
-                    ci: block.querySelector('.victima-ci').value.trim(),
-                    telefono: block.querySelector('.victima-telefono').value.trim(),
-                    domicilio: block.querySelector('.victima-domicilio').value.trim(),
-                    edad: parseInt(block.querySelector('.victima-edad').value) || null
-                });
-            }
-        });
-        const testigos = [];
-        document.querySelectorAll('.testigo-block').forEach(block => {
-            const nombre = block.querySelector('.testigo-nombre').value.trim();
-            if (nombre) {
-                testigos.push({
-                    nombre,
-                    ci: block.querySelector('.testigo-ci').value.trim(),
-                    telefono: block.querySelector('.testigo-telefono').value.trim()
-                });
-            }
-        });
-
-        const primerImputado = imputadosTemporales[
-            lugarHecho: document.getElementById('lugar-hecho').value.trim(),
-            fechaHecho: document.getElementById('fecha-hecho').value,<div id="sub-seccion">
-            horaHecho: document.getElementById('hora-hecho').value,
-            testigos,
-            descripcionHecho: document.getElementById('descripcion-hecho').value.trim(),
-            hechos: hechosAgregados.map(h => ({ hecho: h.hecho, incisos: h.incisos })),
-            caratula: document.getElementById('caratula-preview').textContent,
-            observacionesGenerales: document.getElementById('observaciones-generales').value.trim()
-        };
-        const causa = actualizarCausa(datos);
-        if (causa) {
-            actualizarEstadoSeccion('tab1', true);
-            document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
-            alert('Datos Generales guardados correctamente.');
-        }
+    const num = document.getElementById('num-causa').value.trim();
+    let imputado = '';
+    if (imputadosTemporales.length === 1) {
+        imputado = imputadosTemporales[0].nombre || '';
+    } else if (imputadosTemporales.length === 2) {
+        imputado = (imputadosTemporales[0].nombre || '') + ' y ' + (imputadosTemporales[1].nombre || '');
+    } else if (imputadosTemporales.length > 2) {
+        imputado = (imputadosTemporales[0].nombre || '') + ' y otros';
     }
+    if (!num || !imputado) { alert('Complete Nº Causa e Imputado.'); return; }
+    if (hechosAgregados.length === 0) { alert('Agregue al menos un hecho punible.'); return; }
 
-    function guardarPestana2() {
+    const victimas = [];
+    document.querySelectorAll('.victima-block').forEach(block => {
+        const nombre = block.querySelector('.victima-nombre').value.trim();
+        if (nombre) {
+            victimas.push({
+                nombre,
+                ci: block.querySelector('.victima-ci').value.trim(),
+                telefono: block.querySelector('.victima-telefono').value.trim(),
+                domicilio: block.querySelector('.victima-domicilio').value.trim(),
+                edad: parseInt(block.querySelector('.victima-edad').value) || null
+            });
+        }
+    });
+
+    const testigos = [];
+    document.querySelectorAll('.testigo-block').forEach(block => {
+        const nombre = block.querySelector('.testigo-nombre').value.trim();
+        if (nombre) {
+            testigos.push({
+                nombre,
+                ci: block.querySelector('.testigo-ci').value.trim(),
+                telefono: block.querySelector('.testigo-telefono').value.trim()
+            });
+        }
+    });
+
+    const primerImputado = imputadosTemporales[0] || {};
+    const datos = {
+        numCausa: num,
+        imputado: imputado,
+        imputados: imputadosTemporales.map(imp => ({
+            nombre: imp.nombre || '',
+            ci: imp.ci || '',
+            domicilio: imp.domicilio || '',
+            telefono: imp.telefono || '',
+            reincidente: !!imp.reincidente,
+            numReincidencias: imp.numReincidencias || 0
+        })),
+        ciImputado: primerImputado.ci || '',
+        domicilioImputado: primerImputado.domicilio || '',
+        telefonoImputado: primerImputado.telefono || '',
+        reincidente: !!primerImputado.reincidente,
+        numReincidencias: primerImputado.numReincidencias || 0,
+        victimas,
+        lugarHecho: document.getElementById('lugar-hecho').value.trim(),
+        fechaHecho: document.getElementById('fecha-hecho').value,
+        horaHecho: document.getElementById('hora-hecho').value,
+        testigos,
+        descripcionHecho: document.getElementById('descripcion-hecho').value.trim(),
+        hechos: hechosAgregados.map(h => ({ hecho: h.hecho, incisos: h.incisos })),
+        caratula: document.getElementById('caratula-preview').textContent,
+        observacionesGenerales: document.getElementById('observaciones-generales').value.trim()
+    };
+
+    const causa = actualizarCausa(datos);
+    if (causa) {
+        actualizarEstadoSeccion('tab1', true);
+        document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
+        alert('Datos Generales guardados correctamente.');
+    }
+}
         if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
         const fechaManual = document.getElementById('fecha-vencimiento-input').value;
         if (!fechaManual) { alert('La fecha de acto conclusivo es obligatoria.'); return; }
