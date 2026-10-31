@@ -995,6 +995,7 @@
         </div>
     </div>
 
+    <!-- Modal Imputado (ÚNICO) -->
     <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
         <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
             <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
@@ -1018,58 +1019,8 @@
         </div>
     </div>
 
-    <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
-            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
-            <input type="hidden" id="modal-imp-index" value="">
-            <div class="form-row">
-                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-imp-nombre" placeholder="Nombre y apellido"></div>
-                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-imp-ci" placeholder="Ej: 4.567.890"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Domicilio</label><input type="text" id="modal-imp-domicilio" placeholder="Dirección completa"></div>
-                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-imp-telefono" placeholder="Ej: 0981-123-456"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="modal-imp-reincidente" onchange="toggleReincidenciaModal()"><label for="modal-imp-reincidente">Sí</label></div></div>
-                <div class="form-group"><label>Número de veces</label><input type="number" id="modal-imp-num-reincidencias" min="0" value="0" disabled></div>
-            </div>
-            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
-                <button class="btn btn-outline" onclick="cerrarModalImputado()">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarImputadoEnLista()"><i class="fas fa-save"></i> Guardar imputado</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
-            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
-            <input type="hidden" id="modal-imp-index" value="">
-            <div class="form-row">
-                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-imp-nombre" placeholder="Nombre y apellido"></div>
-                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-imp-ci" placeholder="Ej: 4.567.890"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Domicilio</label><input type="text" id="modal-imp-domicilio" placeholder="Dirección completa"></div>
-                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-imp-telefono" placeholder="Ej: 0981-123-456"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="modal-imp-reincidente" onchange="toggleReincidenciaModal()"><label for="modal-imp-reincidente">Sí</label></div></div>
-                <div class="form-group"><label>Número de veces</label><input type="number" id="modal-imp-num-reincidencias" min="0" value="0" disabled></div>
-            </div>
-            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
-                <button class="btn btn-outline" onclick="cerrarModalImputado()">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarImputadoEnLista()"><i class="fas fa-save"></i> Guardar imputado</button>
-            </div>
-        </div>
-    </div>
-
-    </div>
-                    <div class="sub-seccion">
-                        <h4><i class="fas fa-user-tag"></i> Imputado(s)</h4>
-                        <div id="imputados-list"></div>
-                        <button class="btn btn-agregar mt-10" onclick="abrirModalImputado()"><i class="fas fa-plus"></i> Agregar imputado</button>
-                    </div>
+    <!-- Modal Reauth (ÚNICO y bien cerrado) -->
+    <div id="modal-reauth">
         <div class="reauth-contenido">
             <h3><i class="fas fa-lock"></i> Verificación de seguridad</h3>
             <p>Para eliminar esta causa, ingrese su contraseña actual.</p>
@@ -1350,99 +1301,6 @@
         elDias.textContent = `${diff} días`;
         elDias.style.color = '#1a2a4a';
     }
-    // ===== MÚLTIPLES IMPUTADOS =====
-
-    function abrirModalImputado(indice) {
-        document.getElementById('modal-imp-index').value = (indice !== undefined && indice !== null) ? String(indice) : '';
-        document.getElementById('modal-imp-titulo').textContent = (indice !== undefined && indice !== null) ? 'Editar imputado' : 'Agregar imputado';
-        if (indice !== undefined && indice !== null && imputadosTemporales[indice]) {
-            const imp = imputadosTemporales[indice];
-            document.getElementById('modal-imp-nombre').value = imp.nombre || '';
-            document.getElementById('modal-imp-ci').value = imp.ci || '';
-            document.getElementById('modal-imp-domicilio').value = imp.domicilio || '';
-            document.getElementById('modal-imp-telefono').value = imp.telefono || '';
-            document.getElementById('modal-imp-reincidente').checked = !!imp.reincidente;
-            document.getElementById('modal-imp-num-reincidencias').value = imp.numReincidencias || 0;
-        } else {
-            document.getElementById('modal-imp-nombre').value = '';
-            document.getElementById('modal-imp-ci').value = '';
-            document.getElementById('modal-imp-domicilio').value = '';
-            document.getElementById('modal-imp-telefono').value = '';
-            document.getElementById('modal-imp-reincidente').checked = false;
-            document.getElementById('modal-imp-num-reincidencias').value = 0;
-        }
-        toggleReincidenciaModal();
-        document.getElementById('modal-imputado').style.display = 'flex';
-        setTimeout(() => document.getElementById('modal-imp-nombre').focus(), 100);
-    }
-
-    function cerrarModalImputado() {
-        document.getElementById('modal-imputado').style.display = 'none';
-    }
-
-    function toggleReincidenciaModal() {
-        const activa = document.getElementById('modal-imp-reincidente').checked;
-        document.getElementById('modal-imp-num-reincidencias').disabled = !activa;
-        if (!activa) document.getElementById('modal-imp-num-reincidencias').value = 0;
-    }
-
-    function guardarImputadoEnLista() {
-        const nombre = document.getElementById('modal-imp-nombre').value.trim();
-        if (!nombre) { alert('El nombre del imputado es obligatorio.'); return; }
-        const imputado = {
-            nombre,
-            ci: document.getElementById('modal-imp-ci').value.trim(),
-            domicilio: document.getElementById('modal-imp-domicilio').value.trim(),
-            telefono: document.getElementById('modal-imp-telefono').value.trim(),
-            reincidente: document.getElementById('modal-imp-reincidente').checked,
-            numReincidencias: parseInt(document.getElementById('modal-imp-num-reincidencias').value) || 0
-        };
-        const idxStr = document.getElementById('modal-imp-index').value;
-        if (idxStr !== '') {
-            imputadosTemporales[parseInt(idxStr, 10)] = imputado;
-        } else {
-            imputadosTemporales.push(imputado);
-        }
-        cerrarModalImputado();
-        renderizarImputados();
-        generarCaratula();
-    }
-
-    function renderizarImputados() {
-        const cont = document.getElementById('imputados-list');
-        if (!cont) return;
-        if (imputadosTemporales.length === 0) {
-            cont.innerHTML = '<p class="text-muted" style="margin-bottom:8px;">No hay imputados cargados. Haga clic en "Agregar imputado".</p>';
-            return;
-        }
-        let html = '';
-        imputadosTemporales.forEach((imp, idx) => {
-            const detalles = [];
-            if (imp.ci) detalles.push('CI: ' + imp.ci);
-            if (imp.domicilio) detalles.push('Domicilio: ' + imp.domicilio);
-            if (imp.telefono) detalles.push('Tel: ' + imp.telefono);
-            if (imp.reincidente) detalles.push('Reincidente: Sí (' + (imp.numReincidencias || 0) + ')');
-            html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
-            html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
-            html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(imp.nombre) + '</strong>';
-            if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
-            html += '</div>';
-            html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
-            html += '<button type="button" onclick="abrirModalImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
-            html += '<button type="button" onclick="eliminarImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
-            html += '</div></div>';
-        });
-        cont.innerHTML = html;
-    }
-
-    function eliminarImputado(indice) {
-        if (!confirm('¿Eliminar este imputado de la lista?')) return;
-        imputadosTemporales.splice(indice, 1);
-        renderizarImputados();
-        generarCaratula();
-    }
-    // ===== FIN MÚLTIPLES IMPUTADOS =====
-
     // ===== MÚLTIPLES IMPUTADOS =====
     let imputadosTemporales = [];
 
@@ -2192,25 +2050,9 @@
             }
         });
 
-        const datos = {
-            numCausa: num,
-            imputados: imputadosTemporales.map(imp => ({
-                nombre: imp.nombre || '',
-                ci: imp.ci || '',
-                domicilio: imp.domicilio || '',
-                telefono: imp.telefono || '',
-                reincidente: !!imp.reincidente,
-                numReincidencias: imp.numReincidencias || 0
-            })),
-            imputado,
-            ciImputado: primerImputado.ci || '',
-            domicilioImputado: primerImputado.domicilio || '',
-            telefonoImputado: primerImputado.telefono || '',
-            reincidente: !!primerImputado.reincidente,
-            numReincidencias: primerImputado.numReincidencias || 0,
-            victimas,
+        const primerImputado = imputadosTemporales[
             lugarHecho: document.getElementById('lugar-hecho').value.trim(),
-            fechaHecho: document.getElementById('fecha-hecho').value,
+            fechaHecho: document.getElementById('fecha-hecho').value,<div id="sub-seccion">
             horaHecho: document.getElementById('hora-hecho').value,
             testigos,
             descripcionHecho: document.getElementById('descripcion-hecho').value.trim(),
