@@ -521,7 +521,274 @@
             #modal-reauth .reauth-contenido { padding: 15px; }
             #modal-tyc .tyc-contenido { padding: 18px; }
         }
+/* ===== NUEVO DISEÑO DEL RESUMEN ===== */
+#modal-resumen .modal-contenido {
+    max-width: 1150px;
+    padding: 0;
+    overflow: hidden;
+}
+.resumen-header {
+    background: linear-gradient(135deg, #1a2a4a 0%, #2a4a7a 100%);
+    color: #fff;
+    padding: 22px 30px;
+    position: relative;
+}
+.resumen-header h3 {
+    font-size: 20px;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.resumen-header .sub {
+    font-size: 12px;
+    opacity: 0.8;
+}
+.resumen-header .modal-cerrar {
+    color: #fff;
+    opacity: 0.7;
+    font-size: 30px;
+    top: 14px;
+    right: 20px;
+    position: absolute;
+}
+.resumen-header .modal-cerrar:hover { opacity: 1; color: #fff; }
 
+.resumen-body {
+    padding: 20px 28px 24px;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+/* Tarjetas de métricas */
+.resumen-metricas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+.metrica-card {
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    border-left: 5px solid;
+    background: #f8f9fb;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.metrica-card .met-icon {
+    font-size: 28px;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.metrica-card .met-info { flex: 1; }
+.metrica-card .met-valor {
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1;
+    color: #1a2a4a;
+}
+.metrica-card .met-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #777;
+    font-weight: 600;
+    margin-top: 4px;
+}
+.metrica-card.urgente { border-left-color: #b33c3c; }
+.metrica-card.urgente .met-icon { background: #f8d7da; color: #b33c3c; }
+.metrica-card.urgente .met-valor { color: #b33c3c; }
+.metrica-card.plazo { border-left-color: #2a7d4f; }
+.metrica-card.plazo .met-icon { background: #d4edda; color: #2a7d4f; }
+.metrica-card.plazo .met-valor { color: #2a7d4f; }
+.metrica-card.acto { border-left-color: #0d47a1; }
+.metrica-card.acto .met-icon { background: #bbdefb; color: #0d47a1; }
+.metrica-card.acto .met-valor { color: #0d47a1; }
+
+/* Alerta de vencidas */
+.alerta-vencidas {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%);
+    border: 1px solid #dc3545;
+    border-left: 5px solid #dc3545;
+    padding: 12px 18px;
+    border-radius: 8px;
+    color: #721c24;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.alerta-vencidas i { font-size: 20px; }
+
+/* Secciones */
+.resumen-seccion {
+    margin-bottom: 26px;
+}
+.resumen-seccion-titulo {
+    font-size: 15px;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.resumen-seccion-titulo .contador {
+    margin-left: auto;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0.8;
+    background: rgba(255,255,255,0.4);
+    padding: 2px 10px;
+    border-radius: 10px;
+}
+.resumen-seccion.urgente .resumen-seccion-titulo { background: #f8d7da; color: #721c24; border-left: 4px solid #b33c3c; }
+.resumen-seccion.plazo .resumen-seccion-titulo { background: #d4edda; color: #155724; border-left: 4px solid #2a7d4f; }
+.resumen-seccion.acto .resumen-seccion-titulo { background: #bbdefb; color: #0d47a1; border-left: 4px solid #0d47a1; }
+
+/* Tarjetas de causas */
+.resumen-card {
+    background: #fff;
+    border: 1px solid #e0e4ea;
+    border-left: 5px solid #ccc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px 16px;
+    align-items: center;
+    transition: all 0.15s;
+}
+.resumen-card:hover {
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    transform: translateY(-1px);
+}
+.resumen-card.estado-vencida { border-left-color: #dc3545; background: #fff8f8; }
+.resumen-card.estado-critica { border-left-color: #fd7e14; background: #fff9f2; }
+.resumen-card.estado-proxima { border-left-color: #ffc107; background: #fffdf2; }
+.resumen-card.estado-plazo   { border-left-color: #28a745; background: #f8fdf9; }
+.resumen-card.estado-acto    { border-left-color: #0d47a1; background: #f7faff; }
+
+.resumen-card .rc-principal { min-width: 0; }
+.resumen-card .rc-causa {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a2a4a;
+    margin-bottom: 2px;
+}
+.resumen-card .rc-imputado {
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 6px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.resumen-card .rc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-size: 11px;
+    color: #666;
+}
+.resumen-card .rc-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.resumen-card .rc-meta i { color: #999; font-size: 10px; }
+
+.resumen-card .rc-estado {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 110px;
+}
+.rc-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.rc-badge.vencida { background: #dc3545; color: #fff; }
+.rc-badge.critica { background: #fd7e14; color: #fff; }
+.rc-badge.proxima { background: #ffc107; color: #856404; }
+.rc-badge.plazo   { background: #28a745; color: #fff; }
+.rc-badge.acto    { background: #0d47a1; color: #fff; }
+
+.rc-dias {
+    font-size: 11px;
+    color: #888;
+}
+.rc-dias strong { color: #333; }
+
+/* Barra de progreso de días */
+.rc-barra {
+    height: 4px;
+    background: #e8ecf1;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+.rc-barra-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s;
+}
+.rc-barra-fill.vencida { background: #dc3545; }
+.rc-barra-fill.critica { background: #fd7e14; }
+.rc-barra-fill.proxima { background: #ffc107; }
+.rc-barra-fill.plazo   { background: #28a745; }
+.rc-barra-fill.acto    { background: #0d47a1; }
+
+/* Footer del resumen */
+.resumen-footer {
+    padding: 14px 28px 20px;
+    border-top: 1px solid #e0e4ea;
+    background: #f8f9fb;
+    text-align: center;
+}
+.resumen-footer .btn { padding: 9px 24px; font-size: 14px; }
+
+/* Empty state del resumen */
+.resumen-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+.resumen-empty i {
+    font-size: 56px;
+    color: #2a7d4f;
+    margin-bottom: 16px;
+}
+.resumen-empty h4 {
+    font-size: 18px;
+    color: #1a2a4a;
+    margin-bottom: 6px;
+}
+
+@media (max-width: 600px) {
+    .resumen-card { grid-template-columns: 1fr; }
+    .resumen-card .rc-estado { text-align: left; align-items: flex-start; }
+    .resumen-header { padding: 16px 18px; }
+    .resumen-body { padding: 14px 16px; }
+}
         @media print {
             @page { size: legal; margin: 1.5cm; }
             body { background: #fff; padding: 0; margin: 0; font-size: 10pt; }
@@ -992,13 +1259,10 @@
 
     <!-- ===== MODALES ===== -->
     <div id="modal-resumen">
-        <div class="modal-contenido">
-            <button class="modal-cerrar" id="cerrar-modal-resumen">&times;</button>
-            <h3 style="color:#1a2a4a; margin-bottom:12px;"><i class="fas fa-list"></i> Resumen de Plazos de Causas</h3>
-            <pre id="contenido-modal"></pre>
-            <div class="modal-footer"><button class="btn btn-primary" id="btn-cerrar-modal-resumen">Cerrar</button></div>
-        </div>
+    <div class="modal-contenido">
+        <div id="contenido-modal" style="margin:0;"></div>
     </div>
+</div>
 
     <!-- Modal Imputado (ÚNICO) -->
     <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
@@ -1251,29 +1515,29 @@
         return ESTADOS_ACTO_CONCLUSIVO.includes(estado);
     }
     function calcularInfoPlazo(causa) {
-        const estado = causa.estadoCausa || 'activa';
-        let fechaStr = null;
-        let tipo = 'ninguno';
-        if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
-            fechaStr = causa.fechaLimiteArchivo;
-            tipo = 'archivo_provisional';
-        } else if (esActoConclusivoPresentado(estado)) {
-            return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado' };
-        } else if (causa.fechaActoConclusivo) {
-            fechaStr = causa.fechaActoConclusivo;
-            tipo = 'acto_conclusivo';
-        }
-        if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-        const hoy = getTodayUTC();
-        const fecha = parseUTCDate(fechaStr);
-        if (!fecha) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-        const diffMs = fecha - hoy;
-        const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        let estadoPlazo = 'ok';
-        if (diffDias < 0) estadoPlazo = 'vencido';
-        else if (diffDias <= 15) estadoPlazo = 'proximo';
-        return { dias: diffDias, estado: estadoPlazo, tipo: tipo };
+    const estado = causa.estadoCausa || 'activa';
+    let fechaStr = null;
+    let tipo = 'ninguno';
+    if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
+        fechaStr = causa.fechaLimiteArchivo;
+        tipo = 'archivo_provisional';
+    } else if (esActoConclusivoPresentado(estado)) {
+        return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado' };
+    } else if (causa.fechaActoConclusivo) {
+        fechaStr = causa.fechaActoConclusivo;
+        tipo = 'acto_conclusivo';
     }
+    if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
+    const hoy = getTodayUTC();
+    const fecha = parseUTCDate(fechaStr);
+    if (!fecha) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
+    const diffMs = fecha - hoy;
+    const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    let estadoPlazo = 'ok';
+    if (diffDias < 0) estadoPlazo = 'vencido';
+    else if (diffDias <= 30) estadoPlazo = 'proximo';   // ← cambiado de 15 a 30
+    return { dias: diffDias, estado: estadoPlazo, tipo: tipo };
+}
     function toggleFechaArchivoProvisional() {
         const estado = document.getElementById('estado-causa-select').value;
         const campo = document.getElementById('campo-fecha-archivo');
@@ -1870,87 +2134,193 @@
     // 9. RESUMEN
     // ================================================================
     function generarResumenRequerimientos() {
-        if (causas.length === 0) return '📭 No hay causas registradas.';
-        const lista = causas.map(c => {
-            const info = calcularInfoPlazo(c);
-            let fechaStr = 'No definida';
-            let tipoPlazo = '--';
-            let estadoPlazo = 'Sin fecha';
-            let mensajeExtra = '';
-            let prorrogaInfo = 'No';
-
-            if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
-                prorrogaInfo = `Ord: ${formatearFechaLocal(c.prorrogaOrdinaria.nuevaFecha)}`;
-            }
-            if (c.prorrogaExtraordinaria && c.prorrogaExtraordinaria.otorgada === 'Si' && c.prorrogaExtraordinaria.nuevaFecha) {
-                if (prorrogaInfo !== 'No') prorrogaInfo += ' | ';
-                prorrogaInfo += `Ext: ${formatearFechaLocal(c.prorrogaExtraordinaria.nuevaFecha)}`;
-            }
-
-            if (info.tipo === 'acto_conclusivo') {
-                fechaStr = formatearFechaLocal(c.fechaActoConclusivo);
-                tipoPlazo = 'Acto Conclusivo';
-                if (info.estado === 'acto_conclusivo') {
-                    estadoPlazo = '📄 Presentado';
-                    mensajeExtra = ' (acto conclusivo ya presentado)';
-                } else if (info.dias !== null) {
-                    if (info.dias < 0) estadoPlazo = '🔴 VENCIDO';
-                    else if (info.dias <= 15) estadoPlazo = '🟡 PRÓXIMO';
-                    else estadoPlazo = '🟢 EN PLAZO';
-                }
-            } else if (info.tipo === 'archivo_provisional') {
-                fechaStr = formatearFechaLocal(c.fechaLimiteArchivo);
-                tipoPlazo = 'Archivo Provisional';
-                if (info.dias < 0) estadoPlazo = '🔴 VENCIDO';
-                else if (info.dias <= 15) estadoPlazo = '🟡 PRÓXIMO';
-                else estadoPlazo = '🟢 EN PLAZO';
-            }
-
-            const esActiva = (c.estadoCausa === 'activa' || !c.estadoCausa);
-            const estadoInv = esActiva ? 'Activa' : 'Precluida';
-
-            return {
-                num: c.numCausa || 'Sin número',
-                imputado: c.imputado || 'Sin imputado',
-                fecha: fechaStr,
-                tipoPlazo,
-                estadoPlazo: estadoPlazo + mensajeExtra,
-                prorroga: prorrogaInfo,
-                estadoInv
-            };
-        });
-
-        const orden = { '🔴 VENCIDO': 0, '🟡 PRÓXIMO': 1, '🟢 EN PLAZO': 2, '📄 Presentado': 3, 'Sin plazo': 4, 'Sin fecha': 4 };
-        lista.sort((a, b) => {
-            const prioridadA = orden[a.estadoPlazo] !== undefined ? orden[a.estadoPlazo] : 4;
-            const prioridadB = orden[b.estadoPlazo] !== undefined ? orden[b.estadoPlazo] : 4;
-            return prioridadA - prioridadB;
-        });
-
-        let texto = '📋 **RESUMEN DE PLAZOS DE CAUSAS**\n\n';
-        texto += 'Nº Causa     | Imputado               | Fecha Límite    | Tipo Plazo     | Estado Plazo   | Prórroga           | Investigación\n';
-        texto += '------------------------------------------------------------------------------------------------------------------\n';
-        lista.forEach(item => {
-            const num = item.num.padEnd(12);
-            const imp = item.imputado.padEnd(22).slice(0, 22);
-            const fecha = item.fecha.padEnd(16);
-            const tipo = item.tipoPlazo.padEnd(15);
-            const estadoP = item.estadoPlazo.padEnd(14);
-            const prorroga = item.prorroga.padEnd(18);
-            const inv = item.estadoInv.padEnd(12);
-            texto += `${num} | ${imp} | ${fecha} | ${tipo} | ${estadoP} | ${prorroga} | ${inv}\n`;
-        });
-        texto += '\n------------------------------------------------------------------------------------------------------------------\n';
-        texto += `Total: ${lista.length} causas.`;
-        return texto;
+    if (causas.length === 0) {
+        return `<div class="resumen-empty"><i class="fas fa-folder-open"></i><h4>Sin causas registradas</h4><p>Registre una causa para ver el resumen de plazos.</p></div>`;
     }
+
+    const urgentes = [], activasEnPlazo = [], actoConclusivo = [];
+
+    causas.forEach(c => {
+        const info = calcularInfoPlazo(c);
+        const estado = c.estadoCausa || 'activa';
+        const esActoConc = esActoConclusivoPresentado(estado);
+
+        if (esActoConc) actoConclusivo.push({ causa: c, info });
+        else if (info.estado === 'vencido' || info.estado === 'proximo') urgentes.push({ causa: c, info });
+        else if (info.dias !== null && info.dias > 30) activasEnPlazo.push({ causa: c, info });
+    });
+
+    // Orden URGENTES: vencidas primero (más antigua arriba), luego próximas ascendente
+    urgentes.sort((a, b) => {
+        const da = a.info.dias, db = b.info.dias;
+        const aVenc = da < 0, bVenc = db < 0;
+        if (aVenc !== bVenc) return aVenc ? -1 : 1;
+        return da - db;
+    });
+    activasEnPlazo.sort((a, b) => a.info.dias - b.info.dias);
+    actoConclusivo.sort((a, b) =>
+        (a.causa.numCausa || '').toString().localeCompare((b.causa.numCausa || '').toString(), undefined, { numeric: true })
+    );
+
+    const totalVencidas = urgentes.filter(u => u.info.dias < 0).length;
+
+    // ---- Helper: tarjeta de causa ----
+    function tarjetaCausa(item, tipo) {
+        const c = item.causa;
+        const info = item.info;
+
+        let claseEstado, badgeTexto, diasTexto, barraPct;
+        if (tipo === 'acto') {
+            claseEstado = 'estado-acto';
+            badgeTexto = `<span class="rc-badge acto">📄 Presentado</span>`;
+            diasTexto = '';
+            barraPct = 100;
+        } else if (info.dias < 0) {
+            claseEstado = 'estado-vencida';
+            badgeTexto = `<span class="rc-badge vencida">VENCIDA</span>`;
+            diasTexto = `hace <strong>${Math.abs(info.dias)}</strong> días`;
+            barraPct = 100;
+        } else if (info.dias === 0) {
+            claseEstado = 'estado-critica';
+            badgeTexto = `<span class="rc-badge critica">VENCE HOY</span>`;
+            diasTexto = '';
+            barraPct = 100;
+        } else if (info.dias <= 10) {
+            claseEstado = 'estado-critica';
+            badgeTexto = `<span class="rc-badge critica">CRÍTICA</span>`;
+            diasTexto = `<strong>${info.dias}</strong> días`;
+            barraPct = Math.min(100, (info.dias / 30) * 100);
+        } else if (info.dias <= 30) {
+            claseEstado = 'estado-proxima';
+            badgeTexto = `<span class="rc-badge proxima">PRÓXIMA</span>`;
+            diasTexto = `<strong>${info.dias}</strong> días`;
+            barraPct = Math.min(100, (info.dias / 30) * 100);
+        } else {
+            claseEstado = 'estado-plazo';
+            badgeTexto = `<span class="rc-badge plazo">EN PLAZO</span>`;
+            diasTexto = `<strong>${info.dias}</strong> días`;
+            barraPct = Math.min(100, (info.dias / 90) * 100);
+        }
+
+        let fechaStr = 'No definida', tipoPlazo = '--';
+        if (info.tipo === 'archivo_provisional') {
+            fechaStr = formatearFechaLocal(c.fechaLimiteArchivo);
+            tipoPlazo = 'Archivo Provisional';
+        } else if (info.tipo === 'acto_conclusivo') {
+            fechaStr = formatearFechaLocal(c.fechaActoConclusivo);
+            tipoPlazo = 'Acto Conclusivo';
+        }
+
+        let prorroga = '';
+        if (c.prorrogaOrdinaria?.otorgada === 'Si' && c.prorrogaOrdinaria?.nuevaFecha) {
+            prorroga = `Ord: ${formatearFechaLocal(c.prorrogaOrdinaria.nuevaFecha)}`;
+        }
+        if (c.prorrogaExtraordinaria?.otorgada === 'Si' && c.prorrogaExtraordinaria?.nuevaFecha) {
+            if (prorroga) prorroga += ' · ';
+            prorroga += `Ext: ${formatearFechaLocal(c.prorrogaExtraordinaria.nuevaFecha)}`;
+        }
+
+        return `
+            <div class="resumen-card ${claseEstado}">
+                <div class="rc-principal">
+                    <div class="rc-causa">${escapeHTML(c.numCausa || 'Sin número')}</div>
+                    <div class="rc-imputado">${escapeHTML(c.imputado || 'Sin imputado')}</div>
+                    <div class="rc-meta">
+                        <span><i class="fas fa-calendar-alt"></i> ${fechaStr}</span>
+                        <span><i class="fas fa-file-signature"></i> ${tipoPlazo}</span>
+                        ${prorroga ? `<span><i class="fas fa-clock"></i> ${prorroga}</span>` : ''}
+                    </div>
+                    <div class="rc-barra"><div class="rc-barra-fill ${claseEstado.replace('estado-','')}" style="width:${barraPct}%;"></div></div>
+                </div>
+                <div class="rc-estado">
+                    ${badgeTexto}
+                    ${diasTexto ? `<div class="rc-dias">${diasTexto}</div>` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    // ---- Construcción del HTML ----
+    let html = `
+        <div class="resumen-header">
+            <button class="modal-cerrar" id="cerrar-modal-resumen-interno">&times;</button>
+            <h3><i class="fas fa-chart-line"></i> Resumen de Plazos</h3>
+            <div class="sub">Control de vencimientos · ${new Date().toLocaleDateString('es-ES', {day:'2-digit', month:'long', year:'numeric'})}</div>
+        </div>
+        <div class="resumen-body">
+            <div class="resumen-metricas">
+                <div class="metrica-card urgente">
+                    <div class="met-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div class="met-info">
+                        <div class="met-valor">${urgentes.length}</div>
+                        <div class="met-label">Urgentes / Vencidas</div>
+                    </div>
+                </div>
+                <div class="metrica-card plazo">
+                    <div class="met-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="met-info">
+                        <div class="met-valor">${activasEnPlazo.length}</div>
+                        <div class="met-label">Activas en Plazo</div>
+                    </div>
+                </div>
+                <div class="metrica-card acto">
+                    <div class="met-icon"><i class="fas fa-file-signature"></i></div>
+                    <div class="met-info">
+                        <div class="met-valor">${actoConclusivo.length}</div>
+                        <div class="met-label">Acto Conclusivo</div>
+                    </div>
+                </div>
+            </div>
+    `;
+
+    if (totalVencidas > 0) {
+        html += `<div class="alerta-vencidas"><i class="fas fa-bell"></i> ATENCIÓN: ${totalVencidas} causa${totalVencidas > 1 ? 's' : ''} VENCIDA${totalVencidas > 1 ? 'S' : ''} requiere${totalVencidas > 1 ? 'n' : ''} acción inmediata.</div>`;
+    }
+
+    if (urgentes.length > 0) {
+        html += `<div class="resumen-seccion urgente">
+            <div class="resumen-seccion-titulo"><i class="fas fa-exclamation-triangle"></i> URGENTES Y VENCIDAS <span class="contador">${urgentes.length}</span></div>
+            ${urgentes.map(u => tarjetaCausa(u, 'urgente')).join('')}
+        </div>`;
+    }
+
+    if (activasEnPlazo.length > 0) {
+        html += `<div class="resumen-seccion plazo">
+            <div class="resumen-seccion-titulo"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO <span class="contador">${activasEnPlazo.length}</span></div>
+            ${activasEnPlazo.map(a => tarjetaCausa(a, 'plazo')).join('')}
+        </div>`;
+    }
+
+    if (actoConclusivo.length > 0) {
+        html += `<div class="resumen-seccion acto">
+            <div class="resumen-seccion-titulo"><i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO <span class="contador">${actoConclusivo.length}</span></div>
+            ${actoConclusivo.map(a => tarjetaCausa(a, 'acto')).join('')}
+        </div>`;
+    }
+
+    if (urgentes.length === 0 && activasEnPlazo.length === 0 && actoConclusivo.length === 0) {
+        html += `<div class="resumen-empty"><i class="fas fa-check-circle"></i><h4>Todo bajo control</h4><p>No hay causas con plazos pendientes.</p></div>`;
+    }
+
+    html += `</div>
+        <div class="resumen-footer">
+            <button class="btn btn-primary" id="btn-cerrar-modal-resumen-interno">Cerrar</button>
+        </div>`;
+
+    return html;
+}
 
     function mostrarResumenRequerimientos() {
-        const modal = document.getElementById('modal-resumen');
-        const contenido = document.getElementById('contenido-modal');
-        contenido.textContent = generarResumenRequerimientos();
-        modal.style.display = 'flex';
-    }
+    const modal = document.getElementById('modal-resumen');
+    const contenido = document.getElementById('contenido-modal');
+    contenido.innerHTML = generarResumenRequerimientos();
+
+    // Re-enlazar botones de cierre del nuevo contenido
+    document.getElementById('cerrar-modal-resumen-interno')?.addEventListener('click', () => { modal.style.display = 'none'; });
+    document.getElementById('btn-cerrar-modal-resumen-interno')?.addEventListener('click', () => { modal.style.display = 'none'; });
+
+    modal.style.display = 'flex';
+}
 
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('modal-resumen');
