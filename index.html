@@ -2986,50 +2986,90 @@ function guardarPestana2() {
     // 15. LISTADO Y CATEGORIZACIÓN
     // ================================================================
     function renderizarCausas() {
-        const grid = document.getElementById('causa-grid');
-        const contador = document.getElementById('contador-causas');
-        if (causas.length === 0) {
-            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
-            contador.textContent = '(0)';
-            return;
-        }
-        contador.textContent = `(${causas.length})`;
-
-        const grupoUrgentes = [], grupoActivas = [], grupoActoConclusivo = [], grupoSinImputacion = [];
-        causas.forEach(c => {
-            const info = calcularInfoPlazo(c);
-            const estado = c.estadoCausa || 'activa';
-            const esActoConc = esActoConclusivoPresentado(estado);
-            if (esActoConc) grupoActoConclusivo.push(c);
-            else if (info.estado === 'vencido' || info.estado === 'proximo') grupoUrgentes.push(c);
-            else if (info.estado === 'sin_fecha' || !c.fechaActoConclusivo) grupoSinImputacion.push(c);
-            else grupoActivas.push(c);
-        });
-        const ordenarPorNumero = (a, b) => (a.numCausa || '').toString().localeCompare((b.numCausa || '').toString(), undefined, { numeric: true });
-        grupoUrgentes.sort(ordenarPorNumero);
-        grupoActivas.sort(ordenarPorNumero);
-        grupoActoConclusivo.sort(ordenarPorNumero);
-        grupoSinImputacion.sort(ordenarPorNumero);
-
-        let html = '';
-        if (grupoUrgentes.length > 0) {
-            html += `<div class="seccion-grupo seccion-urgentes"><i class="fas fa-exclamation-triangle"></i> URGENTES (plazo vencido o próximo)<span class="contador-grupo">${grupoUrgentes.length} causa${grupoUrgentes.length > 1 ? 's' : ''}</span></div>`;
-            grupoUrgentes.forEach(c => { html += generarCardCausa(c); });
-        }
-        if (grupoActivas.length > 0) {
-            html += `<div class="seccion-grupo seccion-activas"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO<span class="contador-grupo">${grupoActivas.length} causa${grupoActivas.length > 1 ? 's' : ''}</span></div>`;
-            grupoActivas.forEach(c => { html += generarCardCausa(c); });
-        }
-        if (grupoActoConclusivo.length > 0) {
-            html += `<div class="seccion-grupo seccion-acto"><i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO<span class="contador-grupo">${grupoActoConclusivo.length} causa${grupoActoConclusivo.length > 1 ? 's' : ''}</span></div>`;
-            grupoActoConclusivo.forEach(c => { html += generarCardCausa(c); });
-        }
-        if (grupoSinImputacion.length > 0) {
-            html += `<div class="seccion-grupo seccion-sin-imputacion"><i class="fas fa-hourglass-start"></i> SIN IMPUTACIÓN / SIN PLAZO<span class="contador-grupo">${grupoSinImputacion.length} causa${grupoSinImputacion.length > 1 ? 's' : ''}</span></div>`;
-            grupoSinImputacion.forEach(c => { html += generarCardCausa(c); });
-        }
-        grid.innerHTML = html;
+    const grid = document.getElementById('causa-grid');
+    const contador = document.getElementById('contador-causas');
+    if (causas.length === 0) {
+        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
+        contador.textContent = '(0)';
+        return;
     }
+    contador.textContent = `(${causas.length})`;
+
+    const grupoUrgentes = [], grupoActivas = [], grupoActoConclusivo = [], grupoSinImputacion = [];
+    causas.forEach(c => {
+        const info = calcularInfoPlazo(c);
+        const estado = c.estadoCausa || 'activa';
+        const esActoConc = esActoConclusivoPresentado(estado);
+        if (esActoConc) grupoActoConclusivo.push(c);
+        else if (info.estado === 'vencido' || info.estado === 'proximo') grupoUrgentes.push(c);
+        else if (info.estado === 'sin_fecha' || !c.fechaActoConclusivo) grupoSinImputacion.push(c);
+        else grupoActivas.push(c);
+    });
+
+    // Orden por número de causa (para los grupos que NO se ordenan por fecha)
+    const ordenarPorNumero = (a, b) =>
+        (a.numCausa || '').toString().localeCompare((b.numCausa || '').toString(), undefined, { numeric: true });
+
+    // ===== URGENTES: primero las que vencen en 30, 20, 15 días (ascendente),
+    //       luego las vencidas (la más reciente primero) =====
+    function diasUrgente(c) {
+        const info = calcularInfoPlazo(c);
+        return (info.dias !== null && info.dias !== undefined) ? info.dias : Number.POSITIVE_INFINITY;
+    }
+    grupoUrgentes.sort((a, b) => {
+        const da = diasUrgente(a);
+        const db = diasUrgente(b);
+        const aVencida = da < 0;
+        const bVencida = db < 0;
+
+        // 1) Las NO vencidas van siempre arriba de las vencidas
+        if (aVencida !== bVencida) return aVencida ? 1 : -1;
+
+        // 2) Entre NO vencidas: ascendente (15 → 20 → 30) = la más próxima arriba
+        if (!aVencida) {
+            if (da !== db) return da - db;
+            return ordenarPorNumero(a, b);
+        }
+
+        // 3) Entre vencidas: la más reciente primero (ej: -5 antes que -30)
+        if (da !== db) return db - da;
+        return ordenarPorNumero(a, b);
+    });
+
+    grupoActoConclusivo.sort(ordenarPorNumero);
+    grupoSinImputacion.sort(ordenarPorNumero);
+
+    // ===== ACTIVAS EN PLAZO: orden ascendente (más próxima a vencer arriba) =====
+    function diasActiva(c) {
+        const info = calcularInfoPlazo(c);
+        return (info.dias !== null && info.dias !== undefined) ? info.dias : Number.POSITIVE_INFINITY;
+    }
+    grupoActivas.sort((a, b) => {
+        const da = diasActiva(a);
+        const db = diasActiva(b);
+        if (da !== db) return da - db;
+        return ordenarPorNumero(a, b);
+    });
+
+    let html = '';
+    if (grupoUrgentes.length > 0) {
+        html += `<div class="seccion-grupo seccion-urgentes"><i class="fas fa-exclamation-triangle"></i> URGENTES (plazo vencido o próximo)<span class="contador-grupo">${grupoUrgentes.length} causa${grupoUrgentes.length > 1 ? 's' : ''}</span></div>`;
+        grupoUrgentes.forEach(c => { html += generarCardCausa(c); });
+    }
+    if (grupoActivas.length > 0) {
+        html += `<div class="seccion-grupo seccion-activas"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO<span class="contador-grupo">${grupoActivas.length} causa${grupoActivas.length > 1 ? 's' : ''}</span></div>`;
+        grupoActivas.forEach(c => { html += generarCardCausa(c); });
+    }
+    if (grupoActoConclusivo.length > 0) {
+        html += `<div class="seccion-grupo seccion-acto"><i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO<span class="contador-grupo">${grupoActoConclusivo.length} causa${grupoActoConclusivo.length > 1 ? 's' : ''}</span></div>`;
+        grupoActoConclusivo.forEach(c => { html += generarCardCausa(c); });
+    }
+    if (grupoSinImputacion.length > 0) {
+        html += `<div class="seccion-grupo seccion-sin-imputacion"><i class="fas fa-hourglass-start"></i> SIN IMPUTACIÓN / SIN PLAZO<span class="contador-grupo">${grupoSinImputacion.length} causa${grupoSinImputacion.length > 1 ? 's' : ''}</span></div>`;
+        grupoSinImputacion.forEach(c => { html += generarCardCausa(c); });
+    }
+    grid.innerHTML = html;
+}
 
     function generarCardCausa(c) {
         const badge = c.hechos && c.hechos.some(h => esArticulo(h.hecho, '225')) ? 'badge-alimentos' : 'badge-activa';
