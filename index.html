@@ -2872,28 +2872,20 @@ renderizarVictimas();
     function agregarVictima() {
     abrirModalVictima();
 }
-function eliminarVictimaVieja(btn) {
-    function agregarVictima() {
-    abrirModalVictima();
+function agregarTestigo() {
+    const container = document.getElementById('testigos-container');
+    const div = document.createElement('div');
+    div.className = 'testigo-block';
+    div.innerHTML = `
+        <div class="form-row">
+            <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" placeholder="Nombre del testigo"></div>
+            <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" placeholder="CI"></div>
+            <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" placeholder="Teléfono"></div>
+            <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button></div>
+        </div>
+    `;
+    container.appendChild(div);
 }
-    function agregarTestigo() {
-        if (document.querySelectorAll('.victima-block').length > 1) block.remove();
-        else alert('Debe haber al menos una víctima.');
-    }
-    function agregarTestigo() {
-        const container = document.getElementById('testigos-container');
-        const div = document.createElement('div');
-        div.className = 'testigo-block';
-        div.innerHTML = `
-            <div class="form-row">
-                <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" placeholder="Nombre del testigo"></div>
-                <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" placeholder="CI"></div>
-                <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" placeholder="Teléfono"></div>
-                <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button></div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
             function eliminarTestigo(btn) {
         const block = btn.closest('.testigo-block');
         if (document.querySelectorAll('.testigo-block').length > 1) block.remove();
