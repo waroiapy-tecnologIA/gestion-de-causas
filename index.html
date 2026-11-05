@@ -988,26 +988,11 @@
                         <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="reincidente" onchange="toggleReincidencia()"><label for="reincidente">Sí</label></div></div>
                         <div class="form-group"><label>Número de veces</label><input type="number" id="num-reincidencias" min="0" value="0" disabled data-guia="Cantidad de condenas previas firmes. Solo aplica si marcó 'Sí'."></div>
                     </div>
-                    <div class="sub-seccion">
-                        <h4>Víctima(s)</h4>
-                        <div id="victimas-container">
-                            <div class="victima-block" data-index="0">
-                                <div class="form-row">
-                                    <div class="form-group"><label>Nombre completo</label><input type="text" class="victima-nombre" placeholder="Nombre de la víctima" data-guia="Nombre y apellido completo de la víctima."></div>
-                                    <div class="form-group"><label>Cédula de identidad</label><input type="text" class="victima-ci" placeholder="CI" data-guia="Cédula de identidad de la víctima."></div>
-                                    <div class="form-group"><label>Teléfono</label><input type="text" class="victima-telefono" placeholder="Teléfono" data-guia="Teléfono de contacto de la víctima."></div>
-                                </div>
-                                <div class="form-row">
-                                    <div class="form-group"><label>Domicilio</label><input type="text" class="victima-domicilio" placeholder="Dirección" data-guia="Domicilio de la víctima."></div>
-                                    <div class="form-group"><label>Edad</label><input type="number" class="victima-edad" placeholder="Edad" min="0" data-guia="Edad de la víctima al momento del hecho."></div>
-                                    <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarVictima(this)"><i class="fas fa-times"></i> Eliminar</button></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-agregar" onclick="agregarVictima()"><i class="fas fa-plus"></i> Agregar otra víctima</button>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Lugar del hecho</label><input type="text" id="lugar-hecho" placeholder="Dirección o ubicación" data-guia="Lugar donde ocurrió el hecho punible."></div>
+                   <div class="sub-seccion">
+    <h4>Víctima(s)</h4>
+    <div id="victimas-list"></div>
+    <button type="button" class="btn btn-agregar" onclick="abrirModalVictima()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar víctima</button>
+</div> <div class="form-group"><label>Lugar del hecho</label><input type="text" id="lugar-hecho" placeholder="Dirección o ubicación" data-guia="Lugar donde ocurrió el hecho punible."></div>
                         <div class="form-group"><label>Fecha del hecho</label><input type="date" id="fecha-hecho" data-guia="Fecha en que ocurrió el hecho punible."></div>
                         <div class="form-group"><label>Hora del hecho</label><input type="time" id="hora-hecho" data-guia="Hora aproximada del hecho, si se conoce."></div>
                     </div>
@@ -1263,7 +1248,28 @@
         <div id="contenido-modal" style="margin:0;"></div>
     </div>
 </div>
-
+<!-- Modal Víctima -->
+<div id="modal-victima" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
+        <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-shield"></i> <span id="modal-vic-titulo">Agregar víctima</span></h3>
+        <input type="hidden" id="modal-vic-index" value="">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-vic-nombre" placeholder="Nombre y apellido"></div>
+            <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-vic-ci" placeholder="Ej: 4.567.890"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Domicilio</label><input type="text" id="modal-vic-domicilio" placeholder="Dirección completa"></div>
+            <div class="form-group"><label>Teléfono</label><input type="text" id="modal-vic-telefono" placeholder="Ej: 0981-123-456"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Edad</label><input type="number" id="modal-vic-edad" placeholder="Edad" min="0"></div>
+        </div>
+        <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-outline" onclick="cerrarModalVictima()">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarVictimaEnLista()"><i class="fas fa-save"></i> Guardar víctima</button>
+        </div>
+    </div>
+</div>
     <!-- Modal Imputado (ÚNICO) -->
     <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
         <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
@@ -1570,6 +1576,86 @@
         elDias.textContent = `${diff} días`;
         elDias.style.color = '#1a2a4a';
     }
+// ===== MÚLTIPLES VÍCTIMAS =====
+let victimasTemporales = [];
+
+function abrirModalVictima(indice) {
+    document.getElementById('modal-vic-index').value = (indice !== undefined && indice !== null) ? String(indice) : '';
+    document.getElementById('modal-vic-titulo').textContent = (indice !== undefined && indice !== null) ? 'Editar víctima' : 'Agregar víctima';
+    if (indice !== undefined && indice !== null && victimasTemporales[indice]) {
+        const v = victimasTemporales[indice];
+        document.getElementById('modal-vic-nombre').value = v.nombre || '';
+        document.getElementById('modal-vic-ci').value = v.ci || '';
+        document.getElementById('modal-vic-domicilio').value = v.domicilio || '';
+        document.getElementById('modal-vic-telefono').value = v.telefono || '';
+        document.getElementById('modal-vic-edad').value = v.edad || '';
+    } else {
+        document.getElementById('modal-vic-nombre').value = '';
+        document.getElementById('modal-vic-ci').value = '';
+        document.getElementById('modal-vic-domicilio').value = '';
+        document.getElementById('modal-vic-telefono').value = '';
+        document.getElementById('modal-vic-edad').value = '';
+    }
+    document.getElementById('modal-victima').style.display = 'flex';
+    setTimeout(() => document.getElementById('modal-vic-nombre').focus(), 100);
+}
+
+function cerrarModalVictima() {
+    document.getElementById('modal-victima').style.display = 'none';
+}
+
+function guardarVictimaEnLista() {
+    const nombre = document.getElementById('modal-vic-nombre').value.trim();
+    if (!nombre) { alert('El nombre de la víctima es obligatorio.'); return; }
+    const victima = {
+        nombre,
+        ci: document.getElementById('modal-vic-ci').value.trim(),
+        domicilio: document.getElementById('modal-vic-domicilio').value.trim(),
+        telefono: document.getElementById('modal-vic-telefono').value.trim(),
+        edad: parseInt(document.getElementById('modal-vic-edad').value) || null
+    };
+    const idxStr = document.getElementById('modal-vic-index').value;
+    if (idxStr !== '') {
+        victimasTemporales[parseInt(idxStr, 10)] = victima;
+    } else {
+        victimasTemporales.push(victima);
+    }
+    cerrarModalVictima();
+    renderizarVictimas();
+}
+
+function renderizarVictimas() {
+    const cont = document.getElementById('victimas-list');
+    if (!cont) return;
+    if (victimasTemporales.length === 0) {
+        cont.innerHTML = '<p class="text-muted" style="margin-bottom:8px;">No hay víctimas cargadas. Haga clic en "Agregar víctima".</p>';
+        return;
+    }
+    let html = '';
+    victimasTemporales.forEach((v, idx) => {
+        const detalles = [];
+        if (v.ci) detalles.push('CI: ' + v.ci);
+        if (v.domicilio) detalles.push('Domicilio: ' + v.domicilio);
+        if (v.telefono) detalles.push('Tel: ' + v.telefono);
+        if (v.edad) detalles.push('Edad: ' + v.edad);
+        html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
+        html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
+        html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(v.nombre) + '</strong>';
+        if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
+        html += '</div>';
+        html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
+        html += '<button type="button" onclick="abrirModalVictima(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
+        html += '<button type="button" onclick="eliminarVictima(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
+        html += '</div></div>';
+    });
+    cont.innerHTML = html;
+}
+
+function eliminarVictima(indice) {
+    if (!confirm('¿Eliminar esta víctima de la lista?')) return;
+    victimasTemporales.splice(indice, 1);
+    renderizarVictimas();
+}
       // ===== MÚLTIPLES IMPUTADOS =====
     let imputadosTemporales = [];
 
@@ -2392,19 +2478,7 @@
     if (!num || !imputado) { alert('Complete Nº Causa e Imputado.'); return; }
     if (hechosAgregados.length === 0) { alert('Agregue al menos un hecho punible.'); return; }
 
-    const victimas = [];
-    document.querySelectorAll('.victima-block').forEach(block => {
-        const nombre = block.querySelector('.victima-nombre').value.trim();
-        if (nombre) {
-            victimas.push({
-                nombre,
-                ci: block.querySelector('.victima-ci').value.trim(),
-                telefono: block.querySelector('.victima-telefono').value.trim(),
-                domicilio: block.querySelector('.victima-domicilio').value.trim(),
-                edad: parseInt(block.querySelector('.victima-edad').value) || null
-            });
-        }
-    });
+    const victimas = victimasTemporales.slice();
 
     const testigos = [];
     document.querySelectorAll('.testigo-block').forEach(block => {
@@ -2678,26 +2752,14 @@ function guardarPestana2() {
         }
         renderizarImputados();
 
-        const victimasContainer = document.getElementById('victimas-container');
-        victimasContainer.innerHTML = '';
-        if (causa.victimas && causa.victimas.length > 0) {
-            causa.victimas.forEach(v => {
-                const div = document.createElement('div');
-                div.className = 'victima-block';
-                div.innerHTML = `
-                    <div class="form-row">
-                        <div class="form-group"><label>Nombre completo</label><input type="text" class="victima-nombre" value="${v.nombre || ''}" placeholder="Nombre de la víctima"></div>
-                        <div class="form-group"><label>Cédula de identidad</label><input type="text" class="victima-ci" value="${v.ci || ''}" placeholder="CI"></div>
-                        <div class="form-group"><label>Teléfono</label><input type="text" class="victima-telefono" value="${v.telefono || ''}" placeholder="Teléfono"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Domicilio</label><input type="text" class="victima-domicilio" value="${v.domicilio || ''}" placeholder="Dirección"></div>
-                        <div class="form-group"><label>Edad</label><input type="number" class="victima-edad" value="${v.edad || ''}" placeholder="Edad" min="0"></div>
-                        <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarVictima(this)"><i class="fas fa-times"></i> Eliminar</button></div>
-                    </div>
-                `;
-                victimasContainer.appendChild(div);
-            });
+        victimasTemporales = (causa.victimas || []).map(v => ({
+    nombre: v.nombre || '',
+    ci: v.ci || '',
+    domicilio: v.domicilio || '',
+    telefono: v.telefono || '',
+    edad: v.edad || null
+}));
+renderizarVictimas();
         } else { agregarVictima(); }
 
         setValueSafe('lugar-hecho', causa.lugarHecho || '');
@@ -2809,25 +2871,12 @@ function guardarPestana2() {
     // 13. VÍCTIMAS, TESTIGOS, HECHOS
     // ================================================================
     function agregarVictima() {
-        const container = document.getElementById('victimas-container');
-        const div = document.createElement('div');
-        div.className = 'victima-block';
-        div.innerHTML = `
-            <div class="form-row">
-                <div class="form-group"><label>Nombre completo</label><input type="text" class="victima-nombre" placeholder="Nombre de la víctima"></div>
-                <div class="form-group"><label>Cédula de identidad</label><input type="text" class="victima-ci" placeholder="CI"></div>
-                <div class="form-group"><label>Teléfono</label><input type="text" class="victima-telefono" placeholder="Teléfono"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Domicilio</label><input type="text" class="victima-domicilio" placeholder="Dirección"></div>
-                <div class="form-group"><label>Edad</label><input type="number" class="victima-edad" placeholder="Edad" min="0"></div>
-                <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarVictima(this)"><i class="fas fa-times"></i> Eliminar</button></div>
-            </div>
-        `;
-        container.appendChild(div);
-    }
-    function eliminarVictima(btn) {
-        const block = btn.closest('.victima-block');
+    abrirModalVictima();
+}
+function eliminarVictimaVieja(btn) {
+    const block = btn.closest('.victima-block');
+    if (block) block.remove();
+}
         if (document.querySelectorAll('.victima-block').length > 1) block.remove();
         else alert('Debe haber al menos una víctima.');
     }
@@ -3630,8 +3679,8 @@ function guardarPestana2() {
         imputadosTemporales = [];
         renderizarImputados();
         toggleRebeldia();
-        document.getElementById('victimas-container').innerHTML = '';
-        agregarVictima();
+        victimasTemporales = [];
+renderizarVictimas();
         document.getElementById('testigos-container').innerHTML = '';
         agregarTestigo();
         hechosAgregados = [];
