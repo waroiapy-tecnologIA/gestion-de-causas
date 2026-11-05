@@ -2212,9 +2212,7 @@ function eliminarVictima(indice) {
             actualizarPestanas();
         });
         busqueda.addEventListener('input', function() { poblarSelectorHechos(this.value); });
-        ['num-causa', 'imputado'].forEach(id => {
-            document.getElementById(id).addEventListener('input', generarCaratula);
-        });
+        document.getElementById('num-causa').addEventListener('input', generarCaratula);
         document.getElementById('incisos-opciones').addEventListener('change', generarCaratula);
         document.getElementById('fecha-vencimiento-input').addEventListener('change', calcularDiasRestantesDesdeFecha);
         document.getElementById('estado-causa-select').addEventListener('change', toggleFechaArchivoProvisional);
