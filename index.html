@@ -2873,9 +2873,14 @@ renderizarVictimas();
     abrirModalVictima();
 }
 function eliminarVictimaVieja(btn) {
+    function agregarVictima() {
+    abrirModalVictima();
+}
+function eliminarVictimaVieja(btn) {
     const block = btn.closest('.victima-block');
     if (block) block.remove();
 }
+    function agregarTestigo() {
         if (document.querySelectorAll('.victima-block').length > 1) block.remove();
         else alert('Debe haber al menos una víctima.');
     }
