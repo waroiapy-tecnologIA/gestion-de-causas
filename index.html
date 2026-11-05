@@ -968,49 +968,52 @@
                 </div>
                 <div class="tabs no-print" id="tabs-container"></div>
 
-                <!-- TAB 1: DATOS GENERALES -->
+                                <!-- TAB 1: DATOS GENERALES -->
                 <div id="tab1" class="tab-pane active">
+
+                    <!-- 1. Número de causa -->
                     <div class="form-row">
-                        <div class="form-group"><label>Número de Causa <span class="required">*</span></label><input type="text" id="num-causa" placeholder="Ej: 123/2026" data-guia="Formato recomendado: 123/2026. Es el número que identifica la carpeta fiscal." oninput="generarCaratula()"></div>
-                                            <div class="sub-seccion">
+                        <div class="form-group">
+                            <label>Número de Causa <span class="required">*</span></label>
+                            <input type="text" id="num-causa" placeholder="Ej: 123/2026" data-guia="Formato recomendado: 123/2026. Es el número que identifica la carpeta fiscal." oninput="generarCaratula()">
+                        </div>
+                    </div>
+
+                    <!-- 2. Imputados (modal) -->
+                    <div class="sub-seccion">
                         <h4>Imputado(s) <span class="required">*</span></h4>
                         <div id="imputados-list"></div>
                         <button type="button" class="btn btn-agregar" onclick="abrirModalImputado()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar imputado</button>
                     </div>
-                        <div class="form-group"><label>Nombre del Imputado <span class="required">*</span></label><input type="text" id="imputado" placeholder="Nombre completo" data-guia="Nombre y apellido completo del imputado, tal como figura en el acta de imputación." oninput="generarCaratula()"></div>
+
+                    <!-- 3. Víctimas (modal) -->
+                    <div class="sub-seccion">
+                        <h4>Víctima(s)</h4>
+                        <div id="victimas-list"></div>
+                        <button type="button" class="btn btn-agregar" onclick="abrirModalVictima()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar víctima</button>
                     </div>
+
+                    <!-- 4. Testigos (modal) -->
+                    <div class="sub-seccion">
+                        <h4>Testigo(s)</h4>
+                        <div id="testigos-list"></div>
+                        <button type="button" class="btn btn-agregar" onclick="abrirModalTestigo()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar testigo</button>
+                    </div>
+
+                    <!-- 5. Datos del hecho -->
                     <div class="form-row">
-                        <div class="form-group"><label>Número de Identidad (CI)</label><input type="text" id="ci-imputado" placeholder="Ej: 4.567.890" data-guia="Cédula de identidad con puntos. Ej: 4.567.890."></div>
-                        <div class="form-group"><label>Domicilio</label><input type="text" id="domicilio-imputado" placeholder="Dirección completa" data-guia="Domicilio real del imputado según el acta."></div>
-                        <div class="form-group"><label>Teléfono</label><input type="text" id="telefono-imputado" placeholder="Ej: 0981-123-456" data-guia="Teléfono de contacto del imputado."></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="reincidente" onchange="toggleReincidencia()"><label for="reincidente">Sí</label></div></div>
-                        <div class="form-group"><label>Número de veces</label><input type="number" id="num-reincidencias" min="0" value="0" disabled data-guia="Cantidad de condenas previas firmes. Solo aplica si marcó 'Sí'."></div>
-                    </div>
-                   <div class="sub-seccion">
-    <h4>Víctima(s)</h4>
-    <div id="victimas-list"></div>
-    <button type="button" class="btn btn-agregar" onclick="abrirModalVictima()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar víctima</button>
-</div> <div class="form-group"><label>Lugar del hecho</label><input type="text" id="lugar-hecho" placeholder="Dirección o ubicación" data-guia="Lugar donde ocurrió el hecho punible."></div>
+                        <div class="form-group"><label>Lugar del hecho</label><input type="text" id="lugar-hecho" placeholder="Dirección o ubicación" data-guia="Lugar donde ocurrió el hecho punible."></div>
                         <div class="form-group"><label>Fecha del hecho</label><input type="date" id="fecha-hecho" data-guia="Fecha en que ocurrió el hecho punible."></div>
                         <div class="form-group"><label>Hora del hecho</label><input type="time" id="hora-hecho" data-guia="Hora aproximada del hecho, si se conoce."></div>
                     </div>
-                    <div class="sub-seccion">
-                        <h4>Testigos</h4>
-                        <div id="testigos-container">
-                            <div class="testigo-block" data-index="0">
-                                <div class="form-row">
-                                    <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" placeholder="Nombre del testigo" data-guia="Nombre completo del testigo."></div>
-                                    <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" placeholder="CI" data-guia="Cédula de identidad del testigo."></div>
-                                    <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" placeholder="Teléfono" data-guia="Teléfono de contacto del testigo."></div>
-                                    <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button></div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-agregar" onclick="agregarTestigo()"><i class="fas fa-plus"></i> Agregar otro testigo</button>
+
+                    <!-- 6. Descripción -->
+                    <div class="form-group">
+                        <label>Breve descripción del hecho</label>
+                        <textarea id="descripcion-hecho" rows="2" placeholder="Describa brevemente los hechos..." data-guia="Resumen breve del hecho: qué pasó, cómo, cuándo y quiénes participaron."></textarea>
                     </div>
-                    <div class="form-group"><label>Breve descripción del hecho</label><textarea id="descripcion-hecho" rows="2" placeholder="Describa brevemente los hechos..." data-guia="Resumen breve del hecho: qué pasó, cómo, cuándo y quiénes participaron."></textarea></div>
+
+                    <!-- 7. Hechos punibles -->
                     <div class="sub-seccion">
                         <h4>Hechos Punibles</h4>
                         <div class="cp-selector-panel">
@@ -1029,12 +1032,25 @@
                         <div id="incisos-container" style="margin-top:6px;"><div id="incisos-opciones"></div></div>
                         <div id="lista-hechos" style="margin-top:6px;"></div>
                     </div>
-                    <div class="form-group"><label>Carátula Generada</label><div id="caratula-preview" class="caratula-preview"><span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span></div></div>
-                    <div class="form-group"><label>Observaciones Generales</label><textarea id="observaciones-generales" rows="2" placeholder="Comentarios adicionales sobre la causa..." data-guia="Observaciones libres sobre la causa."></textarea></div>
+
+                    <!-- 8. Carátula -->
+                    <div class="form-group">
+                        <label>Carátula Generada</label>
+                        <div id="caratula-preview" class="caratula-preview"><span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span></div>
+                    </div>
+
+                    <!-- 9. Observaciones -->
+                    <div class="form-group">
+                        <label>Observaciones Generales</label>
+                        <textarea id="observaciones-generales" rows="2" placeholder="Comentarios adicionales sobre la causa..." data-guia="Observaciones libres sobre la causa."></textarea>
+                    </div>
+
+                    <!-- 10. Footer -->
                     <div class="footer-seccion">
                         <span class="estado" id="estado-tab1">Sin guardar</span>
                         <button class="btn btn-guardar-seccion" onclick="guardarPestana1()"><i class="fas fa-save"></i> Guardar Datos Generales</button>
                     </div>
+
                 </div>
 
                 <!-- TAB 2: JUZGADO Y PLAZOS -->
@@ -1270,6 +1286,24 @@
         </div>
     </div>
 </div>
+    <!-- Modal Testigo -->
+    <div id="modal-testigo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
+            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-friends"></i> <span id="modal-test-titulo">Agregar testigo</span></h3>
+            <input type="hidden" id="modal-test-index" value="">
+            <div class="form-row">
+                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-test-nombre" placeholder="Nombre y apellido"></div>
+                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-test-ci" placeholder="Ej: 4.567.890"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-test-telefono" placeholder="Ej: 0981-123-456"></div>
+            </div>
+            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
+                <button class="btn btn-outline" onclick="cerrarModalTestigo()">Cancelar</button>
+                <button class="btn btn-primary" onclick="guardarTestigoEnLista()"><i class="fas fa-save"></i> Guardar testigo</button>
+            </div>
+        </div>
+    </div>
     <!-- Modal Imputado (ÚNICO) -->
     <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
         <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
@@ -1747,6 +1781,78 @@ function eliminarVictima(indice) {
         imputadosTemporales.splice(indice, 1);
         renderizarImputados();
         generarCaratula();
+    }
+    // ===== MÚLTIPLES TESTIGOS =====
+    let testigosTemporales = [];
+
+    function abrirModalTestigo(indice) {
+        document.getElementById('modal-test-index').value = (indice !== undefined && indice !== null) ? String(indice) : '';
+        document.getElementById('modal-test-titulo').textContent = (indice !== undefined && indice !== null) ? 'Editar testigo' : 'Agregar testigo';
+        if (indice !== undefined && indice !== null && testigosTemporales[indice]) {
+            const t = testigosTemporales[indice];
+            document.getElementById('modal-test-nombre').value = t.nombre || '';
+            document.getElementById('modal-test-ci').value = t.ci || '';
+            document.getElementById('modal-test-telefono').value = t.telefono || '';
+        } else {
+            document.getElementById('modal-test-nombre').value = '';
+            document.getElementById('modal-test-ci').value = '';
+            document.getElementById('modal-test-telefono').value = '';
+        }
+        document.getElementById('modal-testigo').style.display = 'flex';
+        setTimeout(() => document.getElementById('modal-test-nombre').focus(), 100);
+    }
+
+    function cerrarModalTestigo() {
+        document.getElementById('modal-testigo').style.display = 'none';
+    }
+
+    function guardarTestigoEnLista() {
+        const nombre = document.getElementById('modal-test-nombre').value.trim();
+        if (!nombre) { alert('El nombre del testigo es obligatorio.'); return; }
+        const testigo = {
+            nombre,
+            ci: document.getElementById('modal-test-ci').value.trim(),
+            telefono: document.getElementById('modal-test-telefono').value.trim()
+        };
+        const idxStr = document.getElementById('modal-test-index').value;
+        if (idxStr !== '') {
+            testigosTemporales[parseInt(idxStr, 10)] = testigo;
+        } else {
+            testigosTemporales.push(testigo);
+        }
+        cerrarModalTestigo();
+        renderizarTestigos();
+    }
+
+    function renderizarTestigos() {
+        const cont = document.getElementById('testigos-list');
+        if (!cont) return;
+        if (testigosTemporales.length === 0) {
+            cont.innerHTML = '<p class="text-muted" style="margin-bottom:8px;">No hay testigos cargados. Haga clic en "Agregar testigo".</p>';
+            return;
+        }
+        let html = '';
+        testigosTemporales.forEach((t, idx) => {
+            const detalles = [];
+            if (t.ci) detalles.push('CI: ' + t.ci);
+            if (t.telefono) detalles.push('Tel: ' + t.telefono);
+            html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
+            html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
+            html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(t.nombre) + '</strong>';
+            if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
+            html += '</div>';
+            html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
+            html += '<button type="button" onclick="abrirModalTestigo(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
+            html += '<button type="button" onclick="eliminarTestigo(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
+            html += '</div></div>';
+        });
+        cont.innerHTML = html;
+    }
+
+    function eliminarTestigo(indice) {
+        if (!confirm('¿Eliminar este testigo de la lista?')) return;
+        testigosTemporales.splice(indice, 1);
+        renderizarTestigos();
     }
     // ================================================================
     // 5. AUTENTICACIÓN
@@ -2480,18 +2586,7 @@ function eliminarVictima(indice) {
 
     const victimas = victimasTemporales.slice();
 
-    const testigos = [];
-    document.querySelectorAll('.testigo-block').forEach(block => {
-        const nombre = block.querySelector('.testigo-nombre').value.trim();
-        if (nombre) {
-            testigos.push({
-                nombre,
-                ci: block.querySelector('.testigo-ci').value.trim(),
-                telefono: block.querySelector('.testigo-telefono').value.trim()
-            });
-        }
-    });
-
+        const testigos = testigosTemporales.slice();
     const primerImputado = imputadosTemporales[0] || {};
     const datos = {
         numCausa: num,
@@ -2765,23 +2860,12 @@ renderizarVictimas();
         setValueSafe('fecha-hecho', causa.fechaHecho || '');
         setValueSafe('hora-hecho', causa.horaHecho || '');
 
-        const testigosContainer = document.getElementById('testigos-container');
-        testigosContainer.innerHTML = '';
-        if (causa.testigos && causa.testigos.length > 0) {
-            causa.testigos.forEach(t => {
-                const div = document.createElement('div');
-                div.className = 'testigo-block';
-                div.innerHTML = `
-                    <div class="form-row">
-                        <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" value="${t.nombre || ''}" placeholder="Nombre del testigo"></div>
-                        <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" value="${t.ci || ''}" placeholder="CI"></div>
-                        <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" value="${t.telefono || ''}" placeholder="Teléfono"></div>
-                        <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button></div>
-                    </div>
-                `;
-                testigosContainer.appendChild(div);
-            });
-        } else { agregarTestigo(); }
+                testigosTemporales = (causa.testigos || []).map(t => ({
+            nombre: t.nombre || '',
+            ci: t.ci || '',
+            telefono: t.telefono || ''
+        }));
+        renderizarTestigos();
 
         setValueSafe('descripcion-hecho', causa.descripcionHecho || '');
         setValueSafe('observaciones-generales', causa.observacionesGenerales || '');
@@ -2866,30 +2950,11 @@ renderizarVictimas();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ================================================================
+        // ================================================================
     // 13. VÍCTIMAS, TESTIGOS, HECHOS
     // ================================================================
     function agregarVictima() {
-    abrirModalVictima();
-}
-function agregarTestigo() {
-    const container = document.getElementById('testigos-container');
-    const div = document.createElement('div');
-    div.className = 'testigo-block';
-    div.innerHTML = `
-        <div class="form-row">
-            <div class="form-group"><label>Nombre completo</label><input type="text" class="testigo-nombre" placeholder="Nombre del testigo"></div>
-            <div class="form-group"><label>Cédula de identidad</label><input type="text" class="testigo-ci" placeholder="CI"></div>
-            <div class="form-group"><label>Teléfono</label><input type="text" class="testigo-telefono" placeholder="Teléfono"></div>
-            <div class="form-group" style="justify-content:flex-end;"><button class="btn-remover" onclick="eliminarTestigo(this)"><i class="fas fa-times"></i> Eliminar</button></div>
-        </div>
-    `;
-    container.appendChild(div);
-}
-            function eliminarTestigo(btn) {
-        const block = btn.closest('.testigo-block');
-        if (document.querySelectorAll('.testigo-block').length > 1) block.remove();
-        else alert('Debe haber al menos un testigo.');
+        abrirModalVictima();
     }
 
     function actualizarIncisos() {
@@ -3673,8 +3738,8 @@ function agregarTestigo() {
         toggleRebeldia();
         victimasTemporales = [];
 renderizarVictimas();
-        document.getElementById('testigos-container').innerHTML = '';
-        agregarTestigo();
+                testigosTemporales = [];
+        renderizarTestigos();
         hechosAgregados = [];
         diligenciasTemporales = [];
         renderizarHechosAgregados();
