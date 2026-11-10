@@ -3598,8 +3598,8 @@ renderizarVictimas();
         html += `<div class="seccion-grupo seccion-urgentes"><i class="fas fa-exclamation-triangle"></i> URGENTES (plazo vencido o próximo)<span class="contador-grupo">${grupoUrgentes.length} causa${grupoUrgentes.length > 1 ? 's' : ''}</span></div>`;
         grupoUrgentes.forEach(c => { html += generarCardCausa(c); });
     }
-    if (grupoActivas.length > 0) {
-        html += `<div class="seccion-grupo seccion-activas"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO<span class="contador-grupo">${grupoActivas.length} causa${grupoActivas.length > 1 ? 's' : ''}</span></div>`;
+        if (grupoActivas.length > 0) {
+        html += `<div class="seccion-grupo seccion-activas"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO (IMPUTADOS)<span class="contador-grupo">${grupoActivas.length} causa${grupoActivas.length > 1 ? 's' : ''}</span></div>`;
         grupoActivas.forEach(c => { html += generarCardCausa(c); });
     }
     if (grupoActoConclusivo.length > 0) {
