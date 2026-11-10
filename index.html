@@ -1059,6 +1059,17 @@
                             </div>
                             <div class="cp-catalogo-estado" id="cp-catalogo-estado" role="status"><i class="fas fa-circle-notch fa-spin"></i> Cargando catálogo jurídico…</div>
                         </div>
+                                                <!-- Bloque de hecho manual (leyes especiales no catalogadas) -->
+                        <div style="margin-top:10px; padding:10px 12px; background:#f8f9fa; border:1px dashed #d0d4da; border-radius:6px;">
+                            <label style="font-size:12px; font-weight:600; color:#1a2a4a; display:block; margin-bottom:6px;">
+                                <i class="fas fa-pen" style="color:#d4a843;"></i> ¿No encontrás el hecho punible? Escribilo manualmente:
+                            </label>
+                            <div class="flex-wrap">
+                                <input type="text" id="hecho-manual" placeholder="Ej: Ley 1234/2020 – Art. 5: Usura agravada" style="flex:1; min-width:220px; padding:6px 10px; border:1px solid #d0d4da; border-radius:5px; font-size:13px;" data-guia="Escribí la ley especial o hecho punible que no esté en el catálogo. Se usará tal cual en la carátula e informe.">
+                                <button type="button" class="btn btn-agregar" onclick="agregarHechoManual()"><i class="fas fa-plus"></i> Agregar hecho manual</button>
+                            </div>
+                            <div class="text-muted" style="font-size:11px; margin-top:4px;">Se usará el texto tal como lo escribas en la carátula e informe.</div>
+                        </div>
                         <div id="incisos-container" style="margin-top:6px;"><div id="incisos-opciones"></div></div>
                         <div id="lista-hechos" style="margin-top:6px;"></div>
                     </div>
@@ -2635,7 +2646,11 @@ function eliminarVictima(indice) {
         horaHecho: document.getElementById('hora-hecho').value,
         testigos,
         descripcionHecho: document.getElementById('descripcion-hecho').value.trim(),
-        hechos: hechosAgregados.map(h => ({ hecho: h.hecho, incisos: h.incisos })),
+                hechos: hechosAgregados.map(h => {
+            const obj = { hecho: h.hecho, incisos: h.incisos };
+            if (h.labelManual) obj.labelManual = h.labelManual;
+            return obj;
+        }),
         caratula: document.getElementById('caratula-preview').textContent,
         observacionesGenerales: document.getElementById('observaciones-generales').value.trim()
     };
@@ -2895,13 +2910,17 @@ renderizarVictimas();
         setValueSafe('descripcion-hecho', causa.descripcionHecho || '');
         setValueSafe('observaciones-generales', causa.observacionesGenerales || '');
 
-        hechosAgregados = (causa.hechos || []).filter(h => h && h.hecho).map(h => ({
-            hecho: h.hecho,
-            incisos: Array.isArray(h.incisos) ? h.incisos.map(inc => ({
-                id: inc.id,
-                numerales: Array.isArray(inc.numerales) ? inc.numerales.slice() : []
-            })) : []
-        }));
+                hechosAgregados = (causa.hechos || []).filter(h => h && h.hecho).map(h => {
+            const obj = {
+                hecho: h.hecho,
+                incisos: Array.isArray(h.incisos) ? h.incisos.map(inc => ({
+                    id: inc.id,
+                    numerales: Array.isArray(inc.numerales) ? inc.numerales.slice() : []
+                })) : []
+            };
+            if (h.labelManual) obj.labelManual = h.labelManual;
+            return obj;
+        });
         renderizarHechosAgregados();
 
         setValueSafe('fecha-vencimiento-input', causa.fechaActoConclusivo || '');
@@ -3079,8 +3098,25 @@ renderizarVictimas();
         document.getElementById('hecho-selector').value = '';
         document.getElementById('incisos-opciones').innerHTML = '<span class="text-muted">Seleccione un hecho punible</span>';
     }
+                function agregarHechoManual() {
+        const texto = document.getElementById('hecho-manual').value.trim();
+        if (!texto) { alert('Escriba el hecho punible o ley especial.'); return; }
+        const yaExiste = hechosAgregados.some(h => h.labelManual && h.labelManual.toLowerCase() === texto.toLowerCase());
+        if (yaExiste) { alert('Ese hecho manual ya fue agregado.'); return; }
+        hechosAgregados.push({
+            hecho: 'manual-' + Date.now(),
+            incisos: [],
+            labelManual: texto
+        });
+        renderizarHechosAgregados();
+        generarCaratula();
+        actualizarPestanas();
+        if (document.getElementById('tab3').classList.contains('active')) actualizarIntervenciones();
+        document.getElementById('hecho-manual').value = '';
+        document.getElementById('hecho-manual').focus();
+    }
 
-    function renderizarHechosAgregados() {
+        function renderizarHechosAgregados() {
         const container = document.getElementById('lista-hechos');
         if (hechosAgregados.length === 0) {
             container.innerHTML = '<span class="text-muted">No hay hechos punibles agregados.</span>';
@@ -3088,6 +3124,11 @@ renderizarVictimas();
         }
         let html = '<div style="display:flex;flex-direction:column;gap:3px;">';
         hechosAgregados.forEach((h, index) => {
+            // Hecho manual: se muestra tal cual, con ícono de lápiz
+            if (h.labelManual) {
+                html += `<div class="list-item"><span class="label"><i class="fas fa-pen" style="color:#d4a843; font-size:11px;"></i> ${escapeHTML(h.labelManual)}</span><button class="btn-remover" onclick="quitarHecho(${index})"><i class="fas fa-times"></i> Eliminar</button></div>`;
+                return;
+            }
             const config = CONFIG.hechos[h.hecho];
             const label = config ? config.label : h.hecho;
             let detalles = '';
@@ -3114,7 +3155,6 @@ renderizarVictimas();
         html += '</div>';
         container.innerHTML = html;
     }
-
     function quitarHecho(index) {
         hechosAgregados.splice(index, 1);
         renderizarHechosAgregados();
@@ -3142,7 +3182,8 @@ renderizarVictimas();
             preview.innerHTML = '<span class="text-muted">Agregue al menos un hecho punible</span>';
             return;
         }
-        const hechosText = hechosAgregados.map(h => {
+                const hechosText = hechosAgregados.map(h => {
+            if (h.labelManual) return h.labelManual;
             const config = CONFIG.hechos[h.hecho];
             return config ? config.label.replace(/^Art\.\s*\d+[a-z]?\s*[–-]\s*/i, '') : h.hecho;
         }).join('; ');
@@ -3893,10 +3934,11 @@ renderizarVictimas();
 
         html += `<div><strong>Descripción del hecho:</strong> ${causa.descripcionHecho || 'No registrada'}</div>`;
 
-        html += `<div><strong>Hechos punibles:</strong></div>`;
-        if (causa.hechos && causa.hechos.length > 0) {
-            html += `<ul style="margin-top:4px;padding-left:20px;">`;
-            causa.hechos.forEach(h => {
+                    causa.hechos.forEach(h => {
+                if (h.labelManual) {
+                    html += `<li><strong>${escapeHTML(h.labelManual)}</strong> <span style="color:#888;font-size:11px;">(cargado manualmente)</span></li>`;
+                    return;
+                }
                 const config = CONFIG.hechos[h.hecho];
                 const label = config ? config.label : h.hecho;
                 html += `<li><strong>${label}</strong>`;
@@ -3921,11 +3963,6 @@ renderizarVictimas();
                 }
                 html += `</li>`;
             });
-            html += `</ul>`;
-        } else {
-            html += `<div class="text-muted">No se registraron hechos punibles.</div>`;
-        }
-
         html += `<div><strong>Carátula:</strong> ${causa.caratula || 'No generada'}</div>`;
         html += `<div><strong>Observaciones Generales:</strong> ${causa.observacionesGenerales || 'No registradas'}</div>`;
 
