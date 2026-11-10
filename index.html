@@ -789,6 +789,36 @@
     .resumen-header { padding: 16px 18px; }
     .resumen-body { padding: 14px 16px; }
 }
+                /* ===== TARJETAS DE PERSONAS (imputados / víctimas / testigos) ===== */
+        .persona-card {
+            background: #fff;
+            border: 1px solid #e0e4ea;
+            border-left: 4px solid #d4a843;
+            border-radius: 6px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .persona-card-info { flex: 1; font-size: 13px; line-height: 1.5; }
+        .persona-card-nombre { color: #1a2a4a; font-size: 14px; }
+        .persona-card-detalles { color: #666; font-size: 12px; }
+        .persona-card-acciones { display: flex; gap: 5px; flex-shrink: 0; }
+        .persona-btn-editar, .persona-btn-eliminar {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 6px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+        .persona-btn-editar { color: #1a2a4a; }
+        .persona-btn-editar:hover { background: #eef2f7; }
+        .persona-btn-eliminar { color: #b33c3c; }
+        .persona-btn-eliminar:hover { background: #f8d7da; }
         @media print {
             @page { size: legal; margin: 1.5cm; }
             body { background: #fff; padding: 0; margin: 0; font-size: 10pt; }
@@ -1672,19 +1702,18 @@ function renderizarVictimas() {
         if (v.domicilio) detalles.push('Domicilio: ' + v.domicilio);
         if (v.telefono) detalles.push('Tel: ' + v.telefono);
         if (v.edad) detalles.push('Edad: ' + v.edad);
-        html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
-        html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
-        html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(v.nombre) + '</strong>';
-        if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
+        html += '<div class="persona-card">';
+        html += '<div class="persona-card-info">';
+        html += '<strong class="persona-card-nombre">' + escapeHTML(v.nombre) + '</strong>';
+        if (detalles.length) html += '<div class="persona-card-detalles">' + escapeHTML(detalles.join(' · ')) + '</div>';
         html += '</div>';
-        html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
-        html += '<button type="button" onclick="abrirModalVictima(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
-        html += '<button type="button" onclick="eliminarVictima(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
+        html += '<div class="persona-card-acciones">';
+        html += '<button type="button" class="persona-btn-editar" onclick="abrirModalVictima(' + idx + ')" title="Editar"><i class="fas fa-pen"></i></button>';
+        html += '<button type="button" class="persona-btn-eliminar" onclick="eliminarVictima(' + idx + ')" title="Eliminar"><i class="fas fa-times"></i></button>';
         html += '</div></div>';
     });
     cont.innerHTML = html;
 }
-
 function eliminarVictima(indice) {
     if (!confirm('¿Eliminar esta víctima de la lista?')) return;
     victimasTemporales.splice(indice, 1);
@@ -1749,7 +1778,7 @@ function eliminarVictima(indice) {
         generarCaratula();
     }
 
-    function renderizarImputados() {
+       function renderizarImputados() {
         const cont = document.getElementById('imputados-list');
         if (!cont) return;
         if (imputadosTemporales.length === 0) {
@@ -1763,19 +1792,18 @@ function eliminarVictima(indice) {
             if (imp.domicilio) detalles.push('Domicilio: ' + imp.domicilio);
             if (imp.telefono) detalles.push('Tel: ' + imp.telefono);
             if (imp.reincidente) detalles.push('Reincidente: Sí (' + (imp.numReincidencias || 0) + ')');
-            html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
-            html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
-            html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(imp.nombre) + '</strong>';
-            if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
+            html += '<div class="persona-card">';
+            html += '<div class="persona-card-info">';
+            html += '<strong class="persona-card-nombre">' + escapeHTML(imp.nombre) + '</strong>';
+            if (detalles.length) html += '<div class="persona-card-detalles">' + escapeHTML(detalles.join(' · ')) + '</div>';
             html += '</div>';
-            html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
-            html += '<button type="button" onclick="abrirModalImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
-            html += '<button type="button" onclick="eliminarImputado(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
+            html += '<div class="persona-card-acciones">';
+            html += '<button type="button" class="persona-btn-editar" onclick="abrirModalImputado(' + idx + ')" title="Editar"><i class="fas fa-pen"></i></button>';
+            html += '<button type="button" class="persona-btn-eliminar" onclick="eliminarImputado(' + idx + ')" title="Eliminar"><i class="fas fa-times"></i></button>';
             html += '</div></div>';
         });
         cont.innerHTML = html;
     }
-
     function eliminarImputado(indice) {
         if (!confirm('¿Eliminar este imputado de la lista?')) return;
         imputadosTemporales.splice(indice, 1);
@@ -1824,7 +1852,7 @@ function eliminarVictima(indice) {
         renderizarTestigos();
     }
 
-    function renderizarTestigos() {
+        function renderizarTestigos() {
         const cont = document.getElementById('testigos-list');
         if (!cont) return;
         if (testigosTemporales.length === 0) {
@@ -1836,19 +1864,18 @@ function eliminarVictima(indice) {
             const detalles = [];
             if (t.ci) detalles.push('CI: ' + t.ci);
             if (t.telefono) detalles.push('Tel: ' + t.telefono);
-            html += '<div style="background:#fff; border:1px solid #e0e4ea; border-left:4px solid #d4a843; border-radius:6px; padding:10px 14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">';
-            html += '<div style="flex:1; font-size:13px; line-height:1.5;">';
-            html += '<strong style="color:#1a2a4a; font-size:14px;">' + escapeHTML(t.nombre) + '</strong>';
-            if (detalles.length) html += '<div style="color:#666; font-size:12px;">' + escapeHTML(detalles.join(' · ')) + '</div>';
+            html += '<div class="persona-card">';
+            html += '<div class="persona-card-info">';
+            html += '<strong class="persona-card-nombre">' + escapeHTML(t.nombre) + '</strong>';
+            if (detalles.length) html += '<div class="persona-card-detalles">' + escapeHTML(detalles.join(' · ')) + '</div>';
             html += '</div>';
-            html += '<div style="display:flex; gap:5px; flex-shrink:0;">';
-            html += '<button type="button" onclick="abrirModalTestigo(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#1a2a4a;" title="Editar"><i class="fas fa-pen"></i></button>';
-            html += '<button type="button" onclick="eliminarTestigo(' + idx + ')" style="background:transparent; border:none; cursor:pointer; font-size:14px; padding:4px 6px; border-radius:4px; color:#b33c3c;" title="Eliminar"><i class="fas fa-times"></i></button>';
+            html += '<div class="persona-card-acciones">';
+            html += '<button type="button" class="persona-btn-editar" onclick="abrirModalTestigo(' + idx + ')" title="Editar"><i class="fas fa-pen"></i></button>';
+            html += '<button type="button" class="persona-btn-eliminar" onclick="eliminarTestigo(' + idx + ')" title="Eliminar"><i class="fas fa-times"></i></button>';
             html += '</div></div>';
         });
         cont.innerHTML = html;
     }
-
     function eliminarTestigo(indice) {
         if (!confirm('¿Eliminar este testigo de la lista?')) return;
         testigosTemporales.splice(indice, 1);
