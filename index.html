@@ -4464,14 +4464,38 @@
     // 20. EXPORTAR / IMPORTAR
     // ================================================================
     function exportarDatos() {
-        const blob = new Blob([JSON.stringify(causas, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `causas_${new Date().toISOString().slice(0,10)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
+    // 1. Nombre del usuario (sanitizado para nombres de archivo)
+    let nombreUsuario = (currentUserData && currentUserData.nombre)
+        ? currentUserData.nombre.trim()
+        : 'Usuario';
+    nombreUsuario = nombreUsuario
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[\/\\:*?"<>|]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
+    if (!nombreUsuario) nombreUsuario = 'Usuario';
+
+    // 2. Mes y año de exportación
+    const ahora = new Date();
+    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                   'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    const mes = meses[ahora.getMonth()];
+    const anio = ahora.getFullYear();
+
+    // 3. Nombre final del archivo
+    const nombreArchivo = `Causas_${nombreUsuario}_${mes}_${anio}.json`;
+
+    // 4. Generar y descargar
+    const blob = new Blob([JSON.stringify(causas, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = nombreArchivo;
+    a.click();
+    URL.revokeObjectURL(url);
+}
     function enviarCorreoConRespaldo() {
         if (causas.length === 0) { alert('No hay datos para exportar.'); return; }
         exportarDatos();
