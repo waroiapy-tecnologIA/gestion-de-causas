@@ -2464,7 +2464,7 @@
                             (!esAdmin ? (
                                 (estado === 'pendiente' ? '<button class="btn btn-sm btn-approve" onclick="aprobarUsuario(\'' + uid + '\')"><i class="fas fa-check"></i> Aprobar</button>' : '') +
                                 (estado === 'aprobado' ? '<button class="btn btn-sm btn-renew" onclick="renovarUsuario(\'' + uid + '\')"><i class="fas fa-clock"></i> Renovar</button>' : '') +
-                                (estado !== 'rechazado' ? '<button class="btn btn-sm btn-reject" onclick="rechazarUsuario(\'' + uid + '\')"><i class="fas fa-times"></i> Rechazar</button>' : '')
+                                (estado !== 'rechazado' ? '<button class="btn btn-sm btn-reject" onclick="rechazarUsuario(\'' + uid + '\')"><i class="fas fa-ban"></i> Suspender</button>' : '')
                             ) : '<span class="text-muted">—</span>') +
                         '</td>' +
                     '</tr>';
