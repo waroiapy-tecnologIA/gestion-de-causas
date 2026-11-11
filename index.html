@@ -248,6 +248,24 @@
         .badge-estado.inhibitoria { background: #ffccbc; color: #bf360c; }
         .badge-estado.otro { background: #cfd8dc; color: #37474f; }
         .causa-card .eliminar-btn { position: absolute; top: 6px; right: 8px; background: transparent; border: none; color: #b0b8c4; cursor: pointer; font-size: 14px; }
+        .causa-card .calendario-btn {
+    position: absolute;
+    top: 6px;
+    right: 32px;
+    background: transparent;
+    border: none;
+    color: #4a7ab8;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.15s;
+}
+.causa-card .calendario-btn:hover {
+    color: #1a2a4a;
+    background: #eef2f7;
+    transform: scale(1.15);
+}
         .causa-card .eliminar-btn:hover { color: #b33c3c; }
         .causa-card .dias-restantes { font-size: 11px; color: #888; margin-top: 5px; border-top: 1px dashed #e0e4ea; padding-top: 5px; }
         .causa-card .dias-restantes.vencido { color: #b33c3c; font-weight: 600; }
@@ -3948,7 +3966,8 @@
                 ${diasInfo}
                 ${actoConclusivoMsg}
                 ${prorrogaMsg}
-                <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
+                <button class="calendario-btn" onclick="event.stopPropagation(); abrirGoogleCalendar('${c.id}')" title="Agregar al calendario"><i class="fas fa-calendar-plus"></i></button>
+<button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
             </div>
         `;
     }
@@ -4459,7 +4478,75 @@
         html += '</div>';
         container.innerHTML = html;
     }
+// ================================================================
+// 19.5. VINCULACIÓN CON GOOGLE CALENDAR
+// ================================================================
+function generarLinkGoogleCalendar(causa) {
+    const info = calcularInfoPlazo(causa);
+    let fechaStr = null;
+    let tipoEvento = '';
+    let descripcionTipo = '';
 
+    if (info.tipo === 'archivo_provisional' && causa.fechaLimiteArchivo) {
+        fechaStr = causa.fechaLimiteArchivo;
+        tipoEvento = 'Archivo Provisional';
+        descripcionTipo = 'Fecha límite para nuevo requerimiento (Archivo Provisional, Art. 334 CPP)';
+    } else if (causa.fechaActoConclusivo) {
+        fechaStr = causa.fechaActoConclusivo;
+        tipoEvento = 'Acto Conclusivo';
+        descripcionTipo = 'Plazo para presentar el requerimiento conclusivo (Art. 294 CPP y ss.)';
+    }
+
+    if (!fechaStr) return null;
+
+    // Convertir YYYY-MM-DD a YYYYMMDD
+    const fechaInicio = fechaStr.replace(/-/g, '');
+    const fechaObj = parseUTCDate(fechaStr);
+    if (!fechaObj) return null;
+
+    // Google Calendar: el evento "todo el día" termina al día siguiente (exclusivo)
+    const diaSiguiente = new Date(fechaObj);
+    diaSiguiente.setUTCDate(diaSiguiente.getUTCDate() + 1);
+    const fechaFin = diaSiguiente.toISOString().slice(0, 10).replace(/-/g, '');
+
+    // Título y descripción del evento
+    const titulo = `Vencimiento ${tipoEvento} - Causa ${causa.numCausa || 'Sin número'}`;
+    const imputados = (causa.imputados || []).map(i => i.nombre).filter(Boolean).join(', ')
+        || causa.imputado
+        || 'No especificado';
+
+    const descripcion = [
+        descripcionTipo,
+        '',
+        `Causa: ${causa.numCausa || 'Sin número'}`,
+        `Imputado: ${imputados}`,
+        `Juzgado: ${causa.numJuzgado || 'No especificado'}`,
+        '',
+        'Generado por el Sistema de Gestión de Causas Penales'
+    ].join('\n');
+
+    const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: titulo,
+        dates: `${fechaInicio}/${fechaFin}`,
+        details: descripcion
+    });
+    if (causa.numJuzgado) params.append('location', causa.numJuzgado);
+
+    return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function abrirGoogleCalendar(causaId) {
+    const causa = causas.find(c => String(c.id) === String(causaId));
+    if (!causa) { alert('Causa no encontrada.'); return; }
+
+    const link = generarLinkGoogleCalendar(causa);
+    if (!link) {
+        alert('Esta causa no tiene una fecha válida para agendar.');
+        return;
+    }
+    window.open(link, '_blank', 'noopener');
+}
     // ================================================================
     // 20. EXPORTAR / IMPORTAR
     // ================================================================
