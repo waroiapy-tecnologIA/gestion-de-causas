@@ -2296,9 +2296,9 @@
                         mostrarMensaje('Tu cuenta está pendiente de aprobación.', 'error');
                         auth.signOut();
                     } else if (currentUserData.estado === 'rechazado') {
-                        mostrarMensaje('Tu cuenta ha sido rechazada.', 'error');
-                        auth.signOut();
-                    } else {
+    mostrarMensaje('Tu acceso ha sido suspendido. Contactá al administrador para más información.', 'error');
+    auth.signOut();
+                } else {
                         mostrarMensaje('Estado de cuenta no reconocido.', 'error');
                         auth.signOut();
                     }
@@ -2503,11 +2503,11 @@
     }
 
     function rechazarUsuario(uid) {
-        if (!confirm('¿Rechazar este usuario?')) return;
-        db.collection('usuarios').doc(uid).update({ estado: 'rechazado', fechaExpiracion: null })
-            .then(() => { alert('Usuario rechazado.'); cargarUsuarios(); })
-            .catch(err => alert('Error: ' + err.message));
-    }
+    if (!confirm('¿Suspender el acceso de este usuario?\n\nEsta acción es REVERSIBLE: podés reactivarlo después con el botón "Renovar".\n\nEl correo quedará reservado y no podrá volver a registrarse con él.')) return;
+    db.collection('usuarios').doc(uid).update({ estado: 'rechazado', fechaExpiracion: null })
+        .then(() => { alert('Acceso suspendido. Podés reactivarlo con "Renovar" cuando quieras.'); cargarUsuarios(); })
+        .catch(err => alert('Error: ' + err.message));
+}
 
     function renovarUsuario(uid) {
         const dias = getDiasSuscripcion();
