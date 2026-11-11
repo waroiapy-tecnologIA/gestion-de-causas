@@ -473,7 +473,7 @@
         .diligencia-card .dil-detalle { color: #555; margin-top: 3px; }
         .diligencia-card .dil-meta { color: #888; font-size: 11px; margin-top: 4px; }
 
-        /* ===== NUEVO: SELECTOR DE DÍAS DE SUSCRIPCIÓN ===== */
+        /* ===== SELECTOR DE DÍAS DE SUSCRIPCIÓN ===== */
         .admin-suscripcion-bar {
             background: #eef2f7;
             border-left: 4px solid #d4a843;
@@ -502,6 +502,180 @@
             color: #666;
         }
 
+        /* ===== FAB DE AYUDA (Términos y Condiciones) ===== */
+        .fab-ayuda {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: #1a2a4a;
+            color: #fff;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(26,42,74,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 9990;
+        }
+        .fab-ayuda:hover {
+            background: #0f1d33;
+            transform: translateY(-3px) scale(1.06);
+            box-shadow: 0 8px 24px rgba(26,42,74,0.5);
+        }
+        .fab-ayuda:active { transform: scale(0.94); }
+        .fab-ayuda .tooltip-fab {
+            position: absolute;
+            right: 66px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1a2a4a;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .fab-ayuda .tooltip-fab::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 6px solid transparent;
+            border-left-color: #1a2a4a;
+        }
+        .fab-ayuda:hover .tooltip-fab { opacity: 1; transform: translateY(-50%) translateX(-2px); }
+
+        /* ===== BADGE DE DÍAS FREEMIUM EN HEADER ===== */
+        #dias-freemium-badge { display: inline-flex; align-items: center; }
+
+        /* ===== MODAL BIENVENIDA FREEMIUM ===== */
+        #modal-bienvenida-freemium {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.72);
+            z-index: 10002;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow: auto;
+        }
+        #modal-bienvenida-freemium .bienvenida-contenido {
+            background: #fff;
+            max-width: 560px;
+            width: 100%;
+            border-radius: 14px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+            overflow: hidden;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
+        }
+        #modal-bienvenida-freemium .bienvenida-header {
+            background: linear-gradient(135deg, #1a2a4a 0%, #2a4a7a 100%);
+            color: #fff;
+            padding: 26px 30px;
+            text-align: center;
+        }
+        #modal-bienvenida-freemium .bienvenida-header .emoji {
+            font-size: 44px;
+            margin-bottom: 8px;
+        }
+        #modal-bienvenida-freemium .bienvenida-header h2 {
+            margin: 0 0 6px;
+            font-size: 22px;
+        }
+        #modal-bienvenida-freemium .bienvenida-header .sub {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+        #modal-bienvenida-freemium .bienvenida-body {
+            padding: 24px 30px;
+            overflow-y: auto;
+        }
+        #modal-bienvenida-freemium .bienvenida-caja {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 14px 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        #modal-bienvenida-freemium .bienvenida-caja .etiqueta {
+            font-size: 12px;
+            color: #155724;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        #modal-bienvenida-freemium .bienvenida-caja .valor {
+            font-size: 24px;
+            font-weight: 800;
+            color: #155724;
+        }
+        #modal-bienvenida-freemium .bienvenida-caja .fecha {
+            font-size: 12px;
+            color: #2a7d4f;
+            margin-top: 4px;
+        }
+        #modal-bienvenida-freemium h3 {
+            color: #1a2a4a;
+            font-size: 15px;
+            margin: 0 0 10px;
+        }
+        #modal-bienvenida-freemium .lista-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 16px;
+        }
+        #modal-bienvenida-freemium .lista-features li {
+            padding: 6px 0;
+            font-size: 13px;
+            color: #333;
+        }
+        #modal-bienvenida-freemium .lista-features li i {
+            color: #2a7d4f;
+            margin-right: 8px;
+        }
+        #modal-bienvenida-freemium .recordatorio {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #856404;
+            line-height: 1.5;
+        }
+        #modal-bienvenida-freemium .bienvenida-footer {
+            padding: 16px 30px 22px;
+            background: #f8f9fb;
+            text-align: center;
+            border-top: 1px solid #e0e4ea;
+        }
+        #modal-bienvenida-freemium .bienvenida-footer button {
+            padding: 11px 36px;
+            background: #1a2a4a;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        #modal-bienvenida-freemium .bienvenida-footer button:hover {
+            background: #0f1d33;
+        }
+
         @media (max-width:600px) {
             .user-table, .user-table tbody, .user-table tr, .user-table td { display: block; width: 100%; }
             .user-table tr { margin-bottom: 10px; border: 1px solid #ddd; padding: 8px; border-radius: 6px; }
@@ -520,8 +694,11 @@
             #modal-resumen pre { font-size: 11px; padding: 10px; }
             #modal-reauth .reauth-contenido { padding: 15px; }
             #modal-tyc .tyc-contenido { padding: 18px; }
+            #modal-bienvenida-freemium .bienvenida-header { padding: 20px 18px; }
+            #modal-bienvenida-freemium .bienvenida-body { padding: 18px 20px; }
         }
-/* ===== NUEVO DISEÑO DEL RESUMEN ===== */
+
+/* ===== DISEÑO DEL RESUMEN ===== */
 #modal-resumen .modal-contenido {
     max-width: 1150px;
     padding: 0;
@@ -560,7 +737,6 @@
     overflow-y: auto;
 }
 
-/* Tarjetas de métricas */
 .resumen-metricas {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -613,7 +789,6 @@
 .metrica-card.acto .met-icon { background: #bbdefb; color: #0d47a1; }
 .metrica-card.acto .met-valor { color: #0d47a1; }
 
-/* Alerta de vencidas */
 .alerta-vencidas {
     background: linear-gradient(135deg, #f8d7da 0%, #f5c2c7 100%);
     border: 1px solid #dc3545;
@@ -630,10 +805,7 @@
 }
 .alerta-vencidas i { font-size: 20px; }
 
-/* Secciones */
-.resumen-seccion {
-    margin-bottom: 26px;
-}
+.resumen-seccion { margin-bottom: 26px; }
 .resumen-seccion-titulo {
     font-size: 15px;
     font-weight: 700;
@@ -657,7 +829,6 @@
 .resumen-seccion.plazo .resumen-seccion-titulo { background: #d4edda; color: #155724; border-left: 4px solid #2a7d4f; }
 .resumen-seccion.acto .resumen-seccion-titulo { background: #bbdefb; color: #0d47a1; border-left: 4px solid #0d47a1; }
 
-/* Tarjetas de causas */
 .resumen-card {
     background: #fff;
     border: 1px solid #e0e4ea;
@@ -738,7 +909,6 @@
 }
 .rc-dias strong { color: #333; }
 
-/* Barra de progreso de días */
 .rc-barra {
     height: 4px;
     background: #e8ecf1;
@@ -757,7 +927,6 @@
 .rc-barra-fill.plazo   { background: #28a745; }
 .rc-barra-fill.acto    { background: #0d47a1; }
 
-/* Footer del resumen */
 .resumen-footer {
     padding: 14px 28px 20px;
     border-top: 1px solid #e0e4ea;
@@ -766,7 +935,6 @@
 }
 .resumen-footer .btn { padding: 9px 24px; font-size: 14px; }
 
-/* Empty state del resumen */
 .resumen-empty {
     text-align: center;
     padding: 40px 20px;
@@ -789,99 +957,101 @@
     .resumen-header { padding: 16px 18px; }
     .resumen-body { padding: 14px 16px; }
 }
-                /* ===== TARJETAS DE PERSONAS (imputados / víctimas / testigos) ===== */
-        .persona-card {
-            background: #fff;
-            border: 1px solid #e0e4ea;
-            border-left: 4px solid #d4a843;
-            border-radius: 6px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        .persona-card-info { flex: 1; font-size: 13px; line-height: 1.5; }
-        .persona-card-nombre { color: #1a2a4a; font-size: 14px; }
-        .persona-card-detalles { color: #666; font-size: 12px; }
-        .persona-card-acciones { display: flex; gap: 5px; flex-shrink: 0; }
-        .persona-btn-editar, .persona-btn-eliminar {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 14px;
-            padding: 4px 6px;
-            border-radius: 4px;
-            transition: background 0.15s;
-        }
-        .persona-btn-editar { color: #1a2a4a; }
-        .persona-btn-editar:hover { background: #eef2f7; }
-        .persona-btn-eliminar { color: #b33c3c; }
-        .persona-btn-eliminar:hover { background: #f8d7da; }
-        @media print {
-            @page { size: legal; margin: 1.5cm; }
-            body { background: #fff; padding: 0; margin: 0; font-size: 10pt; }
-            .app-container { box-shadow: none; border-radius: 0; max-width: 100%; }
-            .header { background: #1a2a4a !important; color: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; padding: 8px 15px; }
-            .header h1 { font-size: 14pt; }
-            .header .subtitle { font-size: 9pt; }
-            .toolbar, .causa-grid, .tab-btn, .no-print, .btn, .footer-seccion, .search-box, #admin-panel, .banner-datos-locales, #modal-tyc { display: none !important; }
-            .form-container { display: block !important; border: none !important; padding: 0 !important; margin: 0 !important; background: #fff !important; opacity: 1 !important; transform: none !important; }
-            .tab-pane { display: block !important; padding: 3px 0 !important; }
-            .tab-pane:not(.active) { display: none !important; }
-            .tab-pane.active { display: block !important; }
-            .form-row { grid-template-columns: 1fr 1fr; gap: 4px 8px; margin-bottom: 4px; }
-            .form-group { margin-bottom: 2px; }
-            .form-group label { font-size: 9pt; }
-            .form-group input, .form-group select, .form-group textarea { font-size: 9pt; padding: 3px 6px; border: 1px solid #ccc; background: #fff !important; color: #000 !important; }
-            .sub-seccion { background: #f9f9f9 !important; padding: 8px; margin-bottom: 6px; border: 1px solid #ddd; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .sub-seccion h4 { font-size: 10pt; margin-bottom: 4px; border-bottom: 1px solid #ccc; }
-            .caratula-preview { background: #f0f0f0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; padding: 6px 10px; }
-            .resultado-riesgo { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .list-item { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .victima-block, .testigo-block { background: #fafafa !important; border: 1px solid #ddd; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .checkbox-group input[type="checkbox"] { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .checkbox-group input[type="checkbox"]:checked { -webkit-appearance: checkbox; appearance: checkbox; }
-            .alert-card { border: 1px solid #ddd; margin-bottom: 4px; page-break-inside: avoid; }
-            .alert-card-header { background: #f5f5f5 !important; padding: 4px 10px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .alert-card-body { padding: 4px 10px; }
-            .alert-item { padding: 2px 0; font-size: 9pt; }
-            .badge { font-size: 8pt; padding: 1px 5px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .badge-activa { background: #d4edda !important; color: #155724 !important; }
-            .badge-alimentos { background: #fff3cd !important; color: #856404 !important; }
-            .badge-alerta { background: #f8d7da !important; color: #721c24 !important; }
-            .badge-precluida { background: #e0e0e0 !important; color: #616161 !important; }
-            .badge-acto-conclusivo { background: #bbdefb !important; color: #0d47a1 !important; }
-            .badge-estado { font-size: 8pt; }
-            .text-muted { font-size: 8pt; }
-            .espacio-firma .firma-line { width: 180px; }
-            .informe-header { margin-bottom: 10px !important; padding-bottom: 8px !important; border-bottom: 2px solid #1a2a4a !important; }
-            .informe-header h2 { font-size: 14pt; }
-            .main-content { padding: 0 !important; margin: 0 !important; }
-            .form-container { padding: 0 !important; margin: 0 !important; }
-            .tab-pane { padding: 0 !important; margin: 0 !important; }
-            #tab5 { display: block !important; }
-            #tab5 .text-center { display: none !important; }
-            .causa-grid, .empty-state, .toolbar, .no-print { display: none !important; }
-            .form-container .tabs { display: none !important; }
-            .form-container .form-header { margin-bottom: 6px !important; padding-bottom: 5px !important; }
-            .form-container .form-header .btn-cerrar { display: none !important; }
-            .form-container .form-header .estado-guardado { display: none !important; }
-            .tab-pane { page-break-before: avoid; page-break-after: avoid; }
-            #tab1, #tab2, #tab6, #tab7 { display: none !important; }
-            #tab5 { display: block !important; }
-            .fundamento-articulo { font-size: 8pt; }
-            .fundamento-articulo .texto-ley { font-size: 7.5pt; }
-            .resultado-riesgo { font-size: 9pt; }
-            .resultado-riesgo span { font-size: 10pt; }
-            .liquidacion-resultado { font-size: 10pt; }
-            .liquidacion-link { display: none !important; }
-            .diligencia-item { font-size: 8pt; padding: 1px 0; }
-            #campo-fecha-archivo { display: none !important; }
-            .causa-card .prorroga-msg { display: none; }
-            #modal-reauth { display: none !important; }
-        }
+
+/* ===== TARJETAS DE PERSONAS ===== */
+.persona-card {
+    background: #fff;
+    border: 1px solid #e0e4ea;
+    border-left: 4px solid #d4a843;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+.persona-card-info { flex: 1; font-size: 13px; line-height: 1.5; }
+.persona-card-nombre { color: #1a2a4a; font-size: 14px; }
+.persona-card-detalles { color: #666; font-size: 12px; }
+.persona-card-acciones { display: flex; gap: 5px; flex-shrink: 0; }
+.persona-btn-editar, .persona-btn-eliminar {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+.persona-btn-editar { color: #1a2a4a; }
+.persona-btn-editar:hover { background: #eef2f7; }
+.persona-btn-eliminar { color: #b33c3c; }
+.persona-btn-eliminar:hover { background: #f8d7da; }
+
+@media print {
+    @page { size: legal; margin: 1.5cm; }
+    body { background: #fff; padding: 0; margin: 0; font-size: 10pt; }
+    .app-container { box-shadow: none; border-radius: 0; max-width: 100%; }
+    .header { background: #1a2a4a !important; color: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; padding: 8px 15px; }
+    .header h1 { font-size: 14pt; }
+    .header .subtitle { font-size: 9pt; }
+    .toolbar, .causa-grid, .tab-btn, .no-print, .btn, .footer-seccion, .search-box, #admin-panel, .banner-datos-locales, #modal-tyc, .fab-ayuda, #modal-bienvenida-freemium { display: none !important; }
+    .form-container { display: block !important; border: none !important; padding: 0 !important; margin: 0 !important; background: #fff !important; opacity: 1 !important; transform: none !important; }
+    .tab-pane { display: block !important; padding: 3px 0 !important; }
+    .tab-pane:not(.active) { display: none !important; }
+    .tab-pane.active { display: block !important; }
+    .form-row { grid-template-columns: 1fr 1fr; gap: 4px 8px; margin-bottom: 4px; }
+    .form-group { margin-bottom: 2px; }
+    .form-group label { font-size: 9pt; }
+    .form-group input, .form-group select, .form-group textarea { font-size: 9pt; padding: 3px 6px; border: 1px solid #ccc; background: #fff !important; color: #000 !important; }
+    .sub-seccion { background: #f9f9f9 !important; padding: 8px; margin-bottom: 6px; border: 1px solid #ddd; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .sub-seccion h4 { font-size: 10pt; margin-bottom: 4px; border-bottom: 1px solid #ccc; }
+    .caratula-preview { background: #f0f0f0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; padding: 6px 10px; }
+    .resultado-riesgo { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .list-item { background: #f5f5f5 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .victima-block, .testigo-block { background: #fafafa !important; border: 1px solid #ddd; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .checkbox-group input[type="checkbox"] { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .checkbox-group input[type="checkbox"]:checked { -webkit-appearance: checkbox; appearance: checkbox; }
+    .alert-card { border: 1px solid #ddd; margin-bottom: 4px; page-break-inside: avoid; }
+    .alert-card-header { background: #f5f5f5 !important; padding: 4px 10px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .alert-card-body { padding: 4px 10px; }
+    .alert-item { padding: 2px 0; font-size: 9pt; }
+    .badge { font-size: 8pt; padding: 1px 5px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    .badge-activa { background: #d4edda !important; color: #155724 !important; }
+    .badge-alimentos { background: #fff3cd !important; color: #856404 !important; }
+    .badge-alerta { background: #f8d7da !important; color: #721c24 !important; }
+    .badge-precluida { background: #e0e0e0 !important; color: #616161 !important; }
+    .badge-acto-conclusivo { background: #bbdefb !important; color: #0d47a1 !important; }
+    .badge-estado { font-size: 8pt; }
+    .text-muted { font-size: 8pt; }
+    .espacio-firma .firma-line { width: 180px; }
+    .informe-header { margin-bottom: 10px !important; padding-bottom: 8px !important; border-bottom: 2px solid #1a2a4a !important; }
+    .informe-header h2 { font-size: 14pt; }
+    .main-content { padding: 0 !important; margin: 0 !important; }
+    .form-container { padding: 0 !important; margin: 0 !important; }
+    .tab-pane { padding: 0 !important; margin: 0 !important; }
+    #tab5 { display: block !important; }
+    #tab5 .text-center { display: none !important; }
+    .causa-grid, .empty-state, .toolbar, .no-print { display: none !important; }
+    .form-container .tabs { display: none !important; }
+    .form-container .form-header { margin-bottom: 6px !important; padding-bottom: 5px !important; }
+    .form-container .form-header .btn-cerrar { display: none !important; }
+    .form-container .form-header .estado-guardado { display: none !important; }
+    .tab-pane { page-break-before: avoid; page-break-after: avoid; }
+    #tab1, #tab2, #tab6, #tab7 { display: none !important; }
+    #tab5 { display: block !important; }
+    .fundamento-articulo { font-size: 8pt; }
+    .fundamento-articulo .texto-ley { font-size: 7.5pt; }
+    .resultado-riesgo { font-size: 9pt; }
+    .resultado-riesgo span { font-size: 10pt; }
+    .liquidacion-resultado { font-size: 10pt; }
+    .liquidacion-link { display: none !important; }
+    .diligencia-item { font-size: 8pt; padding: 1px 0; }
+    #campo-fecha-archivo { display: none !important; }
+    .causa-card .prorroga-msg { display: none; }
+    #modal-reauth { display: none !important; }
+}
     </style>
 </head>
 <body>
@@ -932,6 +1102,7 @@
             </div>
             <div class="user-info">
                 <span id="user-info-display" style="font-size:13px; font-weight:500;"></span>
+                <span id="dias-freemium-badge"></span>
                 <button class="btn-admin" id="btn-admin-panel" onclick="toggleAdminPanel()" style="display:none;"><i class="fas fa-users-cog"></i> Admin</button>
                 <button class="btn btn-resumen" onclick="mostrarResumenRequerimientos()" title="Ver resumen de plazos"><i class="fas fa-list"></i> Resumen</button>
                 <button class="btn-logout" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Salir</button>
@@ -998,10 +1169,8 @@
                 </div>
                 <div class="tabs no-print" id="tabs-container"></div>
 
-                                <!-- TAB 1: DATOS GENERALES -->
+                <!-- TAB 1: DATOS GENERALES -->
                 <div id="tab1" class="tab-pane active">
-
-                    <!-- 1. Número de causa -->
                     <div class="form-row">
                         <div class="form-group">
                             <label>Número de Causa <span class="required">*</span></label>
@@ -1009,41 +1178,35 @@
                         </div>
                     </div>
 
-                    <!-- 2. Imputados (modal) -->
                     <div class="sub-seccion">
                         <h4>Imputado(s) <span class="required">*</span></h4>
                         <div id="imputados-list"></div>
                         <button type="button" class="btn btn-agregar" onclick="abrirModalImputado()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar imputado</button>
                     </div>
 
-                    <!-- 3. Víctimas (modal) -->
                     <div class="sub-seccion">
                         <h4>Víctima(s)</h4>
                         <div id="victimas-list"></div>
                         <button type="button" class="btn btn-agregar" onclick="abrirModalVictima()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar víctima</button>
                     </div>
 
-                    <!-- 4. Testigos (modal) -->
                     <div class="sub-seccion">
                         <h4>Testigo(s)</h4>
                         <div id="testigos-list"></div>
                         <button type="button" class="btn btn-agregar" onclick="abrirModalTestigo()" style="margin-top:8px;"><i class="fas fa-plus"></i> Agregar testigo</button>
                     </div>
 
-                    <!-- 5. Datos del hecho -->
                     <div class="form-row">
                         <div class="form-group"><label>Lugar del hecho</label><input type="text" id="lugar-hecho" placeholder="Dirección o ubicación" data-guia="Lugar donde ocurrió el hecho punible."></div>
                         <div class="form-group"><label>Fecha del hecho</label><input type="date" id="fecha-hecho" data-guia="Fecha en que ocurrió el hecho punible."></div>
                         <div class="form-group"><label>Hora del hecho</label><input type="time" id="hora-hecho" data-guia="Hora aproximada del hecho, si se conoce."></div>
                     </div>
 
-                    <!-- 6. Descripción -->
                     <div class="form-group">
                         <label>Breve descripción del hecho</label>
                         <textarea id="descripcion-hecho" rows="2" placeholder="Describa brevemente los hechos..." data-guia="Resumen breve del hecho: qué pasó, cómo, cuándo y quiénes participaron."></textarea>
                     </div>
 
-                    <!-- 7. Hechos punibles -->
                     <div class="sub-seccion">
                         <h4>Hechos Punibles</h4>
                         <div class="cp-selector-panel">
@@ -1059,7 +1222,6 @@
                             </div>
                             <div class="cp-catalogo-estado" id="cp-catalogo-estado" role="status"><i class="fas fa-circle-notch fa-spin"></i> Cargando catálogo jurídico…</div>
                         </div>
-                                                <!-- Bloque de hecho manual (leyes especiales no catalogadas) -->
                         <div style="margin-top:10px; padding:10px 12px; background:#f8f9fa; border:1px dashed #d0d4da; border-radius:6px;">
                             <label style="font-size:12px; font-weight:600; color:#1a2a4a; display:block; margin-bottom:6px;">
                                 <i class="fas fa-pen" style="color:#d4a843;"></i> ¿No encontrás el hecho punible? Escribilo manualmente:
@@ -1074,24 +1236,20 @@
                         <div id="lista-hechos" style="margin-top:6px;"></div>
                     </div>
 
-                    <!-- 8. Carátula -->
                     <div class="form-group">
                         <label>Carátula Generada</label>
                         <div id="caratula-preview" class="caratula-preview"><span class="text-muted">Complete los campos obligatorios y agregue hechos punibles</span></div>
                     </div>
 
-                    <!-- 9. Observaciones -->
                     <div class="form-group">
                         <label>Observaciones Generales</label>
                         <textarea id="observaciones-generales" rows="2" placeholder="Comentarios adicionales sobre la causa..." data-guia="Observaciones libres sobre la causa."></textarea>
                     </div>
 
-                    <!-- 10. Footer -->
                     <div class="footer-seccion">
                         <span class="estado" id="estado-tab1">Sin guardar</span>
                         <button class="btn btn-guardar-seccion" onclick="guardarPestana1()"><i class="fas fa-save"></i> Guardar Datos Generales</button>
                     </div>
-
                 </div>
 
                 <!-- TAB 2: JUZGADO Y PLAZOS -->
@@ -1305,6 +1463,7 @@
         <div id="contenido-modal" style="margin:0;"></div>
     </div>
 </div>
+
 <!-- Modal Víctima -->
 <div id="modal-victima" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
     <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
@@ -1327,62 +1486,106 @@
         </div>
     </div>
 </div>
-    <!-- Modal Testigo -->
-    <div id="modal-testigo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
-            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-friends"></i> <span id="modal-test-titulo">Agregar testigo</span></h3>
-            <input type="hidden" id="modal-test-index" value="">
-            <div class="form-row">
-                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-test-nombre" placeholder="Nombre y apellido"></div>
-                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-test-ci" placeholder="Ej: 4.567.890"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-test-telefono" placeholder="Ej: 0981-123-456"></div>
-            </div>
-            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
-                <button class="btn btn-outline" onclick="cerrarModalTestigo()">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarTestigoEnLista()"><i class="fas fa-save"></i> Guardar testigo</button>
-            </div>
-        </div>
-    </div>
-    <!-- Modal Imputado (ÚNICO) -->
-    <div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
-        <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
-            <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
-            <input type="hidden" id="modal-imp-index" value="">
-            <div class="form-row">
-                <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-imp-nombre" placeholder="Nombre y apellido"></div>
-                <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-imp-ci" placeholder="Ej: 4.567.890"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>Domicilio</label><input type="text" id="modal-imp-domicilio" placeholder="Dirección completa"></div>
-                <div class="form-group"><label>Teléfono</label><input type="text" id="modal-imp-telefono" placeholder="Ej: 0981-123-456"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="modal-imp-reincidente" onchange="toggleReincidenciaModal()"><label for="modal-imp-reincidente">Sí</label></div></div>
-                <div class="form-group"><label>Número de veces</label><input type="number" id="modal-imp-num-reincidencias" min="0" value="0" disabled></div>
-            </div>
-            <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
-                <button class="btn btn-outline" onclick="cerrarModalImputado()">Cancelar</button>
-                <button class="btn btn-primary" onclick="guardarImputadoEnLista()"><i class="fas fa-save"></i> Guardar imputado</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Modal Reauth (ÚNICO y bien cerrado) -->
-    <div id="modal-reauth">
-        <div class="reauth-contenido">
-            <h3><i class="fas fa-lock"></i> Verificación de seguridad</h3>
-            <p>Para eliminar esta causa, ingrese su contraseña actual.</p>
-            <div class="form-group"><label>Contraseña</label><input type="password" id="reauth-password" placeholder="••••••••"></div>
-            <div id="reauth-message" class="reauth-message"></div>
-            <div class="reauth-actions">
-                <button class="btn btn-outline" onclick="cerrarReauth()">Cancelar</button>
-                <button class="btn btn-danger" onclick="confirmarReauth()"><i class="fas fa-trash-alt"></i> Eliminar</button>
-            </div>
+<!-- Modal Testigo -->
+<div id="modal-testigo" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
+        <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-friends"></i> <span id="modal-test-titulo">Agregar testigo</span></h3>
+        <input type="hidden" id="modal-test-index" value="">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-test-nombre" placeholder="Nombre y apellido"></div>
+            <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-test-ci" placeholder="Ej: 4.567.890"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Teléfono</label><input type="text" id="modal-test-telefono" placeholder="Ej: 0981-123-456"></div>
+        </div>
+        <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-outline" onclick="cerrarModalTestigo()">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarTestigoEnLista()"><i class="fas fa-save"></i> Guardar testigo</button>
         </div>
     </div>
-        <script>
+</div>
+
+<!-- Modal Imputado -->
+<div id="modal-imputado" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9997; align-items:center; justify-content:center; padding:20px;">
+    <div style="background:#fff; max-width:600px; width:100%; border-radius:12px; padding:22px 26px; max-height:90vh; overflow-y:auto;">
+        <h3 style="color:#1a2a4a; margin-bottom:14px;"><i class="fas fa-user-tag"></i> <span id="modal-imp-titulo">Agregar imputado</span></h3>
+        <input type="hidden" id="modal-imp-index" value="">
+        <div class="form-row">
+            <div class="form-group"><label>Nombre completo <span class="required">*</span></label><input type="text" id="modal-imp-nombre" placeholder="Nombre y apellido"></div>
+            <div class="form-group"><label>Cédula de identidad</label><input type="text" id="modal-imp-ci" placeholder="Ej: 4.567.890"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Domicilio</label><input type="text" id="modal-imp-domicilio" placeholder="Dirección completa"></div>
+            <div class="form-group"><label>Teléfono</label><input type="text" id="modal-imp-telefono" placeholder="Ej: 0981-123-456"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>¿Es reincidente o tiene antecedentes?</label><div class="checkbox-group"><input type="checkbox" id="modal-imp-reincidente" onchange="toggleReincidenciaModal()"><label for="modal-imp-reincidente">Sí</label></div></div>
+            <div class="form-group"><label>Número de veces</label><input type="number" id="modal-imp-num-reincidencias" min="0" value="0" disabled></div>
+        </div>
+        <div style="margin-top:18px; display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-outline" onclick="cerrarModalImputado()">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarImputadoEnLista()"><i class="fas fa-save"></i> Guardar imputado</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Reauth -->
+<div id="modal-reauth">
+    <div class="reauth-contenido">
+        <h3><i class="fas fa-lock"></i> Verificación de seguridad</h3>
+        <p>Para eliminar esta causa, ingrese su contraseña actual.</p>
+        <div class="form-group"><label>Contraseña</label><input type="password" id="reauth-password" placeholder="••••••••"></div>
+        <div id="reauth-message" class="reauth-message"></div>
+        <div class="reauth-actions">
+            <button class="btn btn-outline" onclick="cerrarReauth()">Cancelar</button>
+            <button class="btn btn-danger" onclick="confirmarReauth()"><i class="fas fa-trash-alt"></i> Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODAL BIENVENIDA FREEMIUM ===== -->
+<div id="modal-bienvenida-freemium">
+    <div class="bienvenida-contenido">
+        <div class="bienvenida-header">
+            <div class="emoji">🎉</div>
+            <h2>¡Bienvenido al Sistema!</h2>
+            <div class="sub">Tu cuenta está activa</div>
+        </div>
+        <div class="bienvenida-body">
+            <div class="bienvenida-caja">
+                <div class="etiqueta">ACCESO FREEMIUM ACTIVO</div>
+                <div class="valor">1 año gratis</div>
+                <div class="fecha">Vence el: <strong id="freemium-vence">—</strong></div>
+            </div>
+
+            <h3>¿Qué incluye tu acceso?</h3>
+            <ul class="lista-features">
+                <li><i class="fas fa-check-circle"></i> Causas ilimitadas</li>
+                <li><i class="fas fa-check-circle"></i> Control de plazos y alertas automáticas</li>
+                <li><i class="fas fa-check-circle"></i> Catálogo del Código Penal completo</li>
+                <li><i class="fas fa-check-circle"></i> Cuestionarios, liquidaciones e informes</li>
+                <li><i class="fas fa-check-circle"></i> Exportación e importación de respaldos</li>
+            </ul>
+
+            <div class="recordatorio">
+                <i class="fas fa-info-circle"></i> <strong>Recordatorio importante:</strong> tus causas se guardan solo en este navegador. Exportá un respaldo periódicamente desde el botón <em>Exportar</em>.
+            </div>
+        </div>
+        <div class="bienvenida-footer">
+            <button id="btn-cerrar-bienvenida">
+                <i class="fas fa-check"></i> Comenzar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== FAB DE AYUDA (Términos y Condiciones) ===== -->
+<button class="fab-ayuda" id="fab-ayuda" onclick="abrirTyCManual()" title="Ver Términos y Condiciones" aria-label="Ver Términos y Condiciones">
+    <i class="fas fa-question"></i>
+    <span class="tooltip-fab">Términos y Condiciones</span>
+</button>
+    <script>
     // ================================================================
     // 1. CONFIGURACIÓN Y CONSTANTES
     // ================================================================
@@ -1398,6 +1601,10 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+
+    // ===== FREEMIUM =====
+    const FREEMIUM_DIAS = 365;
+    const FREEMIUM_TEXTO = '1 año';
 
     let currentUser = null;
     let currentUserData = null;
@@ -1423,6 +1630,16 @@
             modal.style.display = 'flex';
         }
         btnAceptar?.addEventListener('click', () => {
+            // Modo manual (abierto desde el FAB): solo cerrar
+            if (btnAceptar.dataset.modo === 'manual') {
+                if (modal) modal.style.display = 'none';
+                btnAceptar.innerHTML = '<i class="fas fa-check"></i> Acepto y continúo';
+                btnAceptar.style.background = '';
+                btnAceptar.dataset.modo = '';
+                if (btnRechazar) btnRechazar.style.display = '';
+                return;
+            }
+            // Modo normal: aceptar
             localStorage.setItem(TYC_KEY, 'true');
             if (modal) modal.style.display = 'none';
         });
@@ -1431,6 +1648,27 @@
             window.location.href = 'about:blank';
         });
     })();
+
+    // ===== ABRIR TYC MANUALMENTE (FAB de ayuda) =====
+    function abrirTyCManual() {
+        const modal = document.getElementById('modal-tyc');
+        if (!modal) return;
+        const btnRechazar = document.getElementById('btn-tyc-rechazar');
+        const btnAceptar = document.getElementById('btn-tyc-aceptar');
+        if (btnRechazar) btnRechazar.style.display = 'none';
+        if (btnAceptar) {
+            btnAceptar.innerHTML = '<i class="fas fa-times"></i> Cerrar';
+            btnAceptar.style.background = '#1a2a4a';
+            btnAceptar.dataset.modo = 'manual';
+        }
+        modal.style.display = 'flex';
+    }
+
+    // ===== FAB DE AYUDA: mostrar solo logueado =====
+    function actualizarFabAyuda(visible) {
+        const fab = document.getElementById('fab-ayuda');
+        if (fab) fab.style.display = visible ? 'flex' : 'none';
+    }
 
     // ===== SISTEMA DE GUÍAS EMERGENTES =====
     (function initGuias() {
@@ -1596,29 +1834,29 @@
         return ESTADOS_ACTO_CONCLUSIVO.includes(estado);
     }
     function calcularInfoPlazo(causa) {
-    const estado = causa.estadoCausa || 'activa';
-    let fechaStr = null;
-    let tipo = 'ninguno';
-    if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
-        fechaStr = causa.fechaLimiteArchivo;
-        tipo = 'archivo_provisional';
-    } else if (esActoConclusivoPresentado(estado)) {
-        return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado' };
-    } else if (causa.fechaActoConclusivo) {
-        fechaStr = causa.fechaActoConclusivo;
-        tipo = 'acto_conclusivo';
+        const estado = causa.estadoCausa || 'activa';
+        let fechaStr = null;
+        let tipo = 'ninguno';
+        if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
+            fechaStr = causa.fechaLimiteArchivo;
+            tipo = 'archivo_provisional';
+        } else if (esActoConclusivoPresentado(estado)) {
+            return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado' };
+        } else if (causa.fechaActoConclusivo) {
+            fechaStr = causa.fechaActoConclusivo;
+            tipo = 'acto_conclusivo';
+        }
+        if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
+        const hoy = getTodayUTC();
+        const fecha = parseUTCDate(fechaStr);
+        if (!fecha) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
+        const diffMs = fecha - hoy;
+        const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        let estadoPlazo = 'ok';
+        if (diffDias < 0) estadoPlazo = 'vencido';
+        else if (diffDias <= 30) estadoPlazo = 'proximo';
+        return { dias: diffDias, estado: estadoPlazo, tipo: tipo };
     }
-    if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-    const hoy = getTodayUTC();
-    const fecha = parseUTCDate(fechaStr);
-    if (!fecha) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-    const diffMs = fecha - hoy;
-    const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-    let estadoPlazo = 'ok';
-    if (diffDias < 0) estadoPlazo = 'vencido';
-    else if (diffDias <= 30) estadoPlazo = 'proximo';   // ← cambiado de 15 a 30
-    return { dias: diffDias, estado: estadoPlazo, tipo: tipo };
-}
     function toggleFechaArchivoProvisional() {
         const estado = document.getElementById('estado-causa-select').value;
         const campo = document.getElementById('campo-fecha-archivo');
@@ -1651,86 +1889,85 @@
         elDias.textContent = `${diff} días`;
         elDias.style.color = '#1a2a4a';
     }
-// ===== MÚLTIPLES VÍCTIMAS =====
-let victimasTemporales = [];
 
-function abrirModalVictima(indice) {
-    document.getElementById('modal-vic-index').value = (indice !== undefined && indice !== null) ? String(indice) : '';
-    document.getElementById('modal-vic-titulo').textContent = (indice !== undefined && indice !== null) ? 'Editar víctima' : 'Agregar víctima';
-    if (indice !== undefined && indice !== null && victimasTemporales[indice]) {
-        const v = victimasTemporales[indice];
-        document.getElementById('modal-vic-nombre').value = v.nombre || '';
-        document.getElementById('modal-vic-ci').value = v.ci || '';
-        document.getElementById('modal-vic-domicilio').value = v.domicilio || '';
-        document.getElementById('modal-vic-telefono').value = v.telefono || '';
-        document.getElementById('modal-vic-edad').value = v.edad || '';
-    } else {
-        document.getElementById('modal-vic-nombre').value = '';
-        document.getElementById('modal-vic-ci').value = '';
-        document.getElementById('modal-vic-domicilio').value = '';
-        document.getElementById('modal-vic-telefono').value = '';
-        document.getElementById('modal-vic-edad').value = '';
+    // ===== MÚLTIPLES VÍCTIMAS =====
+    let victimasTemporales = [];
+
+    function abrirModalVictima(indice) {
+        document.getElementById('modal-vic-index').value = (indice !== undefined && indice !== null) ? String(indice) : '';
+        document.getElementById('modal-vic-titulo').textContent = (indice !== undefined && indice !== null) ? 'Editar víctima' : 'Agregar víctima';
+        if (indice !== undefined && indice !== null && victimasTemporales[indice]) {
+            const v = victimasTemporales[indice];
+            document.getElementById('modal-vic-nombre').value = v.nombre || '';
+            document.getElementById('modal-vic-ci').value = v.ci || '';
+            document.getElementById('modal-vic-domicilio').value = v.domicilio || '';
+            document.getElementById('modal-vic-telefono').value = v.telefono || '';
+            document.getElementById('modal-vic-edad').value = v.edad || '';
+        } else {
+            document.getElementById('modal-vic-nombre').value = '';
+            document.getElementById('modal-vic-ci').value = '';
+            document.getElementById('modal-vic-domicilio').value = '';
+            document.getElementById('modal-vic-telefono').value = '';
+            document.getElementById('modal-vic-edad').value = '';
+        }
+        document.getElementById('modal-victima').style.display = 'flex';
+        setTimeout(() => document.getElementById('modal-vic-nombre').focus(), 100);
     }
-    document.getElementById('modal-victima').style.display = 'flex';
-    setTimeout(() => document.getElementById('modal-vic-nombre').focus(), 100);
-}
-
-function cerrarModalVictima() {
-    document.getElementById('modal-victima').style.display = 'none';
-}
-
-function guardarVictimaEnLista() {
-    const nombre = document.getElementById('modal-vic-nombre').value.trim();
-    if (!nombre) { alert('El nombre de la víctima es obligatorio.'); return; }
-    const victima = {
-        nombre,
-        ci: document.getElementById('modal-vic-ci').value.trim(),
-        domicilio: document.getElementById('modal-vic-domicilio').value.trim(),
-        telefono: document.getElementById('modal-vic-telefono').value.trim(),
-        edad: parseInt(document.getElementById('modal-vic-edad').value) || null
-    };
-    const idxStr = document.getElementById('modal-vic-index').value;
-    if (idxStr !== '') {
-        victimasTemporales[parseInt(idxStr, 10)] = victima;
-    } else {
-        victimasTemporales.push(victima);
+    function cerrarModalVictima() {
+        document.getElementById('modal-victima').style.display = 'none';
     }
-    cerrarModalVictima();
-    renderizarVictimas();
-}
-
-function renderizarVictimas() {
-    const cont = document.getElementById('victimas-list');
-    if (!cont) return;
-    if (victimasTemporales.length === 0) {
-        cont.innerHTML = '<p class="text-muted" style="margin-bottom:8px;">No hay víctimas cargadas. Haga clic en "Agregar víctima".</p>';
-        return;
+    function guardarVictimaEnLista() {
+        const nombre = document.getElementById('modal-vic-nombre').value.trim();
+        if (!nombre) { alert('El nombre de la víctima es obligatorio.'); return; }
+        const victima = {
+            nombre,
+            ci: document.getElementById('modal-vic-ci').value.trim(),
+            domicilio: document.getElementById('modal-vic-domicilio').value.trim(),
+            telefono: document.getElementById('modal-vic-telefono').value.trim(),
+            edad: parseInt(document.getElementById('modal-vic-edad').value) || null
+        };
+        const idxStr = document.getElementById('modal-vic-index').value;
+        if (idxStr !== '') {
+            victimasTemporales[parseInt(idxStr, 10)] = victima;
+        } else {
+            victimasTemporales.push(victima);
+        }
+        cerrarModalVictima();
+        renderizarVictimas();
     }
-    let html = '';
-    victimasTemporales.forEach((v, idx) => {
-        const detalles = [];
-        if (v.ci) detalles.push('CI: ' + v.ci);
-        if (v.domicilio) detalles.push('Domicilio: ' + v.domicilio);
-        if (v.telefono) detalles.push('Tel: ' + v.telefono);
-        if (v.edad) detalles.push('Edad: ' + v.edad);
-        html += '<div class="persona-card">';
-        html += '<div class="persona-card-info">';
-        html += '<strong class="persona-card-nombre">' + escapeHTML(v.nombre) + '</strong>';
-        if (detalles.length) html += '<div class="persona-card-detalles">' + escapeHTML(detalles.join(' · ')) + '</div>';
-        html += '</div>';
-        html += '<div class="persona-card-acciones">';
-        html += '<button type="button" class="persona-btn-editar" onclick="abrirModalVictima(' + idx + ')" title="Editar"><i class="fas fa-pen"></i></button>';
-        html += '<button type="button" class="persona-btn-eliminar" onclick="eliminarVictima(' + idx + ')" title="Eliminar"><i class="fas fa-times"></i></button>';
-        html += '</div></div>';
-    });
-    cont.innerHTML = html;
-}
-function eliminarVictima(indice) {
-    if (!confirm('¿Eliminar esta víctima de la lista?')) return;
-    victimasTemporales.splice(indice, 1);
-    renderizarVictimas();
-}
-      // ===== MÚLTIPLES IMPUTADOS =====
+    function renderizarVictimas() {
+        const cont = document.getElementById('victimas-list');
+        if (!cont) return;
+        if (victimasTemporales.length === 0) {
+            cont.innerHTML = '<p class="text-muted" style="margin-bottom:8px;">No hay víctimas cargadas. Haga clic en "Agregar víctima".</p>';
+            return;
+        }
+        let html = '';
+        victimasTemporales.forEach((v, idx) => {
+            const detalles = [];
+            if (v.ci) detalles.push('CI: ' + v.ci);
+            if (v.domicilio) detalles.push('Domicilio: ' + v.domicilio);
+            if (v.telefono) detalles.push('Tel: ' + v.telefono);
+            if (v.edad) detalles.push('Edad: ' + v.edad);
+            html += '<div class="persona-card">';
+            html += '<div class="persona-card-info">';
+            html += '<strong class="persona-card-nombre">' + escapeHTML(v.nombre) + '</strong>';
+            if (detalles.length) html += '<div class="persona-card-detalles">' + escapeHTML(detalles.join(' · ')) + '</div>';
+            html += '</div>';
+            html += '<div class="persona-card-acciones">';
+            html += '<button type="button" class="persona-btn-editar" onclick="abrirModalVictima(' + idx + ')" title="Editar"><i class="fas fa-pen"></i></button>';
+            html += '<button type="button" class="persona-btn-eliminar" onclick="eliminarVictima(' + idx + ')" title="Eliminar"><i class="fas fa-times"></i></button>';
+            html += '</div></div>';
+        });
+        cont.innerHTML = html;
+    }
+    function eliminarVictima(indice) {
+        if (!confirm('¿Eliminar esta víctima de la lista?')) return;
+        victimasTemporales.splice(indice, 1);
+        renderizarVictimas();
+    }
+
+    // ===== MÚLTIPLES IMPUTADOS =====
     let imputadosTemporales = [];
 
     function abrirModalImputado(indice) {
@@ -1756,17 +1993,14 @@ function eliminarVictima(indice) {
         document.getElementById('modal-imputado').style.display = 'flex';
         setTimeout(() => document.getElementById('modal-imp-nombre').focus(), 100);
     }
-
     function cerrarModalImputado() {
         document.getElementById('modal-imputado').style.display = 'none';
     }
-
     function toggleReincidenciaModal() {
         const activa = document.getElementById('modal-imp-reincidente').checked;
         document.getElementById('modal-imp-num-reincidencias').disabled = !activa;
         if (!activa) document.getElementById('modal-imp-num-reincidencias').value = 0;
     }
-
     function guardarImputadoEnLista() {
         const nombre = document.getElementById('modal-imp-nombre').value.trim();
         if (!nombre) { alert('El nombre del imputado es obligatorio.'); return; }
@@ -1788,8 +2022,7 @@ function eliminarVictima(indice) {
         renderizarImputados();
         generarCaratula();
     }
-
-       function renderizarImputados() {
+    function renderizarImputados() {
         const cont = document.getElementById('imputados-list');
         if (!cont) return;
         if (imputadosTemporales.length === 0) {
@@ -1821,6 +2054,7 @@ function eliminarVictima(indice) {
         renderizarImputados();
         generarCaratula();
     }
+
     // ===== MÚLTIPLES TESTIGOS =====
     let testigosTemporales = [];
 
@@ -1840,11 +2074,9 @@ function eliminarVictima(indice) {
         document.getElementById('modal-testigo').style.display = 'flex';
         setTimeout(() => document.getElementById('modal-test-nombre').focus(), 100);
     }
-
     function cerrarModalTestigo() {
         document.getElementById('modal-testigo').style.display = 'none';
     }
-
     function guardarTestigoEnLista() {
         const nombre = document.getElementById('modal-test-nombre').value.trim();
         if (!nombre) { alert('El nombre del testigo es obligatorio.'); return; }
@@ -1862,8 +2094,7 @@ function eliminarVictima(indice) {
         cerrarModalTestigo();
         renderizarTestigos();
     }
-
-        function renderizarTestigos() {
+    function renderizarTestigos() {
         const cont = document.getElementById('testigos-list');
         if (!cont) return;
         if (testigosTemporales.length === 0) {
@@ -1892,6 +2123,7 @@ function eliminarVictima(indice) {
         testigosTemporales.splice(indice, 1);
         renderizarTestigos();
     }
+
     // ================================================================
     // 5. AUTENTICACIÓN
     // ================================================================
@@ -1934,6 +2166,11 @@ function eliminarVictima(indice) {
             const nombre = document.getElementById('auth-nombre').value.trim();
             const cargo = document.getElementById('auth-cargo').value.trim();
             const telefono = document.getElementById('auth-telefono').value.trim();
+
+            const ahora = new Date();
+            const expiracion = new Date(ahora);
+            expiracion.setDate(expiracion.getDate() + FREEMIUM_DIAS);
+
             auth.createUserWithEmailAndPassword(email, password)
                 .then(credencial => {
                     const user = credencial.user;
@@ -1942,16 +2179,18 @@ function eliminarVictima(indice) {
                         nombre: nombre,
                         cargo: cargo,
                         telefono: telefono,
-                        estado: 'pendiente',
-                        fechaExpiracion: null,
+                        estado: 'aprobado',
+                        esFreemium: true,
+                        fechaExpiracion: firebase.firestore.Timestamp.fromDate(expiracion),
+                        inicioSuscripcion: firebase.firestore.Timestamp.fromDate(ahora),
+                        accesosDesdeSuscripcion: 0,
+                        totalAccesos: 0,
+                        ultimoAcceso: null,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 })
                 .then(() => {
-                    mostrarMensaje('Cuenta creada. Espera la aprobación del administrador.', 'success');
-                    auth.signOut();
-                    document.getElementById('auth-email').value = '';
-                    document.getElementById('auth-password').value = '';
+                    mostrarMensaje(`¡Cuenta creada! Tenés ${FREEMIUM_TEXTO} de acceso gratis.`, 'success');
                 })
                 .catch(err => { mostrarMensaje(err.message, 'error'); });
         }
@@ -1969,6 +2208,42 @@ function eliminarVictima(indice) {
         }
     }
 
+    // ===== REGISTRO DE ACCESO (una vez por día calendario) =====
+    function esMismoDia(fecha1, fecha2) {
+        return fecha1.getFullYear() === fecha2.getFullYear()
+            && fecha1.getMonth() === fecha2.getMonth()
+            && fecha1.getDate() === fecha2.getDate();
+    }
+    async function registrarAcceso(user, data) {
+        try {
+            const ahora = new Date();
+            const ultimo = data.ultimoAcceso
+                ? (data.ultimoAcceso.seconds
+                    ? new Date(data.ultimoAcceso.seconds * 1000)
+                    : new Date(data.ultimoAcceso))
+                : null;
+
+            const esNuevoDia = !ultimo || !esMismoDia(ahora, ultimo);
+
+            const update = {
+                ultimoAcceso: firebase.firestore.FieldValue.serverTimestamp()
+            };
+            if (esNuevoDia) {
+                update.totalAccesos = firebase.firestore.FieldValue.increment(1);
+                update.accesosDesdeSuscripcion = firebase.firestore.FieldValue.increment(1);
+            }
+            await db.collection('usuarios').doc(user.uid).update(update);
+
+            if (esNuevoDia) {
+                currentUserData.totalAccesos = (currentUserData.totalAccesos || 0) + 1;
+                currentUserData.accesosDesdeSuscripcion = (currentUserData.accesosDesdeSuscripcion || 0) + 1;
+            }
+            currentUserData.ultimoAcceso = { seconds: Math.floor(Date.now() / 1000) };
+        } catch (e) {
+            console.warn('No se pudo registrar el acceso:', e);
+        }
+    }
+
     auth.onAuthStateChanged(async user => {
         if (user) {
             currentUser = user;
@@ -1978,6 +2253,7 @@ function eliminarVictima(indice) {
                     currentUserData = doc.data();
                     isAdmin = (currentUserData.email === 'waroiapy@gmail.com');
                     if (isAdmin) {
+                        await registrarAcceso(user, currentUserData);
                         mostrarApp();
                     } else if (currentUserData.estado === 'aprobado') {
                         const expiracion = currentUserData.fechaExpiracion;
@@ -1985,9 +2261,13 @@ function eliminarVictima(indice) {
                             const hoy = new Date();
                             const exp = new Date(expiracion.seconds * 1000);
                             if (exp >= hoy) {
+                                await registrarAcceso(user, currentUserData);
                                 mostrarApp();
                             } else {
-                                mostrarMensaje('Tu acceso ha expirado. Solicita renovación al administrador.', 'error');
+                                const msg = currentUserData.esFreemium
+                                    ? `Tu período de prueba (${FREEMIUM_TEXTO}) expiró. Contactá al administrador para renovar el acceso.`
+                                    : 'Tu acceso ha expirado. Solicitá renovación al administrador.';
+                                mostrarMensaje(msg, 'error');
                                 auth.signOut();
                             }
                         } else {
@@ -2017,6 +2297,7 @@ function eliminarVictima(indice) {
             document.getElementById('app').style.display = 'none';
             document.getElementById('auth-container').style.display = 'block';
             document.getElementById('admin-panel').style.display = 'none';
+            actualizarFabAyuda(false);
             currentUser = null;
             currentUserData = null;
             isAdmin = false;
@@ -2043,7 +2324,53 @@ function eliminarVictima(indice) {
             document.getElementById('btn-admin-panel').style.display = 'inline-block';
             cargarUsuarios();
         }
+
+        // ===== FREEMIUM: badge de días + bienvenida =====
+        const badge = document.getElementById('dias-freemium-badge');
+        if (badge) badge.innerHTML = '';
+
+        if (currentUserData && !isAdmin && currentUserData.fechaExpiracion) {
+            const exp = new Date(currentUserData.fechaExpiracion.seconds * 1000);
+            const dias = Math.ceil((exp - Date.now()) / 86400000);
+            if (badge) {
+                if (dias > 60) {
+                    badge.innerHTML = `<span style="background:#d4edda;color:#155724;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;" title="Acceso freemium activo">✓ ${dias} días</span>`;
+                } else if (dias > 15) {
+                    badge.innerHTML = `<span style="background:#fff3cd;color:#856404;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;" title="Queda poco tiempo">${dias} días</span>`;
+                } else if (dias > 0) {
+                    badge.innerHTML = `<span style="background:#f8d7da;color:#721c24;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;" title="Vence pronto">⚠️ ${dias} días</span>`;
+                }
+            }
+            if (currentUserData.esFreemium) {
+                const key = 'freemium_shown_' + currentUser.uid;
+                if (!localStorage.getItem(key)) {
+                    localStorage.setItem(key, 'true');
+                    setTimeout(() => mostrarBienvenidaFreemium(currentUserData.fechaExpiracion), 400);
+                }
+            }
+        }
+
+        actualizarFabAyuda(true);
         inicializarSistema();
+    }
+
+    // ===== BIENVENIDA FREEMIUM =====
+    function mostrarBienvenidaFreemium(fechaExpiracion) {
+        const modal = document.getElementById('modal-bienvenida-freemium');
+        if (!modal) return;
+        if (fechaExpiracion) {
+            const fecha = fechaExpiracion.seconds
+                ? new Date(fechaExpiracion.seconds * 1000)
+                : new Date(fechaExpiracion);
+            const el = document.getElementById('freemium-vence');
+            if (el) el.textContent = fecha.toLocaleDateString('es-PY', {
+                day: '2-digit', month: 'long', year: 'numeric'
+            });
+        }
+        modal.style.display = 'flex';
+        const btn = document.getElementById('btn-cerrar-bienvenida');
+        if (btn) btn.onclick = () => { modal.style.display = 'none'; };
+        modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
     }
 
     // ================================================================
@@ -2076,6 +2403,10 @@ function eliminarVictima(indice) {
                     const nombre = data.nombre || '';
                     const estado = data.estado || 'pendiente';
                     const esAdmin = (email === 'waroiapy@gmail.com');
+                    const esFreemium = !!data.esFreemium;
+                    const tagFreemium = esFreemium
+                        ? ' <span style="color:#0d47a1;background:#bbdefb;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;">FREEMIUM</span>'
+                        : '';
 
                     const expiracion = data.fechaExpiracion
                         ? new Date(data.fechaExpiracion.seconds * 1000).toLocaleDateString('es-PY')
@@ -2098,14 +2429,14 @@ function eliminarVictima(indice) {
                         ? new Date(data.inicioSuscripcion.seconds * 1000).toLocaleDateString('es-PY')
                         : null;
                     const textoAccesos = inicioSus
-                        ? accesosSus + ' <span style="color:#888;font-size:11px;">desde ' + inicioSus + '</span><br><span style="color:#aaa;font-size:10px;">(' + totalAccesos + ' total)</span>'
+                        ? accesosSus + ' <span style="color:#888;font-size:11px;">días desde ' + inicioSus + '</span><br><span style="color:#aaa;font-size:10px;">(' + totalAccesos + ' total)</span>'
                         : String(totalAccesos);
 
                     const estadoClass = estado === 'pendiente' ? 'pendiente'
                         : estado === 'aprobado' ? 'aprobado' : 'rechazado';
 
                     html += '<tr>' +
-                        '<td data-label="Email">' + email + ' ' + (esAdmin ? '<span style="color:#d4a843;font-weight:600;">(Admin)</span>' : '') + '</td>' +
+                        '<td data-label="Email">' + email + ' ' + (esAdmin ? '<span style="color:#d4a843;font-weight:600;">(Admin)</span>' : '') + tagFreemium + '</td>' +
                         '<td data-label="Nombre">' + nombre + '</td>' +
                         '<td data-label="Estado"><span class="estado-badge ' + estadoClass + '">' + estado.charAt(0).toUpperCase() + estado.slice(1) + '</span></td>' +
                         '<td data-label="Accesos">' + textoAccesos + '</td>' +
@@ -2137,11 +2468,9 @@ function eliminarVictima(indice) {
     function aprobarUsuario(uid) {
         const dias = getDiasSuscripcion();
         if (!confirm(`¿Aprobar este usuario? Se le asignarán ${dias} días de acceso.`)) return;
-
         const ahora = new Date();
         const expiracion = new Date(ahora);
         expiracion.setDate(expiracion.getDate() + dias);
-
         db.collection('usuarios').doc(uid).update({
             estado: 'aprobado',
             fechaExpiracion: firebase.firestore.Timestamp.fromDate(expiracion),
@@ -2165,7 +2494,6 @@ function eliminarVictima(indice) {
     function renovarUsuario(uid) {
         const dias = getDiasSuscripcion();
         if (!confirm(`¿Renovar el acceso por ${dias} días adicionales?`)) return;
-
         db.collection('usuarios').doc(uid).get().then(doc => {
             const data = doc.data() || {};
             const ahora = new Date();
@@ -2175,7 +2503,6 @@ function eliminarVictima(indice) {
             const base = (actual && actual > ahora) ? actual : ahora;
             const nuevaExp = new Date(base);
             nuevaExp.setDate(nuevaExp.getDate() + dias);
-
             return db.collection('usuarios').doc(uid).update({
                 fechaExpiracion: firebase.firestore.Timestamp.fromDate(nuevaExp),
                 inicioSuscripcion: firebase.firestore.Timestamp.fromDate(ahora),
@@ -2362,203 +2689,172 @@ function eliminarVictima(indice) {
     // 9. RESUMEN
     // ================================================================
     function generarResumenRequerimientos() {
-    if (causas.length === 0) {
-        return `<div class="resumen-empty"><i class="fas fa-folder-open"></i><h4>Sin causas registradas</h4><p>Registre una causa para ver el resumen de plazos.</p></div>`;
-    }
-
-    const urgentes = [], activasEnPlazo = [], actoConclusivo = [];
-
-    causas.forEach(c => {
-        const info = calcularInfoPlazo(c);
-        const estado = c.estadoCausa || 'activa';
-        const esActoConc = esActoConclusivoPresentado(estado);
-
-        if (esActoConc) actoConclusivo.push({ causa: c, info });
-        else if (info.estado === 'vencido' || info.estado === 'proximo') urgentes.push({ causa: c, info });
-        else if (info.dias !== null && info.dias > 30) activasEnPlazo.push({ causa: c, info });
-    });
-
-    // Orden URGENTES: vencidas primero (más antigua arriba), luego próximas ascendente
-    urgentes.sort((a, b) => {
-        const da = a.info.dias, db = b.info.dias;
-        const aVenc = da < 0, bVenc = db < 0;
-        if (aVenc !== bVenc) return aVenc ? -1 : 1;
-        return da - db;
-    });
-    activasEnPlazo.sort((a, b) => a.info.dias - b.info.dias);
-    actoConclusivo.sort((a, b) =>
-        (a.causa.numCausa || '').toString().localeCompare((b.causa.numCausa || '').toString(), undefined, { numeric: true })
-    );
-
-    const totalVencidas = urgentes.filter(u => u.info.dias < 0).length;
-
-    // ---- Helper: tarjeta de causa ----
-    function tarjetaCausa(item, tipo) {
-        const c = item.causa;
-        const info = item.info;
-
-        let claseEstado, badgeTexto, diasTexto, barraPct;
-        if (tipo === 'acto') {
-            claseEstado = 'estado-acto';
-            badgeTexto = `<span class="rc-badge acto">📄 Presentado</span>`;
-            diasTexto = '';
-            barraPct = 100;
-        } else if (info.dias < 0) {
-            claseEstado = 'estado-vencida';
-            badgeTexto = `<span class="rc-badge vencida">VENCIDA</span>`;
-            diasTexto = `hace <strong>${Math.abs(info.dias)}</strong> días`;
-            barraPct = 100;
-        } else if (info.dias === 0) {
-            claseEstado = 'estado-critica';
-            badgeTexto = `<span class="rc-badge critica">VENCE HOY</span>`;
-            diasTexto = '';
-            barraPct = 100;
-        } else if (info.dias <= 10) {
-            claseEstado = 'estado-critica';
-            badgeTexto = `<span class="rc-badge critica">CRÍTICA</span>`;
-            diasTexto = `<strong>${info.dias}</strong> días`;
-            barraPct = Math.min(100, (info.dias / 30) * 100);
-        } else if (info.dias <= 30) {
-            claseEstado = 'estado-proxima';
-            badgeTexto = `<span class="rc-badge proxima">PRÓXIMA</span>`;
-            diasTexto = `<strong>${info.dias}</strong> días`;
-            barraPct = Math.min(100, (info.dias / 30) * 100);
-        } else {
-            claseEstado = 'estado-plazo';
-            badgeTexto = `<span class="rc-badge plazo">EN PLAZO</span>`;
-            diasTexto = `<strong>${info.dias}</strong> días`;
-            barraPct = Math.min(100, (info.dias / 90) * 100);
+        if (causas.length === 0) {
+            return `<div class="resumen-empty"><i class="fas fa-folder-open"></i><h4>Sin causas registradas</h4><p>Registre una causa para ver el resumen de plazos.</p></div>`;
         }
+        const urgentes = [], activasEnPlazo = [], actoConclusivo = [];
+        causas.forEach(c => {
+            const info = calcularInfoPlazo(c);
+            const estado = c.estadoCausa || 'activa';
+            const esActoConc = esActoConclusivoPresentado(estado);
+            if (esActoConc) actoConclusivo.push({ causa: c, info });
+            else if (info.estado === 'vencido' || info.estado === 'proximo') urgentes.push({ causa: c, info });
+            else if (info.dias !== null && info.dias > 30) activasEnPlazo.push({ causa: c, info });
+        });
+        urgentes.sort((a, b) => {
+            const da = a.info.dias, db = b.info.dias;
+            const aVenc = da < 0, bVenc = db < 0;
+            if (aVenc !== bVenc) return aVenc ? -1 : 1;
+            return da - db;
+        });
+        activasEnPlazo.sort((a, b) => a.info.dias - b.info.dias);
+        actoConclusivo.sort((a, b) =>
+            (a.causa.numCausa || '').toString().localeCompare((b.causa.numCausa || '').toString(), undefined, { numeric: true })
+        );
+        const totalVencidas = urgentes.filter(u => u.info.dias < 0).length;
 
-        let fechaStr = 'No definida', tipoPlazo = '--';
-        if (info.tipo === 'archivo_provisional') {
-            fechaStr = formatearFechaLocal(c.fechaLimiteArchivo);
-            tipoPlazo = 'Archivo Provisional';
-        } else if (info.tipo === 'acto_conclusivo') {
-            fechaStr = formatearFechaLocal(c.fechaActoConclusivo);
-            tipoPlazo = 'Acto Conclusivo';
-        }
-
-        let prorroga = '';
-        if (c.prorrogaOrdinaria?.otorgada === 'Si' && c.prorrogaOrdinaria?.nuevaFecha) {
-            prorroga = `Ord: ${formatearFechaLocal(c.prorrogaOrdinaria.nuevaFecha)}`;
-        }
-        if (c.prorrogaExtraordinaria?.otorgada === 'Si' && c.prorrogaExtraordinaria?.nuevaFecha) {
-            if (prorroga) prorroga += ' · ';
-            prorroga += `Ext: ${formatearFechaLocal(c.prorrogaExtraordinaria.nuevaFecha)}`;
-        }
-
-        return `
-            <div class="resumen-card ${claseEstado}">
-                <div class="rc-principal">
-                    <div class="rc-causa">${escapeHTML(c.numCausa || 'Sin número')}</div>
-                    <div class="rc-imputado">${escapeHTML(c.imputado || 'Sin imputado')}</div>
-                    <div class="rc-meta">
-                        <span><i class="fas fa-calendar-alt"></i> ${fechaStr}</span>
-                        <span><i class="fas fa-file-signature"></i> ${tipoPlazo}</span>
-                        ${prorroga ? `<span><i class="fas fa-clock"></i> ${prorroga}</span>` : ''}
+        function tarjetaCausa(item, tipo) {
+            const c = item.causa;
+            const info = item.info;
+            let claseEstado, badgeTexto, diasTexto, barraPct;
+            if (tipo === 'acto') {
+                claseEstado = 'estado-acto';
+                badgeTexto = `<span class="rc-badge acto">📄 Presentado</span>`;
+                diasTexto = '';
+                barraPct = 100;
+            } else if (info.dias < 0) {
+                claseEstado = 'estado-vencida';
+                badgeTexto = `<span class="rc-badge vencida">VENCIDA</span>`;
+                diasTexto = `hace <strong>${Math.abs(info.dias)}</strong> días`;
+                barraPct = 100;
+            } else if (info.dias === 0) {
+                claseEstado = 'estado-critica';
+                badgeTexto = `<span class="rc-badge critica">VENCE HOY</span>`;
+                diasTexto = '';
+                barraPct = 100;
+            } else if (info.dias <= 10) {
+                claseEstado = 'estado-critica';
+                badgeTexto = `<span class="rc-badge critica">CRÍTICA</span>`;
+                diasTexto = `<strong>${info.dias}</strong> días`;
+                barraPct = Math.min(100, (info.dias / 30) * 100);
+            } else if (info.dias <= 30) {
+                claseEstado = 'estado-proxima';
+                badgeTexto = `<span class="rc-badge proxima">PRÓXIMA</span>`;
+                diasTexto = `<strong>${info.dias}</strong> días`;
+                barraPct = Math.min(100, (info.dias / 30) * 100);
+            } else {
+                claseEstado = 'estado-plazo';
+                badgeTexto = `<span class="rc-badge plazo">EN PLAZO</span>`;
+                diasTexto = `<strong>${info.dias}</strong> días`;
+                barraPct = Math.min(100, (info.dias / 90) * 100);
+            }
+            let fechaStr = 'No definida', tipoPlazo = '--';
+            if (info.tipo === 'archivo_provisional') {
+                fechaStr = formatearFechaLocal(c.fechaLimiteArchivo);
+                tipoPlazo = 'Archivo Provisional';
+            } else if (info.tipo === 'acto_conclusivo') {
+                fechaStr = formatearFechaLocal(c.fechaActoConclusivo);
+                tipoPlazo = 'Acto Conclusivo';
+            }
+            let prorroga = '';
+            if (c.prorrogaOrdinaria?.otorgada === 'Si' && c.prorrogaOrdinaria?.nuevaFecha) {
+                prorroga = `Ord: ${formatearFechaLocal(c.prorrogaOrdinaria.nuevaFecha)}`;
+            }
+            if (c.prorrogaExtraordinaria?.otorgada === 'Si' && c.prorrogaExtraordinaria?.nuevaFecha) {
+                if (prorroga) prorroga += ' · ';
+                prorroga += `Ext: ${formatearFechaLocal(c.prorrogaExtraordinaria.nuevaFecha)}`;
+            }
+            return `
+                <div class="resumen-card ${claseEstado}">
+                    <div class="rc-principal">
+                        <div class="rc-causa">${escapeHTML(c.numCausa || 'Sin número')}</div>
+                        <div class="rc-imputado">${escapeHTML(c.imputado || 'Sin imputado')}</div>
+                        <div class="rc-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${fechaStr}</span>
+                            <span><i class="fas fa-file-signature"></i> ${tipoPlazo}</span>
+                            ${prorroga ? `<span><i class="fas fa-clock"></i> ${prorroga}</span>` : ''}
+                        </div>
+                        <div class="rc-barra"><div class="rc-barra-fill ${claseEstado.replace('estado-','')}" style="width:${barraPct}%;"></div></div>
                     </div>
-                    <div class="rc-barra"><div class="rc-barra-fill ${claseEstado.replace('estado-','')}" style="width:${barraPct}%;"></div></div>
+                    <div class="rc-estado">
+                        ${badgeTexto}
+                        ${diasTexto ? `<div class="rc-dias">${diasTexto}</div>` : ''}
+                    </div>
                 </div>
-                <div class="rc-estado">
-                    ${badgeTexto}
-                    ${diasTexto ? `<div class="rc-dias">${diasTexto}</div>` : ''}
-                </div>
+            `;
+        }
+
+        let html = `
+            <div class="resumen-header">
+                <button class="modal-cerrar" id="cerrar-modal-resumen-interno">&times;</button>
+                <h3><i class="fas fa-chart-line"></i> Resumen de Plazos</h3>
+                <div class="sub">Control de vencimientos · ${new Date().toLocaleDateString('es-ES', {day:'2-digit', month:'long', year:'numeric'})}</div>
             </div>
+            <div class="resumen-body">
+                <div class="resumen-metricas">
+                    <div class="metrica-card urgente">
+                        <div class="met-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="met-info">
+                            <div class="met-valor">${urgentes.length}</div>
+                            <div class="met-label">Urgentes / Vencidas</div>
+                        </div>
+                    </div>
+                    <div class="metrica-card plazo">
+                        <div class="met-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="met-info">
+                            <div class="met-valor">${activasEnPlazo.length}</div>
+                            <div class="met-label">Activas en Plazo</div>
+                        </div>
+                    </div>
+                    <div class="metrica-card acto">
+                        <div class="met-icon"><i class="fas fa-file-signature"></i></div>
+                        <div class="met-info">
+                            <div class="met-valor">${actoConclusivo.length}</div>
+                            <div class="met-label">Acto Conclusivo</div>
+                        </div>
+                    </div>
+                </div>
         `;
+        if (totalVencidas > 0) {
+            html += `<div class="alerta-vencidas"><i class="fas fa-bell"></i> ATENCIÓN: ${totalVencidas} causa${totalVencidas > 1 ? 's' : ''} VENCIDA${totalVencidas > 1 ? 'S' : ''} requiere${totalVencidas > 1 ? 'n' : ''} acción inmediata.</div>`;
+        }
+        if (urgentes.length > 0) {
+            html += `<div class="resumen-seccion urgente">
+                <div class="resumen-seccion-titulo"><i class="fas fa-exclamation-triangle"></i> URGENTES Y VENCIDAS <span class="contador">${urgentes.length}</span></div>
+                ${urgentes.map(u => tarjetaCausa(u, 'urgente')).join('')}
+            </div>`;
+        }
+        if (activasEnPlazo.length > 0) {
+            html += `<div class="resumen-seccion plazo">
+                <div class="resumen-seccion-titulo"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO <span class="contador">${activasEnPlazo.length}</span></div>
+                ${activasEnPlazo.map(a => tarjetaCausa(a, 'plazo')).join('')}
+            </div>`;
+        }
+        if (actoConclusivo.length > 0) {
+            html += `<div class="resumen-seccion acto">
+                <div class="resumen-seccion-titulo"><i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO <span class="contador">${actoConclusivo.length}</span></div>
+                ${actoConclusivo.map(a => tarjetaCausa(a, 'acto')).join('')}
+            </div>`;
+        }
+        if (urgentes.length === 0 && activasEnPlazo.length === 0 && actoConclusivo.length === 0) {
+            html += `<div class="resumen-empty"><i class="fas fa-check-circle"></i><h4>Todo bajo control</h4><p>No hay causas con plazos pendientes.</p></div>`;
+        }
+        html += `</div>
+            <div class="resumen-footer">
+                <button class="btn btn-primary" id="btn-cerrar-modal-resumen-interno">Cerrar</button>
+            </div>`;
+        return html;
     }
-
-    // ---- Construcción del HTML ----
-    let html = `
-        <div class="resumen-header">
-            <button class="modal-cerrar" id="cerrar-modal-resumen-interno">&times;</button>
-            <h3><i class="fas fa-chart-line"></i> Resumen de Plazos</h3>
-            <div class="sub">Control de vencimientos · ${new Date().toLocaleDateString('es-ES', {day:'2-digit', month:'long', year:'numeric'})}</div>
-        </div>
-        <div class="resumen-body">
-            <div class="resumen-metricas">
-                <div class="metrica-card urgente">
-                    <div class="met-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                    <div class="met-info">
-                        <div class="met-valor">${urgentes.length}</div>
-                        <div class="met-label">Urgentes / Vencidas</div>
-                    </div>
-                </div>
-                <div class="metrica-card plazo">
-                    <div class="met-icon"><i class="fas fa-check-circle"></i></div>
-                    <div class="met-info">
-                        <div class="met-valor">${activasEnPlazo.length}</div>
-                        <div class="met-label">Activas en Plazo</div>
-                    </div>
-                </div>
-                <div class="metrica-card acto">
-                    <div class="met-icon"><i class="fas fa-file-signature"></i></div>
-                    <div class="met-info">
-                        <div class="met-valor">${actoConclusivo.length}</div>
-                        <div class="met-label">Acto Conclusivo</div>
-                    </div>
-                </div>
-            </div>
-    `;
-
-    if (totalVencidas > 0) {
-        html += `<div class="alerta-vencidas"><i class="fas fa-bell"></i> ATENCIÓN: ${totalVencidas} causa${totalVencidas > 1 ? 's' : ''} VENCIDA${totalVencidas > 1 ? 'S' : ''} requiere${totalVencidas > 1 ? 'n' : ''} acción inmediata.</div>`;
-    }
-
-    if (urgentes.length > 0) {
-        html += `<div class="resumen-seccion urgente">
-            <div class="resumen-seccion-titulo"><i class="fas fa-exclamation-triangle"></i> URGENTES Y VENCIDAS <span class="contador">${urgentes.length}</span></div>
-            ${urgentes.map(u => tarjetaCausa(u, 'urgente')).join('')}
-        </div>`;
-    }
-
-    if (activasEnPlazo.length > 0) {
-        html += `<div class="resumen-seccion plazo">
-            <div class="resumen-seccion-titulo"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO <span class="contador">${activasEnPlazo.length}</span></div>
-            ${activasEnPlazo.map(a => tarjetaCausa(a, 'plazo')).join('')}
-        </div>`;
-    }
-
-    if (actoConclusivo.length > 0) {
-        html += `<div class="resumen-seccion acto">
-            <div class="resumen-seccion-titulo"><i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO <span class="contador">${actoConclusivo.length}</span></div>
-            ${actoConclusivo.map(a => tarjetaCausa(a, 'acto')).join('')}
-        </div>`;
-    }
-
-    if (urgentes.length === 0 && activasEnPlazo.length === 0 && actoConclusivo.length === 0) {
-        html += `<div class="resumen-empty"><i class="fas fa-check-circle"></i><h4>Todo bajo control</h4><p>No hay causas con plazos pendientes.</p></div>`;
-    }
-
-    html += `</div>
-        <div class="resumen-footer">
-            <button class="btn btn-primary" id="btn-cerrar-modal-resumen-interno">Cerrar</button>
-        </div>`;
-
-    return html;
-}
 
     function mostrarResumenRequerimientos() {
-    const modal = document.getElementById('modal-resumen');
-    const contenido = document.getElementById('contenido-modal');
-    contenido.innerHTML = generarResumenRequerimientos();
-
-    // Re-enlazar botones de cierre del nuevo contenido
-    document.getElementById('cerrar-modal-resumen-interno')?.addEventListener('click', () => { modal.style.display = 'none'; });
-    document.getElementById('btn-cerrar-modal-resumen-interno')?.addEventListener('click', () => { modal.style.display = 'none'; });
-
-    modal.style.display = 'flex';
-}
-
-    document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('modal-resumen');
-        const cerrarBtn = document.getElementById('cerrar-modal-resumen');
-        const cerrarBtn2 = document.getElementById('btn-cerrar-modal-resumen');
-        function cerrarModal() { modal.style.display = 'none'; }
-        cerrarBtn.addEventListener('click', cerrarModal);
-        cerrarBtn2.addEventListener('click', cerrarModal);
-        modal.addEventListener('click', function(e) { if (e.target === modal) cerrarModal(); });
-    });
+        const contenido = document.getElementById('contenido-modal');
+        contenido.innerHTML = generarResumenRequerimientos();
+        document.getElementById('cerrar-modal-resumen-interno')?.addEventListener('click', () => { modal.style.display = 'none'; });
+        document.getElementById('btn-cerrar-modal-resumen-interno')?.addEventListener('click', () => { modal.style.display = 'none'; });
+        modal.style.display = 'flex';
+        modal.addEventListener('click', function(e) { if (e.target === modal) modal.style.display = 'none'; });
+    }
 
     // ================================================================
     // 10. CRUD
@@ -2608,63 +2904,60 @@ function eliminarVictima(indice) {
     // 11. GUARDAR PESTAÑAS
     // ================================================================
     function guardarPestana1() {
-    const num = document.getElementById('num-causa').value.trim();
-    let imputado = '';
-    if (imputadosTemporales.length === 1) {
-        imputado = imputadosTemporales[0].nombre || '';
-    } else if (imputadosTemporales.length === 2) {
-        imputado = (imputadosTemporales[0].nombre || '') + ' y ' + (imputadosTemporales[1].nombre || '');
-    } else if (imputadosTemporales.length > 2) {
-        imputado = (imputadosTemporales[0].nombre || '') + ' y otros';
-    }
-    if (!num || !imputado) { alert('Complete Nº Causa e Imputado.'); return; }
-    if (hechosAgregados.length === 0) { alert('Agregue al menos un hecho punible.'); return; }
-
-    const victimas = victimasTemporales.slice();
-
+        const num = document.getElementById('num-causa').value.trim();
+        let imputado = '';
+        if (imputadosTemporales.length === 1) {
+            imputado = imputadosTemporales[0].nombre || '';
+        } else if (imputadosTemporales.length === 2) {
+            imputado = (imputadosTemporales[0].nombre || '') + ' y ' + (imputadosTemporales[1].nombre || '');
+        } else if (imputadosTemporales.length > 2) {
+            imputado = (imputadosTemporales[0].nombre || '') + ' y otros';
+        }
+        if (!num || !imputado) { alert('Complete Nº Causa e Imputado.'); return; }
+        if (hechosAgregados.length === 0) { alert('Agregue al menos un hecho punible.'); return; }
+        const victimas = victimasTemporales.slice();
         const testigos = testigosTemporales.slice();
-    const primerImputado = imputadosTemporales[0] || {};
-    const datos = {
-        numCausa: num,
-        imputado: imputado,
-        imputados: imputadosTemporales.map(imp => ({
-            nombre: imp.nombre || '',
-            ci: imp.ci || '',
-            domicilio: imp.domicilio || '',
-            telefono: imp.telefono || '',
-            reincidente: !!imp.reincidente,
-            numReincidencias: imp.numReincidencias || 0
-        })),
-        ciImputado: primerImputado.ci || '',
-        domicilioImputado: primerImputado.domicilio || '',
-        telefonoImputado: primerImputado.telefono || '',
-        reincidente: !!primerImputado.reincidente,
-        numReincidencias: primerImputado.numReincidencias || 0,
-        victimas,
-        lugarHecho: document.getElementById('lugar-hecho').value.trim(),
-        fechaHecho: document.getElementById('fecha-hecho').value,
-        horaHecho: document.getElementById('hora-hecho').value,
-        testigos,
-        descripcionHecho: document.getElementById('descripcion-hecho').value.trim(),
-                hechos: hechosAgregados.map(h => {
-            const obj = { hecho: h.hecho, incisos: h.incisos };
-            if (h.labelManual) obj.labelManual = h.labelManual;
-            return obj;
-        }),
-        caratula: document.getElementById('caratula-preview').textContent,
-        observacionesGenerales: document.getElementById('observaciones-generales').value.trim()
-    };
-
-    const causa = actualizarCausa(datos);
-    if (causa) {
-        actualizarEstadoSeccion('tab1', true);
-        document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
-                alert('Datos Generales guardados correctamente.');
+        const primerImputado = imputadosTemporales[0] || {};
+        const datos = {
+            numCausa: num,
+            imputado: imputado,
+            imputados: imputadosTemporales.map(imp => ({
+                nombre: imp.nombre || '',
+                ci: imp.ci || '',
+                domicilio: imp.domicilio || '',
+                telefono: imp.telefono || '',
+                reincidente: !!imp.reincidente,
+                numReincidencias: imp.numReincidencias || 0
+            })),
+            ciImputado: primerImputado.ci || '',
+            domicilioImputado: primerImputado.domicilio || '',
+            telefonoImputado: primerImputado.telefono || '',
+            reincidente: !!primerImputado.reincidente,
+            numReincidencias: primerImputado.numReincidencias || 0,
+            victimas,
+            lugarHecho: document.getElementById('lugar-hecho').value.trim(),
+            fechaHecho: document.getElementById('fecha-hecho').value,
+            horaHecho: document.getElementById('hora-hecho').value,
+            testigos,
+            descripcionHecho: document.getElementById('descripcion-hecho').value.trim(),
+            hechos: hechosAgregados.map(h => {
+                const obj = { hecho: h.hecho, incisos: h.incisos };
+                if (h.labelManual) obj.labelManual = h.labelManual;
+                return obj;
+            }),
+            caratula: document.getElementById('caratula-preview').textContent,
+            observacionesGenerales: document.getElementById('observaciones-generales').value.trim()
+        };
+        const causa = actualizarCausa(datos);
+        if (causa) {
+            actualizarEstadoSeccion('tab1', true);
+            document.getElementById('estado-causa').textContent = `Causa: ${causa.numCausa}`;
+            alert('Datos Generales guardados correctamente.');
+        }
     }
-}
 
-function guardarPestana2() {
-    if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
+    function guardarPestana2() {
+        if (!causaActualId) { alert('Primero debe guardar los Datos Generales (Pestaña 1).'); return; }
         const fechaManual = document.getElementById('fecha-vencimiento-input').value;
         if (!fechaManual) { alert('La fecha de acto conclusivo es obligatoria.'); return; }
         const datos = {
@@ -2888,19 +3181,19 @@ function guardarPestana2() {
         renderizarImputados();
 
         victimasTemporales = (causa.victimas || []).map(v => ({
-    nombre: v.nombre || '',
-    ci: v.ci || '',
-    domicilio: v.domicilio || '',
-    telefono: v.telefono || '',
-    edad: v.edad || null
-}));
-renderizarVictimas();
-        
+            nombre: v.nombre || '',
+            ci: v.ci || '',
+            domicilio: v.domicilio || '',
+            telefono: v.telefono || '',
+            edad: v.edad || null
+        }));
+        renderizarVictimas();
+
         setValueSafe('lugar-hecho', causa.lugarHecho || '');
         setValueSafe('fecha-hecho', causa.fechaHecho || '');
         setValueSafe('hora-hecho', causa.horaHecho || '');
 
-                testigosTemporales = (causa.testigos || []).map(t => ({
+        testigosTemporales = (causa.testigos || []).map(t => ({
             nombre: t.nombre || '',
             ci: t.ci || '',
             telefono: t.telefono || ''
@@ -2910,7 +3203,7 @@ renderizarVictimas();
         setValueSafe('descripcion-hecho', causa.descripcionHecho || '');
         setValueSafe('observaciones-generales', causa.observacionesGenerales || '');
 
-                hechosAgregados = (causa.hechos || []).filter(h => h && h.hecho).map(h => {
+        hechosAgregados = (causa.hechos || []).filter(h => h && h.hecho).map(h => {
             const obj = {
                 hecho: h.hecho,
                 incisos: Array.isArray(h.incisos) ? h.incisos.map(inc => ({
@@ -2994,7 +3287,7 @@ renderizarVictimas();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-        // ================================================================
+    // ================================================================
     // 13. VÍCTIMAS, TESTIGOS, HECHOS
     // ================================================================
     function agregarVictima() {
@@ -3098,7 +3391,8 @@ renderizarVictimas();
         document.getElementById('hecho-selector').value = '';
         document.getElementById('incisos-opciones').innerHTML = '<span class="text-muted">Seleccione un hecho punible</span>';
     }
-                function agregarHechoManual() {
+
+    function agregarHechoManual() {
         const texto = document.getElementById('hecho-manual').value.trim();
         if (!texto) { alert('Escriba el hecho punible o ley especial.'); return; }
         const yaExiste = hechosAgregados.some(h => h.labelManual && h.labelManual.toLowerCase() === texto.toLowerCase());
@@ -3116,7 +3410,7 @@ renderizarVictimas();
         document.getElementById('hecho-manual').focus();
     }
 
-        function renderizarHechosAgregados() {
+    function renderizarHechosAgregados() {
         const container = document.getElementById('lista-hechos');
         if (hechosAgregados.length === 0) {
             container.innerHTML = '<span class="text-muted">No hay hechos punibles agregados.</span>';
@@ -3124,7 +3418,6 @@ renderizarVictimas();
         }
         let html = '<div style="display:flex;flex-direction:column;gap:3px;">';
         hechosAgregados.forEach((h, index) => {
-            // Hecho manual: se muestra tal cual, con ícono de lápiz
             if (h.labelManual) {
                 html += `<div class="list-item"><span class="label"><i class="fas fa-pen" style="color:#d4a843; font-size:11px;"></i> ${escapeHTML(h.labelManual)}</span><button class="btn-remover" onclick="quitarHecho(${index})"><i class="fas fa-times"></i> Eliminar</button></div>`;
                 return;
@@ -3182,7 +3475,7 @@ renderizarVictimas();
             preview.innerHTML = '<span class="text-muted">Agregue al menos un hecho punible</span>';
             return;
         }
-                const hechosText = hechosAgregados.map(h => {
+        const hechosText = hechosAgregados.map(h => {
             if (h.labelManual) return h.labelManual;
             const config = CONFIG.hechos[h.hecho];
             return config ? config.label.replace(/^Art\.\s*\d+[a-z]?\s*[–-]\s*/i, '') : h.hecho;
@@ -3528,90 +3821,80 @@ renderizarVictimas();
     // 15. LISTADO Y CATEGORIZACIÓN
     // ================================================================
     function renderizarCausas() {
-    const grid = document.getElementById('causa-grid');
-    const contador = document.getElementById('contador-causas');
-    if (causas.length === 0) {
-        grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
-        contador.textContent = '(0)';
-        return;
-    }
-    contador.textContent = `(${causas.length})`;
+        const grid = document.getElementById('causa-grid');
+        const contador = document.getElementById('contador-causas');
+        if (causas.length === 0) {
+            grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-folder-open"></i><p>No hay causas registradas. Haga clic en "Nueva Causa" para comenzar.</p></div>`;
+            contador.textContent = '(0)';
+            return;
+        }
+        contador.textContent = `(${causas.length})`;
 
-    const grupoUrgentes = [], grupoActivas = [], grupoActoConclusivo = [], grupoSinImputacion = [];
-    causas.forEach(c => {
-        const info = calcularInfoPlazo(c);
-        const estado = c.estadoCausa || 'activa';
-        const esActoConc = esActoConclusivoPresentado(estado);
-        if (esActoConc) grupoActoConclusivo.push(c);
-        else if (info.estado === 'vencido' || info.estado === 'proximo') grupoUrgentes.push(c);
-        else if (info.estado === 'sin_fecha' || !c.fechaActoConclusivo) grupoSinImputacion.push(c);
-        else grupoActivas.push(c);
-    });
+        const grupoUrgentes = [], grupoActivas = [], grupoActoConclusivo = [], grupoSinImputacion = [];
+        causas.forEach(c => {
+            const info = calcularInfoPlazo(c);
+            const estado = c.estadoCausa || 'activa';
+            const esActoConc = esActoConclusivoPresentado(estado);
+            if (esActoConc) grupoActoConclusivo.push(c);
+            else if (info.estado === 'vencido' || info.estado === 'proximo') grupoUrgentes.push(c);
+            else if (info.estado === 'sin_fecha' || !c.fechaActoConclusivo) grupoSinImputacion.push(c);
+            else grupoActivas.push(c);
+        });
 
-    // Orden por número de causa (para los grupos que NO se ordenan por fecha)
-    const ordenarPorNumero = (a, b) =>
-        (a.numCausa || '').toString().localeCompare((b.numCausa || '').toString(), undefined, { numeric: true });
+        const ordenarPorNumero = (a, b) =>
+            (a.numCausa || '').toString().localeCompare((b.numCausa || '').toString(), undefined, { numeric: true });
 
-    // ===== URGENTES: primero las que vencen en 30, 20, 15 días (ascendente),
-    //       luego las vencidas (la más reciente primero) =====
-    function diasUrgente(c) {
-        const info = calcularInfoPlazo(c);
-        return (info.dias !== null && info.dias !== undefined) ? info.dias : Number.POSITIVE_INFINITY;
-    }
-    grupoUrgentes.sort((a, b) => {
-        const da = diasUrgente(a);
-        const db = diasUrgente(b);
-        const aVencida = da < 0;
-        const bVencida = db < 0;
+        function diasUrgente(c) {
+            const info = calcularInfoPlazo(c);
+            return (info.dias !== null && info.dias !== undefined) ? info.dias : Number.POSITIVE_INFINITY;
+        }
+        grupoUrgentes.sort((a, b) => {
+            const da = diasUrgente(a);
+            const db = diasUrgente(b);
+            const aVencida = da < 0;
+            const bVencida = db < 0;
+            if (aVencida !== bVencida) return aVencida ? 1 : -1;
+            if (!aVencida) {
+                if (da !== db) return da - db;
+                return ordenarPorNumero(a, b);
+            }
+            if (da !== db) return db - da;
+            return ordenarPorNumero(a, b);
+        });
 
-        // 1) Las NO vencidas van siempre arriba de las vencidas
-        if (aVencida !== bVencida) return aVencida ? 1 : -1;
+        grupoActoConclusivo.sort(ordenarPorNumero);
+        grupoSinImputacion.sort(ordenarPorNumero);
 
-        // 2) Entre NO vencidas: ascendente (15 → 20 → 30) = la más próxima arriba
-        if (!aVencida) {
+        function diasActiva(c) {
+            const info = calcularInfoPlazo(c);
+            return (info.dias !== null && info.dias !== undefined) ? info.dias : Number.POSITIVE_INFINITY;
+        }
+        grupoActivas.sort((a, b) => {
+            const da = diasActiva(a);
+            const db = diasActiva(b);
             if (da !== db) return da - db;
             return ordenarPorNumero(a, b);
+        });
+
+        let html = '';
+        if (grupoUrgentes.length > 0) {
+            html += `<div class="seccion-grupo seccion-urgentes"><i class="fas fa-exclamation-triangle"></i> URGENTES (plazo vencido o próximo)<span class="contador-grupo">${grupoUrgentes.length} causa${grupoUrgentes.length > 1 ? 's' : ''}</span></div>`;
+            grupoUrgentes.forEach(c => { html += generarCardCausa(c); });
         }
-
-        // 3) Entre vencidas: la más reciente primero (ej: -5 antes que -30)
-        if (da !== db) return db - da;
-        return ordenarPorNumero(a, b);
-    });
-
-    grupoActoConclusivo.sort(ordenarPorNumero);
-    grupoSinImputacion.sort(ordenarPorNumero);
-
-    // ===== ACTIVAS EN PLAZO: orden ascendente (más próxima a vencer arriba) =====
-    function diasActiva(c) {
-        const info = calcularInfoPlazo(c);
-        return (info.dias !== null && info.dias !== undefined) ? info.dias : Number.POSITIVE_INFINITY;
-    }
-    grupoActivas.sort((a, b) => {
-        const da = diasActiva(a);
-        const db = diasActiva(b);
-        if (da !== db) return da - db;
-        return ordenarPorNumero(a, b);
-    });
-
-    let html = '';
-    if (grupoUrgentes.length > 0) {
-        html += `<div class="seccion-grupo seccion-urgentes"><i class="fas fa-exclamation-triangle"></i> URGENTES (plazo vencido o próximo)<span class="contador-grupo">${grupoUrgentes.length} causa${grupoUrgentes.length > 1 ? 's' : ''}</span></div>`;
-        grupoUrgentes.forEach(c => { html += generarCardCausa(c); });
-    }
         if (grupoActivas.length > 0) {
-        html += `<div class="seccion-grupo seccion-activas"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO (IMPUTADOS)<span class="contador-grupo">${grupoActivas.length} causa${grupoActivas.length > 1 ? 's' : ''}</span></div>`;
-        grupoActivas.forEach(c => { html += generarCardCausa(c); });
+            html += `<div class="seccion-grupo seccion-activas"><i class="fas fa-check-circle"></i> ACTIVAS EN PLAZO (IMPUTADOS)<span class="contador-grupo">${grupoActivas.length} causa${grupoActivas.length > 1 ? 's' : ''}</span></div>`;
+            grupoActivas.forEach(c => { html += generarCardCausa(c); });
+        }
+        if (grupoActoConclusivo.length > 0) {
+            html += `<div class="seccion-grupo seccion-acto"><i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO<span class="contador-grupo">${grupoActoConclusivo.length} causa${grupoActoConclusivo.length > 1 ? 's' : ''}</span></div>`;
+            grupoActoConclusivo.forEach(c => { html += generarCardCausa(c); });
+        }
+        if (grupoSinImputacion.length > 0) {
+            html += `<div class="seccion-grupo seccion-sin-imputacion"><i class="fas fa-hourglass-start"></i> SIN IMPUTACIÓN / SIN PLAZO<span class="contador-grupo">${grupoSinImputacion.length} causa${grupoSinImputacion.length > 1 ? 's' : ''}</span></div>`;
+            grupoSinImputacion.forEach(c => { html += generarCardCausa(c); });
+        }
+        grid.innerHTML = html;
     }
-    if (grupoActoConclusivo.length > 0) {
-        html += `<div class="seccion-grupo seccion-acto"><i class="fas fa-file-signature"></i> ACTO CONCLUSIVO PRESENTADO<span class="contador-grupo">${grupoActoConclusivo.length} causa${grupoActoConclusivo.length > 1 ? 's' : ''}</span></div>`;
-        grupoActoConclusivo.forEach(c => { html += generarCardCausa(c); });
-    }
-    if (grupoSinImputacion.length > 0) {
-        html += `<div class="seccion-grupo seccion-sin-imputacion"><i class="fas fa-hourglass-start"></i> SIN IMPUTACIÓN / SIN PLAZO<span class="contador-grupo">${grupoSinImputacion.length} causa${grupoSinImputacion.length > 1 ? 's' : ''}</span></div>`;
-        grupoSinImputacion.forEach(c => { html += generarCardCausa(c); });
-    }
-    grid.innerHTML = html;
-}
 
     function generarCardCausa(c) {
         const badge = c.hechos && c.hechos.some(h => esArticulo(h.hecho, '225')) ? 'badge-alimentos' : 'badge-activa';
@@ -3803,8 +4086,8 @@ renderizarVictimas();
         renderizarImputados();
         toggleRebeldia();
         victimasTemporales = [];
-renderizarVictimas();
-                testigosTemporales = [];
+        renderizarVictimas();
+        testigosTemporales = [];
         renderizarTestigos();
         hechosAgregados = [];
         diligenciasTemporales = [];
@@ -3852,7 +4135,6 @@ renderizarVictimas();
             container.innerHTML = `<div class="text-center" style="padding:20px;"><i class="fas fa-file-pdf" style="font-size:40px;color:#1a2a4a;margin-bottom:10px;"></i><h3 style="color:#1a2a4a;">Informe de Causa</h3><p class="text-muted">Guarde los datos de la causa para generar el informe completo.</p></div>`;
             return;
         }
-
         const info = calcularInfoPlazo(causa);
         let estadoPlazo = '', fechaMostrada = '';
         if (info.estado === 'acto_conclusivo') {
@@ -3871,7 +4153,6 @@ renderizarVictimas();
             estadoPlazo = '<span>No definido</span>';
             fechaMostrada = 'No definida';
         }
-
         const estado = causa.estadoCausa || 'activa';
         const esActiva = (estado === 'activa');
         const esActoConc = esActoConclusivoPresentado(estado);
@@ -3905,7 +4186,6 @@ renderizarVictimas();
         } else {
             html += `<div class="text-muted">No se registraron imputados.</div>`;
         }
-
         html += `<div><strong>Víctima(s):</strong></div>`;
         if (causa.victimas && causa.victimas.length > 0) {
             html += `<ul style="margin-top:4px;padding-left:20px;">`;
@@ -3916,11 +4196,9 @@ renderizarVictimas();
         } else {
             html += `<div class="text-muted">No se registraron víctimas.</div>`;
         }
-
         html += `<div><strong>Lugar del hecho:</strong> ${causa.lugarHecho || 'No registrado'}</div>`;
         html += `<div><strong>Fecha del hecho:</strong> ${formatearFechaLocal(causa.fechaHecho)}</div>`;
         html += `<div><strong>Hora del hecho:</strong> ${causa.horaHecho || 'No registrada'}</div>`;
-
         html += `<div><strong>Testigo(s):</strong></div>`;
         if (causa.testigos && causa.testigos.length > 0) {
             html += `<ul style="margin-top:4px;padding-left:20px;">`;
@@ -3931,38 +4209,37 @@ renderizarVictimas();
         } else {
             html += `<div class="text-muted">No se registraron testigos.</div>`;
         }
-
         html += `<div><strong>Descripción del hecho:</strong> ${causa.descripcionHecho || 'No registrada'}</div>`;
 
-                    causa.hechos.forEach(h => {
-                if (h.labelManual) {
-                    html += `<li><strong>${escapeHTML(h.labelManual)}</strong> <span style="color:#888;font-size:11px;">(cargado manualmente)</span></li>`;
-                    return;
-                }
-                const config = CONFIG.hechos[h.hecho];
-                const label = config ? config.label : h.hecho;
-                html += `<li><strong>${label}</strong>`;
-                if (h.incisos && h.incisos.length > 0) {
-                    html += `<ul style="padding-left:15px;list-style-type:circle;">`;
-                    h.incisos.forEach(inc => {
-                        const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
-                        if (incData) {
-                            html += `<li>${incData.label}`;
-                            if (inc.numerales && inc.numerales.length > 0) {
-                                html += `<ul style="padding-left:15px;list-style-type:disc;">`;
-                                inc.numerales.forEach(numId => {
-                                    const numData = incData.numerales ? incData.numerales.find(n => n.id === numId) : null;
-                                    if (numData) html += `<li>${numData.label}</li>`;
-                                });
-                                html += `</ul>`;
-                            }
-                            html += `</li>`;
+        causa.hechos.forEach(h => {
+            if (h.labelManual) {
+                html += `<li><strong>${escapeHTML(h.labelManual)}</strong> <span style="color:#888;font-size:11px;">(cargado manualmente)</span></li>`;
+                return;
+            }
+            const config = CONFIG.hechos[h.hecho];
+            const label = config ? config.label : h.hecho;
+            html += `<li><strong>${label}</strong>`;
+            if (h.incisos && h.incisos.length > 0) {
+                html += `<ul style="padding-left:15px;list-style-type:circle;">`;
+                h.incisos.forEach(inc => {
+                    const incData = config ? config.incisos.find(i => i.id === inc.id) : null;
+                    if (incData) {
+                        html += `<li>${incData.label}`;
+                        if (inc.numerales && inc.numerales.length > 0) {
+                            html += `<ul style="padding-left:15px;list-style-type:disc;">`;
+                            inc.numerales.forEach(numId => {
+                                const numData = incData.numerales ? incData.numerales.find(n => n.id === numId) : null;
+                                if (numData) html += `<li>${numData.label}</li>`;
+                            });
+                            html += `</ul>`;
                         }
-                    });
-                    html += `</ul>`;
-                }
-                html += `</li>`;
-            });
+                        html += `</li>`;
+                    }
+                });
+                html += `</ul>`;
+            }
+            html += `</li>`;
+        });
         html += `<div><strong>Carátula:</strong> ${causa.caratula || 'No generada'}</div>`;
         html += `<div><strong>Observaciones Generales:</strong> ${causa.observacionesGenerales || 'No registradas'}</div>`;
 
@@ -4117,7 +4394,6 @@ renderizarVictimas();
         html += `</ul>`;
 
         html += `<div style="margin-top:20px;padding-top:10px;border-top:1px solid #ccc;font-size:11px;color:#888;text-align:center;">Documento generado automáticamente por el Sistema de Gestión de Causas Penales</div>`;
-
         container.innerHTML = html;
     }
 
@@ -4237,7 +4513,9 @@ renderizarVictimas();
     // ================================================================
     document.addEventListener('DOMContentLoaded', function() {
         console.log('✅ Sistema de Gestión de Causas Penales cargado completamente.');
-        console.log('✅ Suscripciones flexibles: 30 / 90 / 180 / 365 días.');
+        console.log(`✅ Modo Freemium activo: ${FREEMIUM_TEXTO} (${FREEMIUM_DIAS} días) de acceso automático.`);
+        console.log('✅ Contador de accesos: 1 por día calendario.');
+        console.log('✅ Suscripciones flexibles para renovaciones: 30 / 90 / 180 / 365 días.');
     });
     </script>
 </body>
