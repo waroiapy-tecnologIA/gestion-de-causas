@@ -1351,11 +1351,11 @@
                         <div class="checkbox-group"><input type="checkbox" id="rebeldia-activa" onchange="toggleRebeldia()"><label for="rebeldia-activa"><strong>Declarado en rebeldía</strong></label></div>
                         <div id="rebeldia-campos" class="hidden">
                             <div class="form-row">
-                                <div class="form-group"><label>Fecha de declaración</label><input type="date" id="fecha-rebeldia" data-guia="Fecha en que se declaró la rebeldía."></div>
+                                <input type="date" id="fecha-rebeldia" data-guia="Fecha en que se declaró la rebeldía." onchange="calcularDiasSuspendidos()">
                                 <div class="form-group"><label>N° de resolución</label><input type="text" id="num-resolucion-rebeldia" placeholder="N° de resolución" data-guia="Número de resolución que declaró la rebeldía."></div>
                             </div>
                             <div class="form-row">
-                                <div class="form-group"><label>Fecha de levantamiento</label><input type="date" id="fecha-levantamiento-rebeldia" data-guia="Fecha en que se levantó la rebeldía, si aplica."></div>
+                                <input type="date" id="fecha-levantamiento-rebeldia" data-guia="Fecha en que se levantó la rebeldía, si aplica." onchange="calcularDiasSuspendidos()">
                                 <div class="form-group"><label>Días suspendidos (referencia)</label><div id="dias-suspendidos" style="font-size:15px;font-weight:600;color:#1a2a4a;padding-top:4px;">--</div></div>
                             </div>
                         </div>
@@ -1851,29 +1851,75 @@
     function esActoConclusivoPresentado(estado) {
         return ESTADOS_ACTO_CONCLUSIVO.includes(estado);
     }
-    function calcularInfoPlazo(causa) {
+        function calcularInfoPlazo(causa) {
         const estado = causa.estadoCausa || 'activa';
         let fechaStr = null;
         let tipo = 'ninguno';
+
+        const rebeldia = causa.rebeldia || {};
+        const rebeldiaActiva = !!rebeldia.activa;
+        const rebeldiaDesdeStr = rebeldia.fecha || null;
+        const rebeldiaLevantamientoStr = rebeldia.levantamiento || null;
+        const rebeldiaDesde = rebeldiaDesdeStr ? parseUTCDate(rebeldiaDesdeStr) : null;
+        const rebeldiaLevantamiento = rebeldiaLevantamientoStr ? parseUTCDate(rebeldiaLevantamientoStr) : null;
+
+        const rebeldiaExtra = {
+            rebeldiaActiva,
+            rebeldiaDesde: rebeldiaDesdeStr,
+            rebeldiaLevantamiento: rebeldiaLevantamientoStr,
+            plazoPausado: false,
+            diasSuspendidos: 0
+        };
+
         if (estado === 'archivo-provisional' && causa.fechaLimiteArchivo) {
             fechaStr = causa.fechaLimiteArchivo;
             tipo = 'archivo_provisional';
         } else if (esActoConclusivoPresentado(estado)) {
-            return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado' };
+            return { dias: null, estado: 'acto_conclusivo', tipo: 'acto_conclusivo', mensaje: 'Acto conclusivo presentado', ...rebeldiaExtra };
         } else if (causa.fechaActoConclusivo) {
             fechaStr = causa.fechaActoConclusivo;
             tipo = 'acto_conclusivo';
         }
-        if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-        const hoy = getTodayUTC();
-        const fecha = parseUTCDate(fechaStr);
-        if (!fecha) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno' };
-        const diffMs = fecha - hoy;
-        const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+        if (!fechaStr) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno', ...rebeldiaExtra };
+
+        const fechaOriginal = parseUTCDate(fechaStr);
+        if (!fechaOriginal) return { dias: null, estado: 'sin_fecha', tipo: 'ninguno', ...rebeldiaExtra };
+
+        let fechaEfectiva = new Date(fechaOriginal);
+        let fechaReferencia = getTodayUTC();
+        let plazoPausado = false;
+        let diasSuspendidos = 0;
+
+        if (rebeldiaActiva && rebeldiaDesde) {
+            if (rebeldiaLevantamiento) {
+                diasSuspendidos = Math.max(0, Math.round((rebeldiaLevantamiento - rebeldiaDesde) / 86400000));
+                fechaEfectiva.setUTCDate(fechaEfectiva.getUTCDate() + diasSuspendidos);
+            } else {
+                plazoPausado = true;
+                fechaReferencia = rebeldiaDesde;
+                diasSuspendidos = Math.max(0, Math.round((getTodayUTC() - rebeldiaDesde) / 86400000));
+            }
+        }
+
+        const diffDias = Math.ceil((fechaEfectiva - fechaReferencia) / 86400000);
+
         let estadoPlazo = 'ok';
         if (diffDias < 0) estadoPlazo = 'vencido';
         else if (diffDias <= 30) estadoPlazo = 'proximo';
-        return { dias: diffDias, estado: estadoPlazo, tipo: tipo };
+
+        return {
+            dias: diffDias,
+            estado: estadoPlazo,
+            tipo,
+            plazoPausado,
+            rebeldiaActiva,
+            rebeldiaDesde: rebeldiaDesdeStr,
+            rebeldiaLevantamiento: rebeldiaLevantamientoStr,
+            diasSuspendidos,
+            fechaEfectiva: fechaEfectiva.toISOString().slice(0, 10),
+            fechaOriginal: fechaStr
+        };
     }
     function toggleFechaArchivoProvisional() {
         const estado = document.getElementById('estado-causa-select').value;
@@ -1891,21 +1937,36 @@
         document.getElementById('rebeldia-campos').classList.toggle('hidden', !activa);
         if (activa) calcularDiasSuspendidos();
     }
-    function calcularDiasSuspendidos() {
+        function calcularDiasSuspendidos() {
         const fechaDeclaracion = document.getElementById('fecha-rebeldia').value;
         const fechaLevantamiento = document.getElementById('fecha-levantamiento-rebeldia').value;
         const elDias = document.getElementById('dias-suspendidos');
-        if (!fechaDeclaracion || !fechaLevantamiento) { elDias.textContent = '--'; return; }
+        if (!fechaDeclaracion) { elDias.textContent = '--'; elDias.style.color = '#888'; return; }
+
         const ini = parseUTCDate(fechaDeclaracion);
-        const fin = parseUTCDate(fechaLevantamiento);
-        if (!ini || !fin || fin < ini) {
-            elDias.textContent = 'Fecha de levantamiento anterior';
-            elDias.style.color = '#b33c3c';
-            return;
+        if (!ini) { elDias.textContent = '--'; elDias.style.color = '#888'; return; }
+
+        if (fechaLevantamiento) {
+            const fin = parseUTCDate(fechaLevantamiento);
+            if (!fin || fin < ini) {
+                elDias.textContent = 'Fecha de levantamiento anterior';
+                elDias.style.color = '#b33c3c';
+                return;
+            }
+            const diff = Math.round((fin - ini) / 86400000);
+            elDias.textContent = `${diff} día${diff === 1 ? '' : 's'} (cerrada)`;
+            elDias.style.color = '#1a2a4a';
+        } else {
+            const hoy = getTodayUTC();
+            if (hoy < ini) {
+                elDias.textContent = 'Fecha futura';
+                elDias.style.color = '#b33c3c';
+                return;
+            }
+            const diff = Math.round((hoy - ini) / 86400000);
+            elDias.textContent = `${diff} día${diff === 1 ? '' : 's'} (en curso)`;
+            elDias.style.color = '#856404';
         }
-        const diff = Math.ceil((fin - ini) / (1000 * 60 * 60 * 24));
-        elDias.textContent = `${diff} días`;
-        elDias.style.color = '#1a2a4a';
     }
 
     // ===== MÚLTIPLES VÍCTIMAS =====
