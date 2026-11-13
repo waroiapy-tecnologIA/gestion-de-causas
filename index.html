@@ -3983,7 +3983,7 @@
         const alertaIcon = tieneAlertas ? '<i class="fas fa-exclamation-triangle alerta-icon" style="color:#b33c3c;"></i>' : '';
 
         const info = calcularInfoPlazo(c);
-        let diasInfo = '', actoConclusivoMsg = '', prorrogaMsg = '';
+                let diasInfo = '', actoConclusivoMsg = '', prorrogaMsg = '', rebeldiaMsg = '';
 
         if (c.prorrogaOrdinaria && c.prorrogaOrdinaria.otorgada === 'Si' && c.prorrogaOrdinaria.nuevaFecha) {
             prorrogaMsg += `Ord: ${formatearFechaLocal(c.prorrogaOrdinaria.nuevaFecha)} `;
@@ -3993,8 +3993,11 @@
         }
         if (prorrogaMsg) prorrogaMsg = `<div class="prorroga-msg">📅 Prórroga: ${prorrogaMsg}</div>`;
 
-        if (info.estado === 'acto_conclusivo') {
+                if (info.estado === 'acto_conclusivo') {
             actoConclusivoMsg = `<div class="acto-conclusivo-msg"><i class="fas fa-check-circle"></i> Acto conclusivo presentado</div>`;
+        } else if (info.plazoPausado) {
+            const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
+            diasInfo = `<div class="dias-restantes" style="color:#856404;background:#fff3cd;padding:4px 8px;border-radius:4px;font-weight:600;">⏸️ ${label}: <strong>${info.dias} día${info.dias === 1 ? '' : 's'}</strong> (suspendido por rebeldía)</div>`;
         } else if (info.estado === 'vencido') {
             const label = info.tipo === 'archivo_provisional' ? 'Archivo' : 'Acto Conclusivo';
             diasInfo = `<div class="dias-restantes vencido">⚠️ ${label} VENCIDO (hace ${Math.abs(info.dias)} días)</div>`;
@@ -4006,6 +4009,19 @@
             diasInfo = `<div class="dias-restantes">📅 ${label} vence en ${info.dias} días</div>`;
         }
 
+        if (info.rebeldiaActiva) {
+            if (info.plazoPausado) {
+                rebeldiaMsg = `<div style="font-size:11px;color:#721c24;background:#f8d7da;padding:5px 8px;border-radius:4px;margin-top:6px;border-left:3px solid #b33c3c;">
+                    🔴 <strong>Rebelde desde ${formatearFechaLocal(info.rebeldiaDesde)}</strong>
+                    <div style="font-size:10px;margin-top:2px;">⏸️ Plazo suspendido · ${info.diasSuspendidos} día${info.diasSuspendidos === 1 ? '' : 's'} pausado${info.diasSuspendidos === 1 ? '' : 's'}</div>
+                </div>`;
+            } else if (info.rebeldiaLevantamiento) {
+                rebeldiaMsg = `<div style="font-size:11px;color:#155724;background:#d4edda;padding:5px 8px;border-radius:4px;margin-top:6px;border-left:3px solid #2a7d4f;">
+                    ✅ <strong>Rebeldía levantada el ${formatearFechaLocal(info.rebeldiaLevantamiento)}</strong>
+                    <div style="font-size:10px;margin-top:2px;">📅 Plazo ajustado +${info.diasSuspendidos} día${info.diasSuspendidos === 1 ? '' : 's'}</div>
+                </div>`;
+            }
+        }
         const estado = c.estadoCausa || 'activa';
         const esActiva = (estado === 'activa');
         const esActoConc = esActoConclusivoPresentado(estado);
@@ -4027,6 +4043,7 @@
                 ${diasInfo}
                 ${actoConclusivoMsg}
                 ${prorrogaMsg}
+                ${rebeldiaMsg}
                 <button class="calendario-btn" onclick="event.stopPropagation(); abrirGoogleCalendar('${c.id}')" title="Agregar al calendario"><i class="fas fa-calendar-plus"></i></button>
 <button class="eliminar-btn" onclick="event.stopPropagation(); eliminarCausa('${c.id}')"><i class="fas fa-trash-alt"></i></button>
             </div>
