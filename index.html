@@ -11,8 +11,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="codigo-penal/estilos.css" />
-    <script src="codigo-penal/datos/catalogo.js"></script>
+    <link rel="stylesheet" href="/codigo-penal/estilos.css" />
+    <script src="/codigo-penal/datos/catalogo.js"></script>
 
     <!-- Motor inline del catálogo penal (NO borrar: reemplaza codigo-penal/catalogo.js) -->
     <script>
@@ -1096,7 +1096,7 @@
 
     <!-- ===== AUTENTICACIÓN ===== -->
     <div id="auth-container">
-        <img src="logo.png" alt="Gestión de" style="display:block;margin:0 auto 15px;max-width:200px;height:auto;" onerror="this.style.display='none'">
+        <img src="/logo.png" alt="Gestión de" style="display:block;margin:0 auto 15px;max-width:200px;height:auto;" onerror="this.style.display='none'">
         <h2><i class="fas fa-gavel" style="color:#d4a843;"></i> MP</h2>
         <div class="sub">Sistema de Gestión de Causas Penales</div>
         <div id="auth-message"></div>
@@ -1124,7 +1124,7 @@
     <div id="app">
         <header class="header">
             <div style="display:flex;align-items:center;gap:10px;">
-                <img src="logo.png" style="height:40px;" onerror="this.style.display='none'">
+                <img src="/logo.png" style="height:40px;" onerror="this.style.display='none'">
                 <div><h1><i class="fas fa-gavel"></i> GESTIÓN DE CAUSAS PENALES</h1><span class="subtitle"> – Sistema de Gestión Integral</span></div>
             </div>
             <div class="user-info">
@@ -2724,11 +2724,11 @@
     }
 
     function abrirCodigoPenal() {
-        window.open('codigo-penal/index.html', '_blank', 'noopener');
+        window.open('/codigo-penal/index.html', '_blank', 'noopener');
     }
     function verArticuloSeleccionado() {
         const id = document.getElementById('hecho-selector').value;
-        const destino = 'codigo-penal/index.html' + (id ? `#articulo=${encodeURIComponent(id)}` : '');
+        const destino = '/codigo-penal/index.html' + (id ? `#articulo=${encodeURIComponent(id)}` : '');
         window.open(destino, '_blank', 'noopener');
     }
     async function sincronizarCodigoPenal() {
