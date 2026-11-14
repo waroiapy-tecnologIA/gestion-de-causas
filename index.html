@@ -1619,8 +1619,81 @@
 <style>
 #toast-respaldo.visible { opacity:1; transform:translateX(0); pointer-events:auto; }
 </style>
+<!-- ===== MODAL MANUAL DE USO ===== -->
+<div id="modal-ayuda" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:10003;align-items:center;justify-content:center;padding:20px;overflow:auto;">
+    <div style="background:#fff;max-width:680px;width:100%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.4);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#1a2a4a 0%,#2a4a7a 100%);color:#fff;padding:20px 28px;position:relative;">
+            <button onclick="cerrarManual()" style="position:absolute;top:14px;right:18px;background:transparent;border:none;color:#fff;font-size:26px;cursor:pointer;opacity:0.8;">&times;</button>
+            <h2 style="margin:0;font-size:20px;"><i class="fas fa-question-circle"></i> Ayuda del Sistema</h2>
+            <div style="font-size:12px;opacity:0.8;margin-top:4px;">Guía rápida de uso y términos legales</div>
+        </div>
+        <!-- Tabs -->
+        <div style="display:flex;border-bottom:2px solid #e0e4ea;background:#f8f9fb;padding:0 20px;">
+            <button class="tab-ayuda" onclick="cambiarTabAyuda('manual')" data-tab="manual" style="padding:12px 18px;background:transparent;border:none;border-bottom:3px solid #1a2a4a;font-size:13px;font-weight:600;color:#1a2a4a;cursor:pointer;"><i class="fas fa-book"></i> Manual de uso</button>
+            <button class="tab-ayuda" onclick="cambiarTabAyuda('tyc')" data-tab="tyc" style="padding:12px 18px;background:transparent;border:none;border-bottom:3px solid transparent;font-size:13px;font-weight:600;color:#666;cursor:pointer;"><i class="fas fa-shield-alt"></i> Términos y Condiciones</button>
+        </div>
+        <!-- Contenido -->
+        <div style="padding:24px 28px;overflow-y:auto;flex:1;font-size:13px;line-height:1.6;color:#333;">
+            <!-- Tab Manual -->
+            <div id="ayuda-tab-manual" class="ayuda-pane" style="display:block;">
+                <p style="margin:0 0 14px;"><strong>Registra tus causas penales, calcula plazos automáticamente, te avisa cuando vencen y genera informes listos para imprimir.</strong></p>
+
+                <h4 style="color:#1a2a4a;margin:18px 0 8px;font-size:14px;border-bottom:1px solid #e0e4ea;padding-bottom:4px;"><i class="fas fa-play-circle"></i> Primeros pasos</h4>
+                <ol style="padding-left:20px;margin:0 0 14px;">
+                    <li style="margin-bottom:4px;">Clic en <strong>"Nueva Causa"</strong>.</li>
+                    <li style="margin-bottom:4px;">Completá los datos: imputados, víctimas, hechos punibles, juzgado.</li>
+                    <li>Guardá cada pestaña → la causa aparece en el listado.</li>
+                </ol>
+
+                <div style="background:#d4edda;border-left:4px solid #28a745;padding:12px 16px;border-radius:6px;margin:14px 0;">
+                    <div style="font-weight:700;color:#155724;margin-bottom:6px;"><i class="fas fa-star"></i> La regla de oro</div>
+                    <div style="color:#155724;">Cuanto más datos cargues, más exacta es la app. Si cargás la <strong>fecha del acto conclusivo</strong>, el <strong>estado procesal</strong>, la <strong>rebeldía</strong> y las <strong>prórrogas</strong>, el sistema puede calcular días restantes reales, alertarte de plazos vencidos o próximos, generar la carátula correcta e incluir todo en el informe automático.</div>
+                </div>
+
+                <h4 style="color:#1a2a4a;margin:18px 0 8px;font-size:14px;border-bottom:1px solid #e0e4ea;padding-bottom:4px;"><i class="fas fa-lightbulb"></i> Consejos rápidos</h4>
+                <ul style="padding-left:20px;margin:0 0 14px;">
+                    <li style="margin-bottom:4px;"><strong>Plazos:</strong> cargá siempre la <strong>fecha del acto conclusivo</strong>. Sin ella, la tarjeta no puede alertarte.</li>
+                    <li style="margin-bottom:4px;"><strong>Rebeldía:</strong> si declarás rebeldía, cargá la <strong>fecha</strong>. El sistema congela el plazo automáticamente y te muestra "Rebelde desde…".</li>
+                    <li style="margin-bottom:4px;"><strong>Hechos punibles:</strong> usá el buscador del Código Penal. Si no encontrás el hecho, agregalo <strong>manualmente</strong>.</li>
+                    <li style="margin-bottom:4px;"><strong>Resumen:</strong> clic en <strong>"Resumen"</strong> (arriba) para ver todas las causas por urgencia.</li>
+                    <li><strong>Alertas:</strong> cada causa tiene una pestaña "Alertas" con lo que requiere tu atención.</li>
+                </ul>
+
+                <div style="background:#fff3cd;border-left:4px solid #ffc107;padding:12px 16px;border-radius:6px;margin:14px 0;">
+                    <div style="font-weight:700;color:#856404;margin-bottom:6px;"><i class="fas fa-save"></i> Cómo respaldar tus datos</div>
+                    <div style="color:#856404;">Tus causas se guardan <strong>solo en este navegador</strong>. Si limpiás caché, cambiás de PC o usás incógnito, se pierden. El <strong>botón "Exportar"</strong> te muestra un indicador de color:
+                        <ul style="padding-left:20px;margin:8px 0 0;">
+                            <li><strong style="color:#155724;">🟢 Verde:</strong> exportaste en los últimos 3 días. Estás al día.</li>
+                            <li><strong style="color:#856404;">🟡 Amarillo:</strong> pasaron entre 3 y 7 días. Conviene exportar pronto.</li>
+                            <li><strong style="color:#721c24;">🔴 Rojo:</strong> pasaron más de 7 días o hay más de 20 cambios sin exportar. <strong>Exportá ahora.</strong></li>
+                        </ul>
+                        <div style="margin-top:8px;">En el header siempre ves cuándo fue tu último respaldo. <strong>Exportá cada vez que hagas cambios importantes.</strong></div>
+                    </div>
+                </div>
+
+                <h4 style="color:#1a2a4a;margin:18px 0 8px;font-size:14px;border-bottom:1px solid #e0e4ea;padding-bottom:4px;"><i class="fas fa-life-ring"></i> ¿Necesitás más ayuda?</h4>
+                <p style="margin:0;">Consultá los <strong>Términos y Condiciones</strong> (pestaña al lado) o contactá al administrador.</p>
+            </div>
+
+            <!-- Tab TyC -->
+            <div id="ayuda-tab-tyc" class="ayuda-pane" style="display:none;">
+                <p><strong>1. Almacenamiento de datos.</strong> Las causas que usted cargue se guardan <strong>únicamente en el almacenamiento local de este navegador</strong> (localStorage). No se sincronizan automáticamente entre computadoras ni entre usuarios. Los datos de registro de usuario (nombre, cargo, teléfono, correo, estado de aprobación) sí se almacenan en un servicio en la nube (Firebase Firestore) para gestionar el acceso.</p>
+                <p><strong>2. Pérdida de información.</strong> Si usted borra los datos del navegador, cambia de equipo, usa modo incógnito, reinstala el navegador o limpia la caché, <strong>las causas se perderán de forma definitiva</strong>. Se recomienda exportar un respaldo (botón "Exportar") periódicamente y guardarlo en un lugar seguro.</p>
+                <p><strong>3. Responsabilidad.</strong> El mal uso de la información, la pérdida de datos, la carga de datos incorrectos o la divulgación de información sensible es <strong>responsabilidad exclusiva del usuario</strong>. Esta herramienta es un apoyo operativo y no reemplaza los sistemas oficiales de la institución.</p>
+                <p><strong>4. Confidencialidad.</strong> Usted se compromete a no compartir credenciales, a no cargar datos de causas en equipos públicos y a resguardar la información conforme a las normas de su institución.</p>
+                <p><strong>5. Uso compartido.</strong> Cada usuario ve únicamente las causas guardadas en su propio navegador. Para compartir información con un compañero, use la exportación/importación de JSON.</p>
+                <p><strong>6. Aceptación.</strong> Al continuar, usted declara haber leído y aceptado estos términos.</p>
+            </div>
+        </div>
+        <!-- Footer -->
+        <div style="padding:14px 28px 20px;background:#f8f9fb;border-top:1px solid #e0e4ea;text-align:center;">
+            <button onclick="cerrarManual()" style="padding:9px 28px;background:#1a2a4a;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;"><i class="fas fa-check"></i> Entendido</button>
+        </div>
+    </div>
+</div>
 <!-- ===== FAB DE AYUDA (Términos y Condiciones) ===== -->
-<button class="fab-ayuda" id="fab-ayuda" onclick="abrirTyCManual()" title="Ver Términos y Condiciones" aria-label="Ver Términos y Condiciones">
+<button class="fab-ayuda" id="fab-ayuda" onclick="abrirManual()" title="Ayuda del sistema" aria-label="Ayuda del sistema">
     <i class="fas fa-question"></i>
     <span class="tooltip-fab">Términos y Condiciones</span>
 </button>
@@ -1712,6 +1785,32 @@
             btnAceptar.dataset.modo = 'manual';
         }
         modal.style.display = 'flex';
+    }
+        function abrirManual() {
+        const modal = document.getElementById('modal-ayuda');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        cambiarTabAyuda('manual');
+    }
+
+    function cerrarManual() {
+        const modal = document.getElementById('modal-ayuda');
+        if (modal) modal.style.display = 'none';
+    }
+
+    function cambiarTabAyuda(tab) {
+        document.querySelectorAll('.ayuda-pane').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.tab-ayuda').forEach(el => {
+            el.style.borderBottomColor = 'transparent';
+            el.style.color = '#666';
+        });
+        const pane = document.getElementById('ayuda-tab-' + tab);
+        const btn = document.querySelector('.tab-ayuda[data-tab="' + tab + '"]');
+        if (pane) pane.style.display = 'block';
+        if (btn) {
+            btn.style.borderBottomColor = '#1a2a4a';
+            btn.style.color = '#1a2a4a';
+        }
     }
 
     // ===== FAB DE AYUDA: mostrar solo logueado =====
@@ -2505,6 +2604,23 @@
         actualizarBadgeRespaldo();
         inicializarSistema();
     }
+            // Mostrar manual automáticamente la primera vez por usuario
+        if (currentUser && currentUser.uid) {
+            const manualKey = 'manual_mostrado_' + currentUser.uid;
+            if (!localStorage.getItem(manualKey)) {
+                const intentarMostrar = () => {
+                    const freemiumModal = document.getElementById('modal-bienvenida-freemium');
+                    const freemiumVisible = freemiumModal && freemiumModal.style.display === 'flex';
+                    if (freemiumVisible) {
+                        setTimeout(intentarMostrar, 500);
+                    } else {
+                        localStorage.setItem(manualKey, 'true');
+                        abrirManual();
+                    }
+                };
+                setTimeout(intentarMostrar, 1000);
+            }
+        }
 
     // ===== BIENVENIDA FREEMIUM =====
     function mostrarBienvenidaFreemium(fechaExpiracion) {
