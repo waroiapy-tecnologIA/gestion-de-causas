@@ -1129,6 +1129,7 @@
             <div class="user-info">
                 <span id="user-info-display" style="font-size:13px; font-weight:500;"></span>
                 <span id="dias-freemium-badge"></span>
+                <span id="texto-respaldo-header" style="font-size:11px;font-weight:500;cursor:help;" title=""></span>
                 <button class="btn-admin" id="btn-admin-panel" onclick="toggleAdminPanel()" style="display:none;"><i class="fas fa-users-cog"></i> Admin</button>
                 <button class="btn btn-resumen" onclick="mostrarResumenRequerimientos()" title="Ver resumen de plazos"><i class="fas fa-list"></i> Resumen</button>
                 <button class="btn-logout" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Salir</button>
@@ -1145,7 +1146,7 @@
         <div class="toolbar no-print">
             <div class="toolbar-left">
                 <button class="btn btn-primary" onclick="nuevaCausa()"><i class="fas fa-plus"></i> Nueva Causa</button>
-                <button class="btn btn-outline" onclick="exportarDatos()"><i class="fas fa-file-export"></i> Exportar</button>
+                <button class="btn btn-outline" onclick="exportarDatos()" style="position:relative;"><i class="fas fa-file-export"></i> Exportar <span id="badge-respaldo" style="display:none;margin-left:6px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;align-items:center;"></span></button>
                 <button class="btn btn-outline" onclick="importarDatos()"><i class="fas fa-file-import"></i> Importar</button>
                 <button class="btn btn-outline" onclick="enviarCorreoConRespaldo()"><i class="fas fa-envelope"></i> Enviar respaldo</button>
                 <button class="btn btn-outline" onclick="abrirCodigoPenal()"><i class="fas fa-book-open"></i> Código Penal</button>
@@ -1606,6 +1607,18 @@
     </div>
 </div>
 
+<!-- ===== TOAST DE RESPALDO ===== -->
+<div id="toast-respaldo" style="position:fixed;top:80px;right:24px;max-width:340px;background:#fff;border-left:4px solid #dc3545;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.2);padding:14px 18px;font-size:13px;color:#333;z-index:10005;opacity:0;transform:translateX(20px);transition:opacity 0.3s,transform 0.3s;pointer-events:none;">
+    <div style="font-weight:600;color:#b33c3c;margin-bottom:6px;"><i class="fas fa-exclamation-triangle"></i> Respaldo pendiente</div>
+    <div class="toast-texto" style="margin-bottom:10px;line-height:1.4;"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="toast-cerrar" style="padding:5px 12px;background:#e0e0e0;color:#444;border:none;border-radius:4px;cursor:pointer;font-size:12px;">Después</button>
+        <button class="toast-accion" style="padding:5px 12px;background:#1a2a4a;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px;"><i class="fas fa-file-export"></i> Exportar</button>
+    </div>
+</div>
+<style>
+#toast-respaldo.visible { opacity:1; transform:translateX(0); pointer-events:auto; }
+</style>
 <!-- ===== FAB DE AYUDA (Términos y Condiciones) ===== -->
 <button class="fab-ayuda" id="fab-ayuda" onclick="abrirTyCManual()" title="Ver Términos y Condiciones" aria-label="Ver Términos y Condiciones">
     <i class="fas fa-question"></i>
@@ -1631,6 +1644,20 @@
     // ===== FREEMIUM =====
     const FREEMIUM_DIAS = 365;
     const FREEMIUM_TEXTO = '1 año';
+            // ===== FREEMIUM =====
+    const FREEMIUM_DIAS = 365;
+    const FREEMIUM_TEXTO = '1 año';
+
+    // ===== SISTEMA DE RESPALDO =====
+    const RESPALDO_KEYS = {
+        ultimaExportacion: 'causasUltimaExportacion',
+        cambiosSinExportar: 'causasCambiosSinExportar'
+    };
+    const RESPALDO_UMBRALES = {
+        verdeDias: 3,
+        amarilloDias: 7,
+        rojoCambios: 20
+    };
 
     let currentUser = null;
     let currentUserData = null;
@@ -2478,6 +2505,7 @@
         }
 
         actualizarFabAyuda(true);
+        actualizarBadgeRespaldo();
         inicializarSistema();
     }
 
@@ -2986,9 +3014,114 @@
     // ================================================================
     // 10. CRUD
     // ================================================================
-    function guardarDatos() {
-        try { localStorage.setItem('causasPenalesMP', JSON.stringify(causas)); }
-        catch (e) { console.error(e); }
+        function guardarDatos() {
+        try {
+            localStorage.setItem('causasPenalesMP', JSON.stringify(causas));
+            registrarCambio();
+        } catch (e) { console.error(e); }
+    }
+
+    function registrarCambio() {
+        try {
+            const actuales = parseInt(localStorage.getItem(RESPALDO_KEYS.cambiosSinExportar) || '0', 10);
+            localStorage.setItem(RESPALDO_KEYS.cambiosSinExportar, String(actuales + 1));
+            actualizarBadgeRespaldo();
+        } catch (e) { /* silencioso */ }
+    }
+
+    function marcarExportado() {
+        try {
+            localStorage.setItem(RESPALDO_KEYS.ultimaExportacion, new Date().toISOString());
+            localStorage.setItem(RESPALDO_KEYS.cambiosSinExportar, '0');
+            actualizarBadgeRespaldo();
+        } catch (e) { /* silencioso */ }
+    }
+
+    function calcularEstadoRespaldo() {
+        let ultima = null;
+        let cambios = 0;
+        try {
+            const raw = localStorage.getItem(RESPALDO_KEYS.ultimaExportacion);
+            if (raw) ultima = new Date(raw);
+            cambios = parseInt(localStorage.getItem(RESPALDO_KEYS.cambiosSinExportar) || '0', 10);
+        } catch (e) { /* silencioso */ }
+
+        const ahora = new Date();
+        const dias = ultima ? Math.floor((ahora - ultima) / 86400000) : null;
+
+        let nivel = 'verde';
+        let texto = '';
+        let detalle = '';
+
+        if (!ultima) {
+            nivel = 'rojo';
+            texto = 'Sin respaldo';
+            detalle = 'Nunca exportaste un respaldo. Hacé clic para exportar ahora.';
+        } else if (dias >= RESPALDO_UMBRALES.amarilloDias || cambios >= RESPALDO_UMBRALES.rojoCambios) {
+            nivel = 'rojo';
+            texto = dias === 0 ? `Hoy · ${cambios} cambios` : `Hace ${dias} día${dias === 1 ? '' : 's'}`;
+            detalle = `Último respaldo: ${dias === 0 ? 'hoy' : 'hace ' + dias + ' día' + (dias === 1 ? '' : 's')}. ${cambios} cambio${cambios === 1 ? '' : 's'} sin exportar.`;
+        } else if (dias >= RESPALDO_UMBRALES.verdeDias) {
+            nivel = 'amarillo';
+            texto = `Hace ${dias} día${dias === 1 ? '' : 's'}`;
+            detalle = `Último respaldo: hace ${dias} día${dias === 1 ? '' : 's'}. Conviene exportar pronto.`;
+        } else {
+            nivel = 'verde';
+            texto = dias === 0 ? 'Hoy' : `Hace ${dias} día${dias === 1 ? '' : 's'}`;
+            detalle = `Último respaldo: ${dias === 0 ? 'hoy' : 'hace ' + dias + ' día' + (dias === 1 ? '' : 's')}. Estás al día.`;
+        }
+
+        return { nivel, texto, detalle, dias: dias === null ? null : dias, cambios, ultima };
+    }
+
+    function actualizarBadgeRespaldo() {
+        const estado = calcularEstadoRespaldo();
+
+        const badge = document.getElementById('badge-respaldo');
+        if (badge) {
+            const colores = {
+                verde: { bg: '#d4edda', color: '#155724', dot: '#28a745' },
+                amarillo: { bg: '#fff3cd', color: '#856404', dot: '#ffc107' },
+                rojo: { bg: '#f8d7da', color: '#721c24', dot: '#dc3545' }
+            };
+            const c = colores[estado.nivel];
+            badge.style.display = 'inline-flex';
+            badge.style.background = c.bg;
+            badge.style.color = c.color;
+            badge.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${c.dot};display:inline-block;margin-right:5px;"></span>${estado.texto}`;
+            badge.title = estado.detalle;
+        }
+
+        const headerText = document.getElementById('texto-respaldo-header');
+        if (headerText) {
+            const colores = {
+                verde: '#2a7d4f',
+                amarillo: '#b8860b',
+                rojo: '#b33c3c'
+            };
+            headerText.textContent = `💾 Último respaldo: ${estado.dias === null ? 'nunca' : (estado.dias === 0 ? 'hoy' : 'hace ' + estado.dias + ' día' + (estado.dias === 1 ? '' : 's'))}`;
+            headerText.style.color = colores[estado.nivel];
+            headerText.title = estado.detalle;
+        }
+
+        if (estado.nivel === 'rojo' && !sessionStorage.getItem('respaldoToastMostrado')) {
+            sessionStorage.setItem('respaldoToastMostrado', '1');
+            setTimeout(() => mostrarToastRespaldo(estado.detalle), 2500);
+        }
+    }
+
+    function mostrarToastRespaldo(mensaje) {
+        const toast = document.getElementById('toast-respaldo');
+        if (!toast) return;
+        const texto = toast.querySelector('.toast-texto');
+        if (texto) texto.textContent = mensaje;
+        toast.classList.add('visible');
+        const cerrar = () => toast.classList.remove('visible');
+        const btnCerrar = toast.querySelector('.toast-cerrar');
+        const btnAccion = toast.querySelector('.toast-accion');
+        if (btnCerrar) btnCerrar.onclick = cerrar;
+        if (btnAccion) btnAccion.onclick = () => { cerrar(); exportarDatos(); };
+        setTimeout(cerrar, 12000);
     }
     function cargarDatos() {
         try {
@@ -4708,6 +4841,7 @@ function abrirGoogleCalendar(causaId) {
     a.download = nombreArchivo;
     a.click();
     URL.revokeObjectURL(url);
+    marcarExportado();
 }
     function enviarCorreoConRespaldo() {
         if (causas.length === 0) { alert('No hay datos para exportar.'); return; }
